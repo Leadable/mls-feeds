@@ -43,3 +43,15 @@ dependants.
 - [mls board]/bin
 - [mls board]/lib
 - [mls board]/sql
+
+# Getting Started
+
+1. ssh into dev instance `ssh ec2-user@[first name]-dev.leadable.com`
+2. install docker if not already installed `sudo yum install -y docker ; sudo service docker start`
+3. install git `sudo yum install -y git`
+4. generate ssh public key and add it to your github profile `ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`
+3. checkout the mls-feeds repo `git clone git@github.com:Leadable/mls-feeds.git`
+4. Go into mls-feeds directory. `cd mls-feeds`
+5. Build the docker image. `sudo docker build -t jingerso/mls-feeds .`
+6. Create the docker container. `sudo docker run -t -i --name rets -v ~/mls-feeds/:/opt/mls-feeds -p 3000 --rm ted/mls-feeds /bin/bash`
+7. `cd /opt/mls-feeds`
