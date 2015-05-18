@@ -55,3 +55,5 @@ dependants.
 5. Build the docker image. `sudo docker build -t jingerso/mls-feeds .`
 6. Create the docker container. `sudo docker run -t -i --name rets -v ~/mls-feeds/:/opt/mls-feeds -p 3000 --rm ted/mls-feeds /bin/bash`
 7. `cd /opt/mls-feeds`
+8. run screen in container
+9. open seperate ssh conection to ec2 instance and run screen for editing code
