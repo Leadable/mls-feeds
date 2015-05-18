@@ -57,3 +57,17 @@ dependants.
 7. `cd /opt/mls-feeds`
 8. run screen in container
 9. open seperate ssh conection to ec2 instance and run screen for editing code
+
+# Starting a new board
+
+1. create the database schema and roles `cd /opt/mls-feeds; ./init_role_and_schema.pl [board system name]`
+2. copy an existing board directory `cp -R ragfl/ [board system name]`
+3. `vi bin/metadata.pl`
+4. on the docker image `cd [board system name]/bin`, then `./metadata.pl daemon`
+5. open your browser to http://ted-dev.leadable.com:49154
+6. Scroll to the bottom and copy the SQL for creating the tables.
+7. Copy into [board system name]/sql/schema.sql
+8. Switch to psql and run `\i ~/mls-feeds/[board system name]/sql/schema.sql`
+9. Update [board system name]/lib/MLS/Property/Config.pm
+10. Update [board system name]/lib/MLS/Property/Mutation.pm, change the search string for 
+    $rets->CreateSearchRequest and change the string for SetSelect
