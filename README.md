@@ -44,7 +44,7 @@ dependants.
 - [mls board]/lib
 - [mls board]/sql
 
-# Getting Started
+# Setting up the environment
 
 1. ssh into dev instance `ssh ec2-user@[first name]-dev.leadable.com`
 2. install docker if not already installed `sudo yum install -y docker ; sudo service docker start`
