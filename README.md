@@ -52,8 +52,8 @@ dependants.
 4. generate ssh public key and add it to your github profile `ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`
 3. checkout the mls-feeds repo `git clone git@github.com:Leadable/mls-feeds.git`
 4. Go into mls-feeds directory. `cd mls-feeds`
-5. Build the docker image. `sudo docker build -t jingerso/mls-feeds .`
-6. Create the docker container. `sudo docker run -t -i --name rets -v ~/mls-feeds/:/opt/mls-feeds -p 3000 --rm ted/mls-feeds /bin/bash`
+5. Build the docker image. `sudo docker build -t [your name]/mls-feeds .`
+6. Create the docker container. `sudo docker run -t -i --name rets -v ~/mls-feeds/:/opt/mls-feeds -p 3000 --rm [your name]/mls-feeds /bin/bash`
 7. `cd /opt/mls-feeds`
 8. run screen in container
 9. open seperate ssh conection to ec2 instance and run screen for editing code
@@ -64,10 +64,9 @@ dependants.
 2. copy an existing board directory `cp -R ragfl/ [board system name]`
 3. `vi bin/metadata.pl`
 4. on the docker image `cd [board system name]/bin`, then `./metadata.pl daemon`
-5. open your browser to http://ted-dev.leadable.com:49154
+5. open your browser to http://[your name]-dev.leadable.com:49154
 6. Scroll to the bottom and copy the SQL for creating the tables.
 7. Copy into [board system name]/sql/schema.sql
 8. Switch to psql and run `\i ~/mls-feeds/[board system name]/sql/schema.sql`
 9. Update [board system name]/lib/MLS/Property/Config.pm
-10. Update [board system name]/lib/MLS/Property/Mutation.pm, change the search string for 
-    $rets->CreateSearchRequest and change the string for SetSelect
+10. Update [board system name]/lib/MLS/Property/Mutation.pm, change the search string for $rets->CreateSearchRequest and change the string for SetSelect
