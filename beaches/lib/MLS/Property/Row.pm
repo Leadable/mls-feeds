@@ -1,6 +1,10 @@
 package MLS::Property::Row;
 use strict;
 
+$| = 1;
+
+my $report = {add => 0, update => 0};
+
 use Data::Dumper qw(Dumper);
 
 sub new {
@@ -16,6 +20,7 @@ sub new {
 sub go {
   my ($self) = @_;
 
+  print "----Syncing listing rows----\n\n";
   $self->fetch_pg_col_info();
 
   foreach my $class_id (sort keys %MLS::Property::Config::CLASSES) {
@@ -29,13 +34,19 @@ sub go {
 
     while (@$mutated) {
       #print Dumper($mutated);
+      print "Class [$class_id] was found to be mutated\n";
 
       my @chunk = splice(@$mutated, 0, $self->{rets_search_limit});
 
       $self->fetch_remote($class_id, $class, \@chunk);
     }
-    print "\n";
   }
+
+  print "\nSYNC LISTINGS REPORT\n";
+  print "\tNEW: $report->{add}\n";
+  print "\tUPDATED $report->{update}\n";
+  print "\n\tTOTAL: " . ($report->{add} + $report->{update}) . "\n";
+  print "\n[DONE]\n\n";
 }
 
 sub fetch_pg_col_info {
@@ -62,6 +73,7 @@ sub fetch_pg_col_info {
 sub fetch_rets_table_info {
   my ($self, $class_id) = @_;
 
+  print "Fetching rets table info for [$class_id]\n";
   my $rets = $self->{rets};
 
   my $metadata = $rets->GetMetadata;
@@ -98,11 +110,10 @@ sub mutated {
   );
 
   my $sql = "SELECT remote_id, remote_row_mod_ts, local_row_mod_ts FROM $MLS::Property::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id";
-  print "$sql\n";
+  $self->{temp_error} = "$sql\n";
 
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
 
-  print "found " . scalar(@$rs) . "\n";
   return @$rs ? $rs : 0;
 }
 
@@ -120,7 +131,7 @@ sub fetch_local {
   );
 
   my $sql = "SELECT " . join(', ', @select) . " FROM $MLS::Property::Config::MLS.\"$MLS::Property::Config::RESOURCE\" WHERE " . $dbh->quote_identifier($pkey) . " IN('" . join("','", map($_->{remote_id}, @$mutated)) . "')";
-  print "$sql\n";
+  $self->{temp_error} = "$sql\n";
   my %local = map { $_->{$pkey}, $_ } @{ $dbh->selectall_arrayref($sql, { Slice => {} }) };
 
   return \%local;
@@ -138,7 +149,7 @@ sub fetch_remote {
   my $pkey = $MLS::Property::Config::PRIMARY_KEY{SystemName};
 
   my $search = '(' . join('|', map("($pkey=$_->{remote_id})", @$remote_ids)) . ')';
-  print "$search\n";
+  $self->{temp_error} = "$search\n";
 
   eval {
     my $request = $rets->CreateSearchRequest($MLS::Property::Config::RESOURCE, $class_id, $search);
@@ -149,13 +160,13 @@ sub fetch_remote {
     $request->SetCountType($librets::SearchRequest::RECORD_COUNT_AND_RESULTS);
     $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
 
-    print "Request for $MLS::Property::Config::RESOURCE, " . $class->{StandardName} . " ($class_id)\n";
+    print "Fetching remote rows for [$MLS::Property::Config::RESOURCE]/[" . $class->{StandardName} . "] ($class_id)\n";
     my $results = $rets->Search($request);
 
-    print "Record count: " . $results->GetCount() . "\n\n";
+    print "Record count: [" . $results->GetCount() . "]\n";
     #die unless $results->GetCount();
 
-    #my $x = 0;
+    my $i = 0;
     while ($results->HasNext()) {
 
       my $rets_columns = $results->GetColumns();
@@ -185,53 +196,25 @@ sub fetch_remote {
         }
       }
       #print Dumper(\%data);
-     
+
       my $pkey_val = $results->GetString($MLS::Property::Config::PRIMARY_KEY{SystemName});
       my $local_row = $local_rows->{ $pkey_val };
-
-      print "sysid => :$pkey_val:\n";
 
       #print Dumper($local_row);
 
       $local_row ? $self->update($results, \%data, $local_row) : $self->insert($results, \%data);
 
       $self->update_mutation_table($pkey_val, $results);
+      print '.';
+      print "\n" if (++$i % 100 == 0);
     }
+    print "\n";
   };
 
   if ($@) {
     print "librets::RetsException: " . $@->GetFullReport() if ($@ =~ /librets/);
     die $@;
   }
-}
-
-sub photo_urls {
-  my ($self, $results) = @_;
-
-  my $dbh = $self->{dbh};
-
-  my $image_count = $results->GetString('113');
-  return 'null::text[]' unless $image_count;
-
-  my $pkey_val = $results->GetString($MLS::Property::Config::PRIMARY_KEY{SystemName});
-  my @urls;
-
-  foreach my $index (1 .. $image_count) {
-    my $url = sprintf('http://%s/%s/%s/%s/%s/%d.jpg'
-      , 'd3nzuupqvizida.cloudfront.net'
-      , $MLS::Property::Config::MLS
-      , $MLS::Property::Config::RESOURCE
-      , substr($pkey_val, -3, 3)
-      , $pkey_val
-      , $index
-    );
-
-    print "$url\n";
-
-    push(@urls, $url);
-  }
-
-  return 'ARRAY[' . join(',', map($dbh->quote($_), @urls)) . ']';
 }
 
 sub update {
@@ -246,10 +229,6 @@ sub update {
 
   my $price_val = $local_row->{ $MLS::Property::Config::PRICE_COLUMN{SystemName} };
   my $price_newval = $results->GetString($MLS::Property::Config::PRICE_COLUMN{SystemName});
-
-  print "Current Price: $price_val\n";
-  print "New Price    : $price_newval\n";
-  print "\n";
 
   if ($price_val != $price_newval) {
     # __percent_reduced
@@ -286,8 +265,10 @@ sub update {
   my $pkey_val = $results->GetString($pkey_ident);
 
   my $sql = 'UPDATE ' . $MLS::Property::Config::MLS . '."' . $MLS::Property::Config::RESOURCE . '" SET ' . join(',', @vals) . " WHERE " . $dbh->quote_identifier($pkey_ident) . " = " . $dbh->quote($pkey_val);
-  print "$sql\n";
+  $self->{temp_error} = "$sql\n";
   $dbh->do($sql);
+
+  $report->{update}++;
 }
 
 sub insert {
@@ -326,8 +307,10 @@ sub insert {
   push(@vals, 'ARRAY[' . $data->{ $MLS::Property::Config::STATUS_COLUMN{SystemName} } . ']');
 
   my $sql = 'INSERT INTO ' . $MLS::Property::Config::MLS . '."' . $MLS::Property::Config::RESOURCE . '"(' . join(',', @cols) . ') VALUES(' . join(',', @vals) . ')';
-  print "$sql\n";
+  $self->{temp_error} = "$sql\n";
   $dbh->do($sql);
+
+  $report->{add}++;
 }
 
 sub update_mutation_table {
@@ -347,11 +330,11 @@ sub update_mutation_table {
       'remote_id = ' . $dbh->quote($remote_id)
     );
     my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET local_row_mod_ts = remote_row_mod_ts, remote_address = " . $dbh->quote($address) . " WHERE " . join(' AND ', @conditions);
-    print "$sql\n";
+    $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
 
     my $sql = "SELECT * FROM $MLS::Property::Config::MLS.mutation WHERE " . join(' AND ', @conditions);
-    print "$sql\n";
+    $self->{temp_error} = "$sql\n";
     my $row = $dbh->selectrow_hashref($sql);
 
     my $transaction_complete = 1;
@@ -366,7 +349,7 @@ sub update_mutation_table {
     # The publisher job will detect the change and publish the row to the materialized (live) tables
     if ($transaction_complete) {
       my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET last_transaction_completed_at = NOW() WHERE " . join(' AND ', @conditions);
-      print "$sql\n";
+      $self->{temp_error} = "$sql\n";
       $dbh->do($sql);
     }
   };

@@ -17,6 +17,8 @@ sub new {
 sub go {
   my ($self) = @_;
 
+  print "----Checking for Mutations ----\n\n";
+
   $self->{temp_log} = '';
   $self->{totals} = { new => 0, updated => 0, removed => 0, resurrected => 0 };
 
@@ -34,6 +36,7 @@ sub go {
   print "\tREMOVED $self->{totals}->{removed}\n";
   print "\tRESURRECTED $self->{totals}->{resurrected}\n";
   print "\n\tTOTAL MUTATIONS: " . ($self->{totals}->{new} + $self->{totals}->{updated} + $self->{totals}->{removed} + $self->{totals}->{resurrected}) . "\n";
+  print "\n[DONE]\n\n";
 }
 
 # fetch remote rows
@@ -48,7 +51,7 @@ sub fetch_remote {
   foreach my $class_id (sort keys %MLS::Property::Config::CLASSES) {
     my $class = $MLS::Property::Config::CLASSES{ $class_id };
     print "Resource Class: $class_id\n";
-    print "Ignoring this class\n" if $class->{ignore};
+    print "Ignoring this class\n\n" if ($class->{ignore});
 
     next if $class->{ignore};
 
@@ -103,7 +106,7 @@ sub fetch_local {
   my $dbh = $self->{dbh};
   my $local = $self->{local};
 
-  print "Fetching local rows\n";
+  print "Fetching local rows\n\n";
 
   my $sql = "SELECT remote_id, remote_row_mod_ts, remote_img_mod_ts, remote_removed_at FROM $MLS::Property::Config::MLS.mutation";
   
@@ -152,8 +155,9 @@ sub new_remote_rows {
 
     $self->{totals}->{new}++;
     print ".";
-    print "\n" if ($i++ % 100 == 0);
+    print "\n" if (++$i % 100 == 0);
   }
+  print "\n";
 }
 
 #UPDATE
@@ -197,9 +201,10 @@ sub updated_remote_rows {
 
       $self->{totals}->{updated}++;
       print ".";
-      print "\n" if ($i++ % 100 == 0);
+      print "\n" if (++$i % 100 == 0);
     }
-  } 
+  }
+  print "\n";
 }
 
 # DELETED
@@ -233,8 +238,9 @@ sub deleted_remote_rows {
 
     $self->{totals}->{removed}++;
     print ".";
-    print "\n" if ($i++ % 100 == 0);
+    print "\n" if (++$i % 100 == 0);
   }
+  print "\n";
 }
 
 # RESURRECTED
@@ -261,7 +267,7 @@ sub resurrect_remote_rows {
     );
 
     my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET remote_removed_at = NULL WHERE " . join(' AND ', @conditions);
-    print "$sql\n";
+    $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
 
     my $pkey_ident = $MLS::Property::Config::PRIMARY_KEY{SystemName};
@@ -272,8 +278,9 @@ sub resurrect_remote_rows {
 
     $self->{totals}->{resurrected}++;
     print ".";
-    print "\n" if ($i++ % 100 == 0);
+    print "\n" if (++$i % 100 == 0);
   }
+  print "\n";
 }
 
 1;

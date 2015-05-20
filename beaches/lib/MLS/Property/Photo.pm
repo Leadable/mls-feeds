@@ -1,6 +1,8 @@
 package MLS::Property::Photo;
 use strict;
 
+$| = 1;
+
 use Data::Dumper qw(Dumper);
 
 my %extentions = (
@@ -8,6 +10,8 @@ my %extentions = (
  'image/gif' => "gif",
  'text/xml' => "xml"
 );
+
+my $fetch_count = 0;
 
 sub new {
   my ($class, $opts) = @_;
@@ -18,12 +22,19 @@ sub new {
 sub go {
   my ($self) = @_;
 
+  print "----Fetching photos----\n\n";
+
   my $mutated = $self->mutated();
   return unless $mutated;
 
+  my $i = 0;
   foreach my $remote_row (@$mutated) {
     $self->fetch_remote($remote_row);
+    print '.';
+    print "\n" if (++$i % 100 == 0);
   }
+
+  print "\nFetched [$fetch_count] photo urls\n\n[DONE]\n\n";
 }
 
 sub mutated {
@@ -38,11 +49,11 @@ sub mutated {
   );
 
   my $sql = "SELECT remote_id, remote_img_mod_ts, local_img_mod_ts FROM $MLS::Property::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id";
-  print "$sql\n";
+  $self->{temp_error} = "$sql\n";
 
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
 
-  print "found " . scalar(@$rs) . "\n";
+  print "Going to fetch for [" . scalar(@$rs) . "] listings\n";
   return @$rs ? $rs : 0;
 }
 
@@ -68,9 +79,9 @@ sub fetch_remote {
       
   while ($objectDescriptor) {
     my $location = $objectDescriptor->GetLocationUrl();
-    print "Location URL => :" . $location . ":\n";
 
     push(@urls, $location);
+    $fetch_count++;
     $objectDescriptor = $response->NextObject();
   }
 
@@ -85,7 +96,7 @@ sub update {
 
   my $sql = "UPDATE $MLS::Property::Config::MLS." . $dbh->quote_identifier($MLS::Property::Config::RESOURCE) . " SET __photo_urls = ARRAY[" . join(',', map($dbh->quote($_), @$urls)) . "] WHERE " . $dbh->quote_identifier($MLS::Property::Config::PRIMARY_KEY{SystemName}) . " = " . $dbh->quote($row->{remote_id});
 
-  print "$sql\n";
+  $self->{temp_error} = "$sql\n";
   $dbh->do($sql);
 }
 
@@ -103,11 +114,11 @@ sub update_mutation_table {
       'remote_id = ' . $dbh->quote($remote_id)
     );
     my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET local_img_mod_ts = remote_img_mod_ts WHERE " . join(' AND ', @conditions);
-    print "$sql\n";
+    $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
 
     my $sql = "SELECT * FROM $MLS::Property::Config::MLS.mutation WHERE " . join(' AND ', @conditions);
-    print "$sql\n";
+    $self->{temp_error} = "$sql\n";
     my $row = $dbh->selectrow_hashref($sql);
 
     my $transaction_complete = 1;
@@ -122,7 +133,7 @@ sub update_mutation_table {
     # The publisher job will detect the change and publish the row to the materialized (live) tables
     if ($transaction_complete) {
       my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET last_transaction_completed_at = NOW() WHERE " . join(' AND ', @conditions);
-      print "$sql\n";
+      $self->{temp_error} = "$sql\n";
       $dbh->do($sql);
     }
   };

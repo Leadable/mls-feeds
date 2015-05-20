@@ -96,8 +96,6 @@ $MLS::Property::Config::ADDRESS = sub {
   $address{full} = join(', ', @full);
   
   my $spec = Geo::StreetAddress::US->parse_address($address{full});
-  print Dumper(\%address);
-  print Dumper($spec);
 
 #  $VAR1 = {
 #          'state' => 'FL',
