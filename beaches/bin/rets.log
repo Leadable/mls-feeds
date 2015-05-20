@@ -1,0 +1,2263 @@
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#2)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000002, qop=auth, response="ef7c52a12199326adb4f32df50d4daf2", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=05BB321F9CF530F5285121DA0D7CEB59
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 40
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=0&Type=METADATA-SYSTEM* upload completely sent off: 40 out of 40 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="0E2AAC6780063056FD75FC1AF610C17F" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=0E2AAC6780063056FD75FC1AF610C17F; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-SYSTEM
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:50 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-SYSTEM Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <SYSTEM SystemID="fl" SystemDescription="Regional MLS"/>
+    <COMMENTS/>
+  </METADATA-SYSTEM>
+</RETS>
+* Closing connection 2
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#3)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000003, qop=auth, response="6626ec2a3f33c4aeab6582301a8aaaea", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=0E2AAC6780063056FD75FC1AF610C17F
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 42
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=0&Type=METADATA-RESOURCE* upload completely sent off: 42 out of 42 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+MIME-Version: 1.0
+Content-ID: METADATA-RESOURCE
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:50 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-RESOURCE Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	ResourceID	StandardName	VisibleName	Description	KeyField	ClassCount	ClassVersion	ClassDate	ObjectVersion	ObjectDate	SearchHelpVersion	SearchHelpDate	EditMaskVersion	EditMaskDate	LookupVersion	LookupDate	UpdateHelpVersion	UpdateHelpDate	ValidationExpressionVersion	ValidationExpressionDate	ValidationLookupVersion	ValidationLookupDate	ValidationExternalVersion	ValidationExternalDate	</COLUMNS>
+    <DATA>	ActiveAgent	ActiveAgent	ActiveAgent	ActiveAgent	MEMBER_0	1	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT									</DATA>
+    <DATA>	Office	Office	Office	Office	OFFICE_0	1	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT									</DATA>
+    <DATA>	OpenHouse	OpenHouse	OpenHouse	OpenHouse	EVENT0	1	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT									</DATA>
+    <DATA>	Property	Property	Property	Property Data	LIST_1	6	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT	01.02.92538	Thu, 14 May 2015 01:38:22 GMT									</DATA>
+  </METADATA-RESOURCE>
+</RETS>
+* Closing connection 3
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#4)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000004, qop=auth, response="8d201305af985a2e2578c36aa35bf409", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=0E2AAC6780063056FD75FC1AF610C17F
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 50
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=ActiveAgent&Type=METADATA-OBJECT* upload completely sent off: 50 out of 50 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+MIME-Version: 1.0
+Content-ID: METADATA-OBJECT
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:50 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-OBJECT Resource="ActiveAgent" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	ObjectType	StandardName	MimeType	Description	</COLUMNS>
+    <DATA>	Photo	image	image/jpeg	Profile Photo	</DATA>
+  </METADATA-OBJECT>
+</RETS>
+* Closing connection 4
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#5)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000005, qop=auth, response="b5aff731465a2b362ef446b86758acc2", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=0E2AAC6780063056FD75FC1AF610C17F
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 49
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=ActiveAgent&Type=METADATA-CLASS* upload completely sent off: 49 out of 49 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="BD59DAC6022E3687C9ACB7E651523471" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=BD59DAC6022E3687C9ACB7E651523471; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-CLASS
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:51 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-CLASS Resource="ActiveAgent" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	ClassName	StandardName	VisibleName	Description	TableVersion	TableDate	UpdateVersion	UpdateDate	</COLUMNS>
+    <DATA>	Agent	Agent	Agent	Active Agent	01.02.92538	Thu, 14 May 2015 01:38:22 GMT			</DATA>
+  </METADATA-CLASS>
+</RETS>
+* Closing connection 5
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#6)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000006, qop=auth, response="82d6fe66ff3326e18207cb0a40387896", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=BD59DAC6022E3687C9ACB7E651523471
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 55
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=ActiveAgent:Agent&Type=METADATA-TABLE* upload completely sent off: 55 out of 55 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="6510F9060B0EA10D751F71EF44DEC0B1" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=6510F9060B0EA10D751F71EF44DEC0B1; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-TABLE
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:50 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-TABLE Resource="ActiveAgent" Class="Agent" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	SystemName	StandardName	LongName	DBName	ShortName	MaximumLength	DataType	Precision	Searchable	Interpretation	Alignment	UseSeparator	EditMaskID	LookupName	MaxSelect	Units	Index	Minimum	Maximum	Default	Required	SearchHelpID	Unique	</COLUMNS>
+    <DATA>	MEMBER_0	AgentID	Agent ID	techid	AgentID	26	Character		1												0		1	</DATA>
+    <DATA>	MEMBER_1	OfficeID	Office ID	grouptechi	OfficeID	26	Character		1												0		0	</DATA>
+    <DATA>	MEMBER_3	FirstName	First Name	fname	FirstName	20	Character		1												0		0	</DATA>
+    <DATA>	MEMBER_4	LastName	Last Name	lname	LastName	30	Character		1												0		0	</DATA>
+    <DATA>	MEMBER_5	OfficePhone	Office Phone	pophone	OfficePhone	25	Character		1												0		0	</DATA>
+    <DATA>	MEMBER_10	Email	Email	emailaddr	Email	150	Character		1												0		0	</DATA>
+    <DATA>	MEMBER_17		ShortID	shortid	ShortID	15	Character		1												0		0	</DATA>
+    <DATA>	MEMBER_18		Middle Name	mname	MiddleName	20	Character		1												0		0	</DATA>
+    <DATA>	MEMBER_19		Full Name	fullname	FullName	72	Character		1												0		0	</DATA>
+    <DATA>	MEMBER_20		Board Code	boardcode	BoardCode	150	Character		1												0		0	</DATA>
+    <DATA>	MEMBER_21		Primary Phone	prphone	PrimaryPhone	25	Character		1												0		0	</DATA>
+    <DATA>	STATUS		Active Status	STATUS	Active Status	1	Boolean		1												0		0	</DATA>
+    <DATA>	TIMESTAMP	ModificationTimestamp	Timestamp	TIMESTAMP	Timestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	SYSTEM_ACCESS		System Access	SYSTEMACCE	System Access	1	Boolean		1												0		0	</DATA>
+    <DATA>	OFFICESHORT		Office Short ID	OFFICESHOR	Office Short ID	15	Character		1												0		0	</DATA>
+  </METADATA-TABLE>
+</RETS>
+* Closing connection 6
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#7)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000007, qop=auth, response="7d3dea5538e3756223e91a99b952b812", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=6510F9060B0EA10D751F71EF44DEC0B1
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 45
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=Office&Type=METADATA-OBJECT* upload completely sent off: 45 out of 45 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="53391A7CAE3269B516E94E92BA38637C" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=53391A7CAE3269B516E94E92BA38637C; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-OBJECT
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:51 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-OBJECT Resource="Office" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	ObjectType	StandardName	MimeType	Description	</COLUMNS>
+    <DATA>	Photo	image	image/jpeg	Profile Photo	</DATA>
+  </METADATA-OBJECT>
+</RETS>
+* Closing connection 7
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#8)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000008, qop=auth, response="15883f340fa9ed4c8461f166692ea3fd", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=53391A7CAE3269B516E94E92BA38637C
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 44
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=Office&Type=METADATA-CLASS* upload completely sent off: 44 out of 44 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+MIME-Version: 1.0
+Content-ID: METADATA-CLASS
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:51 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-CLASS Resource="Office" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	ClassName	StandardName	VisibleName	Description	TableVersion	TableDate	UpdateVersion	UpdateDate	</COLUMNS>
+    <DATA>	Office	Office	Office	Office	01.02.92538	Thu, 14 May 2015 01:38:22 GMT			</DATA>
+  </METADATA-CLASS>
+</RETS>
+* Closing connection 8
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#9)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000009, qop=auth, response="1084eb9e81b6de016f2202a46e90dfb3", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=53391A7CAE3269B516E94E92BA38637C
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 51
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=Office:Office&Type=METADATA-TABLE* upload completely sent off: 51 out of 51 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="DBA5C16916472576FA6AFC3EBFE1DAF5" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=DBA5C16916472576FA6AFC3EBFE1DAF5; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-TABLE
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:51 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-TABLE Resource="Office" Class="Office" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	SystemName	StandardName	LongName	DBName	ShortName	MaximumLength	DataType	Precision	Searchable	Interpretation	Alignment	UseSeparator	EditMaskID	LookupName	MaxSelect	Units	Index	Minimum	Maximum	Default	Required	SearchHelpID	Unique	</COLUMNS>
+    <DATA>	OFFICE_0	OfficeID	Office ID	techid	OfficeID	26	Character		1												0		1	</DATA>
+    <DATA>	OFFICE_2	Name	Name	name	Name	150	Character		1												0		0	</DATA>
+    <DATA>	OFFICE_3	OfficePhone	Office Phone	pophone	OfficePhone	25	Character		1												0		0	</DATA>
+    <DATA>	OFFICE_8	Email	Email	emailaddr	Email	150	Character		1												0		0	</DATA>
+    <DATA>	OFFICE_10		Street1	street1	Street1	50	Character		1												0		0	</DATA>
+    <DATA>	OFFICE_12		City	city	City	30	Character		1												0		0	</DATA>
+    <DATA>	OFFICE_13		State	stateprov	State	2	Character		1												0		0	</DATA>
+    <DATA>	OFFICE_14		Zip	zip	Zip	10	Character		1												0		0	</DATA>
+    <DATA>	OFFICE_15		ShortID	shortid	ShortID	15	Character		1												0		0	</DATA>
+    <DATA>	OFFICE_16		Board Code	boardcode	BoardCode	150	Character		1												0		0	</DATA>
+    <DATA>	OFFICE_17		Company ID	companyid	CompanyID	26	Character		1												0		0	</DATA>
+    <DATA>	STATUS		Active Status	STATUS	Active Status	1	Boolean		1												0		0	</DATA>
+    <DATA>	TIMESTAMP	ModificationTimestamp	Timestamp	TIMESTAMP	Timestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	SYSTEM_ACCESS		System Access	SYSTEMACCE	System Access	1	Boolean		1												0		0	</DATA>
+    <DATA>	BROKERSHORT		Broker Short ID	BROKERSHOR	Broker Short ID	15	Character		0												0		0	</DATA>
+    <DATA>	IDXOPT		IDX Opted In/Out	IDXOPT	IDX Opted In/Out	5	Character		0												0		0	</DATA>
+  </METADATA-TABLE>
+</RETS>
+* Closing connection 9
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#10)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=0000000a, qop=auth, response="2bef45960e39a6963b0fb51e6f3bc22e", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=DBA5C16916472576FA6AFC3EBFE1DAF5
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 48
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=OpenHouse&Type=METADATA-OBJECT* upload completely sent off: 48 out of 48 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="35DFAE1A2FA76349F6BEB576CEF91BB3" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=35DFAE1A2FA76349F6BEB576CEF91BB3; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-OBJECT
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:51 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success"/>
+* Closing connection 10
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#11)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=0000000b, qop=auth, response="e7bd66cea9ef874fa68a7bc6ea85be2a", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=35DFAE1A2FA76349F6BEB576CEF91BB3
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 47
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=OpenHouse&Type=METADATA-CLASS* upload completely sent off: 47 out of 47 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="6C024EAF3E40EF3CF8AE01ECC7952394" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=6C024EAF3E40EF3CF8AE01ECC7952394; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-CLASS
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:51 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-CLASS Resource="OpenHouse" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	ClassName	StandardName	VisibleName	Description	TableVersion	TableDate	UpdateVersion	UpdateDate	</COLUMNS>
+    <DATA>	OpenHouse		Open House	Open House	01.02.92538	Thu, 14 May 2015 01:38:22 GMT			</DATA>
+  </METADATA-CLASS>
+</RETS>
+* Closing connection 11
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#12)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=0000000c, qop=auth, response="b960f61f9a08090898c8b8b9ac918164", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=6C024EAF3E40EF3CF8AE01ECC7952394
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 57
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=OpenHouse:OpenHouse&Type=METADATA-TABLE* upload completely sent off: 57 out of 57 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="B9D3C8E5E97A9F88A09CD8504874BD47" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=B9D3C8E5E97A9F88A09CD8504874BD47; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-TABLE
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:52 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-TABLE Resource="OpenHouse" Class="OpenHouse" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	SystemName	StandardName	LongName	DBName	ShortName	MaximumLength	DataType	Precision	Searchable	Interpretation	Alignment	UseSeparator	EditMaskID	LookupName	MaxSelect	Units	Index	Minimum	Maximum	Default	Required	SearchHelpID	Unique	</COLUMNS>
+    <DATA>	EVENT0		Event Unique ID	techid	Event Unique ID	26	Character		1												0		1	</DATA>
+    <DATA>	EVENT6		Modification Timestamp	modtimesta	Modification Timestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	EVENT8		Hosted By	userdefine	Hosted By	100	Character		1												0		0	</DATA>
+    <DATA>	EVENT9		Hosted Phone	userdefine	Hosted Phone	100	Character		1												0		0	</DATA>
+    <DATA>	EVENT10		Area	userdefine	Area	100	Character		1												0		0	</DATA>
+    <DATA>	EVENT100		Event Start	STARTDT	Event Start	25	DateTime		1												0		0	</DATA>
+    <DATA>	EVENT200		Event End	ENDDT	Event End	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST1		Unique Listing ID	listid	Unique Listing ID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST22	ListPrice	List Price	listprice	List Price	15	Decimal	2	0												0		0	</DATA>
+    <DATA>	LIST29	ListingArea	Listing Area	area	Listing Area	50	Character		0												0		0	</DATA>
+    <DATA>	LIST105	ListingID	Listing Number	listingid	Listing Number	13	Character		0												0		0	</DATA>
+    <DATA>	ADD0		Street Address	address	Street Address	400	Character		0												0		0	</DATA>
+    <DATA>	ADD5	City	City	city	City	50	Character		0												0		0	</DATA>
+    <DATA>	ADD10	State	State	state	State	2	Character		0												0		0	</DATA>
+    <DATA>	MBR0	AgentID	Listing Agent ID	agentid	Listing Agent ID	26	Character		1												0		0	</DATA>
+    <DATA>	MBR5	FirstName	Listing Agent FirstName	fname	Listing Agent FirstName	20	Character		0												0		0	</DATA>
+    <DATA>	MBR7	LastName	Listing Agent LastName	lname	Listing Agent LastName	30	Character		0												0		0	</DATA>
+    <DATA>	PHONE0		Agent Primary Phone	aphone	Agent Primary Phone	14	Character		0												0		0	</DATA>
+    <DATA>	OFC0	OfficeID	Listing Office ID	officeid	Listing Office ID	26	Character		1												0		0	</DATA>
+    <DATA>	OFC3		Listing Office Name	name	Listing Office Name	150	Character		0												0		0	</DATA>
+    <DATA>	PHONE1		Office Primary Phone	ophone	Office Primary Phone	14	Character		0												0		0	</DATA>
+    <DATA>	OPEN_HOUSE_COMMENT		Open House Comments	OPENHOUSEC	Open House Comments	5000	Character		0												0		0	</DATA>
+  </METADATA-TABLE>
+</RETS>
+* Closing connection 12
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#13)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=0000000d, qop=auth, response="27b0f1b69d3e46adc702bf7f352c2cb6", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=B9D3C8E5E97A9F88A09CD8504874BD47
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 47
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=Property&Type=METADATA-OBJECT* upload completely sent off: 47 out of 47 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="595853DE392633B5418519304391246C" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=595853DE392633B5418519304391246C; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-OBJECT
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:52 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-OBJECT Resource="Property" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	ObjectType	StandardName	MimeType	Description	</COLUMNS>
+    <DATA>	Photo	image	image/jpeg	Standard Photo (300x192)	</DATA>
+    <DATA>	640x480	image	image/jpeg	640x480 Photo	</DATA>
+    <DATA>	Thumbnail	image	image/jpeg	Thumbnail Photo (65x42)	</DATA>
+    <DATA>	HiRes	image	image/jpeg	Higher Resolution Photo	</DATA>
+    <DATA>	Supplement		text/plain	Supplemental Listing Data	</DATA>
+    <DATA>	OfficeRemarks		text/plain	Internal Office Remarks	</DATA>
+    <DATA>	PDF		application/pdf	PDF Listing Document	</DATA>
+    <DATA>	PNG		image/png	PNG Listing Document	</DATA>
+    <DATA>	UnbrandedVideo		text/html	HTML for Video Embedding	</DATA>
+  </METADATA-OBJECT>
+</RETS>
+* Closing connection 13
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#14)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=0000000e, qop=auth, response="4d12b57bf20b8fc6e9bb0bb56b2ac92e", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=595853DE392633B5418519304391246C
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 46
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=Property&Type=METADATA-CLASS* upload completely sent off: 46 out of 46 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+MIME-Version: 1.0
+Content-ID: METADATA-CLASS
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:52 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-CLASS Resource="Property" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	ClassName	StandardName	VisibleName	Description	TableVersion	TableDate	UpdateVersion	UpdateDate	</COLUMNS>
+    <DATA>	A	ResidentialProperty	Residential	Residential	01.02.92538	Thu, 14 May 2015 01:38:22 GMT			</DATA>
+    <DATA>	B	MultiFamily	Residential Income	Residential Income	01.02.92538	Thu, 14 May 2015 01:38:22 GMT			</DATA>
+    <DATA>	C	LotsAndLand	Land	Land	01.02.92538	Thu, 14 May 2015 01:38:22 GMT			</DATA>
+    <DATA>	D	CommonInterest	Business	Business	01.02.92538	Thu, 14 May 2015 01:38:22 GMT			</DATA>
+    <DATA>	E		Comm/Industry	Comm/Industry	01.02.92538	Thu, 14 May 2015 01:38:22 GMT			</DATA>
+    <DATA>	F		Rental	Rental	01.02.92538	Thu, 14 May 2015 01:38:22 GMT			</DATA>
+  </METADATA-CLASS>
+</RETS>
+* Closing connection 14
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#15)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=0000000f, qop=auth, response="8c69e5d4c260e7e35b3d589d3a3a4983", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=595853DE392633B5418519304391246C
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 48
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=Property:A&Type=METADATA-TABLE* upload completely sent off: 48 out of 48 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="03434547BF34FB33E450D3E333894A6D" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=03434547BF34FB33E450D3E333894A6D; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-TABLE
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:53 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-TABLE Resource="Property" Class="A" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	SystemName	StandardName	LongName	DBName	ShortName	MaximumLength	DataType	Precision	Searchable	Interpretation	Alignment	UseSeparator	EditMaskID	LookupName	MaxSelect	Units	Index	Minimum	Maximum	Default	Required	SearchHelpID	Unique	</COLUMNS>
+    <DATA>	LIST_0		MLS Identifier	matechid	MLSID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_1		Internal Listing ID	techid	LISTID	26	Character		1												0		1	</DATA>
+    <DATA>	LIST_2		List Number Prefix	prefix	ListnoPrefix	2	Character		1												0		0	</DATA>
+    <DATA>	LIST_3		List Number Main	listnbr	ListnoMain	11	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_4		MLS Approved	maapproved	Approved	1	Character		1												0		0	</DATA>
+    <DATA>	LIST_5	AgentID	Agent ID	metechid	AgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_6		CoList Agent ID	colistagen	CoListAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_7		Property Group ID	propgroupi	PropGroupID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_8		Property Type	cardfmt	PropType	2	Character		1												0		0	</DATA>
+    <DATA>	LIST_61		Selling Agency ID	sellagency	SellingAgencyID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_62		Selling Agent ID	sellagenti	SellingAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_63		CoSelling Agent ID	cosellagen	CoSellingAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_87	ModificationTimestamp	Timestamp	modtimesta	Timestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_104		Display on Public Websites	pubweb	PublicWebsites	1	Character		1												0		0	</DATA>
+    <DATA>	LIST_105	ListingID	Listing ID	listingid	ListingID	13	Character		1												0		0	</DATA>
+    <DATA>	LIST_106	OfficeID	Office ID	listoffice	OfficeID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_132		Entry Timestamp	entrydate	EntryTimestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_133		Picture Count	piccount	PicCount	11	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_134		Picture Timestamp	pictimesta	PicTimestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_161		Document Timestamp	documentti	DocTimestamp	25	DateTime		0												0		0	</DATA>
+    <DATA>	LIST_162		Document Count	documentco	DocCount	11	Int		0	Number											0		0	</DATA>
+    <DATA>	LIST_163		List Office Board ID	boardid	LO Board Code ID	26	Character		1												0		0	</DATA>
+    <DATA>	BOARDCODE		List Office Board Code	boardcode	LO Board Code	150	Character		0												0		0	</DATA>
+    <DATA>	LIST_167		List Agent Board ID	agentboard	LA Board Code ID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_168		List Agent Board Code	agentboard	LA Board Code	150	Character		1												0		0	</DATA>
+    <DATA>	VOWList		VOWEntireListingDisplay	vowlist	VOWEntireListingDisplay	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWAddr		VOWAddressDisplay	vowaddr	VOWAddressDisplay	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWComm		VOWConsumerComment	vowcomm	VOWConsumerComment	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWAVM		VOWAutomatedValuationDisplay	vowavm	VOWAutomatedValuationDis	1	Boolean		1												0		0	</DATA>
+    <DATA>	LIST_9	Type	Type	booksec		100	Character		1	Lookup				20121126194253855048000000							0		0	</DATA>
+    <DATA>	LIST_12	CloseDate	Sold Date	solddate		10	Date		1												0		0	</DATA>
+    <DATA>	LIST_15	ListingStatus	Status	status		100	Character		1	Lookup				20121126194254125316000000							0		0	</DATA>
+    <DATA>	LIST_16	StatusChangeDate	Status Change Date	statuschan		10	Date		1												0		0	</DATA>
+    <DATA>	LIST_19		Contingent	contingent		100	Character		1	Lookup				20121126194253907929000000							0		0	</DATA>
+    <DATA>	LIST_22	ListPrice	List Price	listprice		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_23	ClosePrice	Sold Price	soldprice		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_26		Total Assessed Value	assessedva		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_27		REO	terms		100	Character		1	Lookup				20121126194254196375000000							0		0	</DATA>
+    <DATA>	LIST_28		Terms of Sale	financing		100	Character		1	Lookup				20121126194253963232000000							0		0	</DATA>
+    <DATA>	LIST_29	Area	Area	area		100	Character		1	Lookup				20121126194253792841000000							0		0	</DATA>
+    <DATA>	LIST_31	StreetNumber	Street #	housenbr		10	Character		1												0		0	</DATA>
+    <DATA>	LIST_32		Middle School	boxnbr		100	Character		1	Lookup				20121126194253859221000000							0		0	</DATA>
+    <DATA>	LIST_33	StreetDirPrefix	Street Dir	streetdirp		100	Character		1	Lookup				20121126194254167815000000							0		0	</DATA>
+    <DATA>	LIST_34	StreetName	Street Name	streetname		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_35	UnitNumber	Unit #	streetaddl		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_36	StreetDirSuffix	Street Post Dir	streetdirs		100	Character		1	Lookup				20121126194254171499000000							0		0	</DATA>
+    <DATA>	LIST_37	StreetSuffix	Street Suffix	streetsuff		100	Character		1	Lookup				20121126194254178690000000							0		0	</DATA>
+    <DATA>	LIST_39	City	City	city		100	Character		1	Lookup				20121126194253903583000000							0		0	</DATA>
+    <DATA>	LIST_40	StateOrProvince	State/Province	state		100	Character		1	Lookup				20121126194254121675000000							0		0	</DATA>
+    <DATA>	LIST_41	County	County	county		100	Character		1	Lookup				20121126194253918662000000							0		0	</DATA>
+    <DATA>	LIST_43	PostalCode	Zip Code	zip		100	Character		1	Lookup				20121126194254356627000000							0		0	</DATA>
+    <DATA>	LIST_45		Mbrshp Equity Amount	geoblock		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_46		Geo Lat	geolat		11	Decimal	6	1	Number											0		0	</DATA>
+    <DATA>	LIST_47		Geo Lon	geolon		11	Decimal	6	1	Number											0		0	</DATA>
+    <DATA>	LIST_48		SqFt - Living	totalsqft		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_49		SqFt - Total	sqft1		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_50		SqFt - Guest House	sqft2		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_51		Total Floors/Stories	sqft3		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_52		Ttl Units in Complex	sqft4		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_53	YearBuilt	Year Built	yrbuilt		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_54		Short Sale Addendum	style		100	Character		1	Lookup				20121126194254182196000000							0		0	</DATA>
+    <DATA>	LIST_56		Lot Dimensions	lotsize		50	Character		1												0		0	</DATA>
+    <DATA>	LIST_58		Front Exp	buybrokerc		100	Character		1	Lookup				20121126194253890823000000							0		0	</DATA>
+    <DATA>	LIST_59		Governing Bodies	sellbroker		100	Character		1	Lookup				20121126194254097861000000							0		0	</DATA>
+    <DATA>	LIST_65		Total Units in Bldg	totalrooms		6	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_66	Bedrooms	Total Bedrooms	totalbr		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_67	BathsTotal	Baths - Total	totalbath		7	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_68	BathsFull	Baths - Full	bathsfull		6	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_69	BathsHalf	Baths - Half	bathshalf		6	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_71		Short Sale	garagetype		100	Character		1	Lookup				20121126194254002434000000							0		0	</DATA>
+    <DATA>	LIST_72		Hardship Package	garagestal		100	Character		1	Lookup				20121126194253971577000000							0		0	</DATA>
+    <DATA>	LIST_73		High School	garagerem		100	Character		1	Lookup				20121126194253966855000000							0		0	</DATA>
+    <DATA>	LIST_74	Zoning	Zoning	zoning		15	Character		1												0		0	</DATA>
+    <DATA>	LIST_75		Taxes	taxes		11	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_76		Tax Year	taxyear		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_77	Subdivision	Subdivision	subdivisio		100	Character		1												0		0	</DATA>
+    <DATA>	LIST_78	PublicRemarks	Public Remarks	remark1		800	Character		1												0		0	</DATA>
+    <DATA>	LIST_80		Parcel ID	parcelnbr		50	Character		1												0		0	</DATA>
+    <DATA>	LIST_81	LegalDescription	Legal Desc	legal		120	Character		1												0		0	</DATA>
+    <DATA>	LIST_82	Directions	Directions	directions		400	Character		1												0		0	</DATA>
+    <DATA>	LIST_85		Elementary School	ownerconta		100	Character		1	Lookup				20121126194254075667000000							0		0	</DATA>
+    <DATA>	LIST_86		Geo Area	howtoshow		100	Character		1	Lookup				20121126194254032986000000							0		0	</DATA>
+    <DATA>	LIST_91		Homeowners Assoc	userdefine		100	Character		1	Lookup				20121126194254328078000000							0		0	</DATA>
+    <DATA>	LIST_93		Built Desc	userdefine		100	Character		1	Lookup				20121126194254335080000000							0		0	</DATA>
+    <DATA>	LIST_95		Mbrshp Equ(Read Only	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_96		HOPA	userdefine		100	Character		1	Lookup				20121126194254345847000000							0		0	</DATA>
+    <DATA>	LIST_97		SqFt Source	userdefine		100	Character		1	Lookup				20121126194254226350000000							0		0	</DATA>
+    <DATA>	LIST_101		Model Name	permbookms		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_108		Waterfront	userdefine		100	Character		1	Lookup				20121126194254233343000000							0		0	</DATA>
+    <DATA>	LIST_109		Private Pool	userdefine		100	Character		1	Lookup				20121126194254236768000000							0		0	</DATA>
+    <DATA>	LIST_110		Special Assessment	userdefine		100	Character		1	Lookup				20121126194254240316000000							0		0	</DATA>
+    <DATA>	LIST_111		Waterfrontage	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_112		Pets Allowed	userdefine		100	Character		1	Lookup				20121126194254247313000000							0		0	</DATA>
+    <DATA>	LIST_113		Short Sale A/U	userdefine		100	Character		1	Lookup				20121126194254250869000000							0		0	</DATA>
+    <DATA>	LIST_114		Bldg #	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_115		Multiple Ofrs Acptd	userdefine		100	Character		1	Lookup				20121126194254258140000000							0		0	</DATA>
+    <DATA>	LIST_117		LP Per ASV	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_118		Lot SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_119		Carport Spaces	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_120		HOA/POA/COA	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_121		Application Fee	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_122		Dock #	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_123		Unit Floor #	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_124		Garage Spaces	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_125		List Price/SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_126		Sold Price/SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_130		Development Name	userdefine		50	Character		1												0		0	</DATA>
+    <DATA>	LIST_148		Membership Equity	userdefine		100	Character		1	Lookup				20130819094204469245000000							0		0	</DATA>
+    <DATA>	FEAT20121205013839414797000000		Lease Info: Land Lease		Land Lease	20	Character		0												0		0	</DATA>
+    <DATA>	FEAT20121205013909971304000000		Lease Info: Recreation Lease		Recreation Lease	20	Character		0												0		0	</DATA>
+    <DATA>	FEAT20121205013955141981000000		Lease Info: Min Days to Lease		Min Days to Lease	20	Character		0												0		0	</DATA>
+    <DATA>	FEAT20121205014045517816000000		Lease Info: Lease Times p/Year		Lease Times p/Year	20	Character		0												0		0	</DATA>
+    <DATA>	FEAT20121205014222365857000000		Mobile/Mfg'd Hm Info: Mobile Home Size		Mobile Home Size	20	Character		0												0		0	</DATA>
+    <DATA>	FEAT20121205014333222849000000		Mobile/Mfg'd Hm Info: Brand Name		Brand Name	20	Character		0												0		0	</DATA>
+    <DATA>	FEAT20121205014307024734000000		Mobile/Mfg'd Hm Info: Serial #		Serial #	20	Character		0												0		0	</DATA>
+    <DATA>	FEAT20121205014241434329000000		Mobile/Mfg'd Hm Info: Decal #		Decal #	20	Character		0												0		0	</DATA>
+    <DATA>	FEAT20130205152427545796000000		Private Pool: Pool Size (W x L)		Pool Size (W x L)	20	Character		0												0		0	</DATA>
+    <DATA>	FEAT20130814021610368182000000		Parking: Other - See Remarks		Other - See Remarks	100	Boolean		0												0		0	</DATA>
+    <DATA>	FEAT20121128235209424878000000		Boat Services: Dock Available		Dock Available	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20140321152634871753000000		Equestrian Features: # of Stalls		# of Stalls	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20140321152710047280000000		Equestrian Features: # of Barns		# of Barns	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20140321160418630820000000		Storm Protection: Electric/Power Shutters		Electric/Power Shutters	100	Character		0	Lookup				20140321160418630820000000							0		0	</DATA>
+    <DATA>	FEAT20140321155533741500000000		Storm Protection: Accordian Shutters		Accordian Shutters	100	Character		0	Lookup				20140321155533741500000000							0		0	</DATA>
+    <DATA>	FEAT20140321160102765192000000		Storm Protection: Roll-Down Shutters		Roll-Down Shutters	100	Character		0	Lookup				20140321160102765192000000							0		0	</DATA>
+    <DATA>	FEAT20140321155658124989000000		Storm Protection: Panel Shutters		Panel Shutters	100	Character		0	Lookup				20140321155658124989000000							0		0	</DATA>
+    <DATA>	FEAT20140321155233891161000000		Storm Protection: Impact Glass		Impact Glass	100	Character		0	Lookup				20140321155233891161000000							0		0	</DATA>
+    <DATA>	FEAT20140321161103935150000000		Storm Protection: Permanent Generator		Permanent Generator	100	Character		0	Lookup				20140321161103935150000000							0		0	</DATA>
+    <DATA>	FEAT20140321160731963322000000		Storm Protection: Other Protection		Other Protection	100	Character		0	Lookup				20140321160731963322000000							0		0	</DATA>
+    <DATA>	GF20121227155358211179000000		ADA Compliant		ADA Compliant	100	Character		1	LookupMulti				GFLU20121227155358211179000000	99						0		0	</DATA>
+    <DATA>	GF20121128203536428561000000		Boat Services		Boat Services	100	Character		1	LookupMulti				GFLU20121128203536428561000000	99						0		0	</DATA>
+    <DATA>	GF20121126194243835004000000		Construction		Construction	100	Character		1	LookupMulti				GFLU20121126194243835004000000	3						0		0	</DATA>
+    <DATA>	GF20130305140913383704000000		Contingents		Contingents	100	Character		1	LookupMulti				GFLU20130305140913383704000000	6						0		0	</DATA>
+    <DATA>	GF20121128203359274284000000	Cooling	Cooling		Cooling	100	Character		1	LookupMulti				GFLU20121128203359274284000000	3						0		0	</DATA>
+    <DATA>	GF20121126194243751321000000		Design		Design	100	Character		1	LookupMulti				GFLU20121126194243751321000000	99						0		0	</DATA>
+    <DATA>	GF20121128203448419411000000		Dining Area		Dining Area	100	Character		1	LookupMulti				GFLU20121128203448419411000000	99						0		0	</DATA>
+    <DATA>	GF20140321152154756346000000		Equestrian Features		Equestrian Features	100	Character		1	LookupMulti				GFLU20140321152154756346000000	99						0		0	</DATA>
+    <DATA>	GF20121128203422637850000000		Equip/Appl Included		Equip/Appl Included	100	Character		1	LookupMulti				GFLU20121128203422637850000000	17						0		0	</DATA>
+    <DATA>	GF20121126194243919925000000	ExteriorFeatures	Exterior Features		Exterior Features	100	Character		1	LookupMulti				GFLU20121126194243919925000000	99						0		0	</DATA>
+    <DATA>	GF20121126194243841543000000		Flooring		Flooring	100	Character		1	LookupMulti				GFLU20121126194243841543000000	4						0		0	</DATA>
+    <DATA>	GF20121126194243781619000000		Furnished		Furnished	100	Character		1	LookupMulti				GFLU20121126194243781619000000	2						0		0	</DATA>
+    <DATA>	GF20121128203514053297000000		Guest House		Guest House	100	Character		1	LookupMulti				GFLU20121128203514053297000000	99						0		0	</DATA>
+    <DATA>	GF20121126194243786373000000	Heating	Heating		Heating	100	Character		1	LookupMulti				GFLU20121126194243786373000000	5						0		0	</DATA>
+    <DATA>	GF20121126194243819854000000	InteriorFeatures	Interior Features		Interior Features	100	Character		1	LookupMulti				GFLU20121126194243819854000000	17						0		0	</DATA>
+    <DATA>	GF20121128194156807054000000		Lot Description		Lot Description	100	Character		1	LookupMulti				GFLU20121128194156807054000000	99						0		0	</DATA>
+    <DATA>	GF20121128203245813130000000		Maintenance Fee Incl		Maintenance Fee Incl	100	Character		1	LookupMulti				GFLU20121128203245813130000000	99						0		0	</DATA>
+    <DATA>	GF20121128194227449710000000		Master Bedroom/Bath		Master Bedroom/Bath	100	Character		1	LookupMulti				GFLU20121128194227449710000000	7						0		0	</DATA>
+    <DATA>	GF20121128203337846630000000		Membership		Membership	100	Character		1	LookupMulti				GFLU20121128203337846630000000	99						0		0	</DATA>
+    <DATA>	GF20121128190158529252000000		Mobile Features		Mobile Features	100	Character		1	LookupMulti				GFLU20121128190158529252000000	99						0		0	</DATA>
+    <DATA>	GF20121128203155695117000000		Parking		Parking	100	Character		1	LookupMulti				GFLU20121128203155695117000000	99						0		0	</DATA>
+    <DATA>	GF20121128203750698912000000		Possession		Possession	100	Character		1	LookupMulti				GFLU20121128203750698912000000	2						0		0	</DATA>
+    <DATA>	GF20121128194138408449000000		Private Pool		Private Pool	100	Character		1	LookupMulti				GFLU20121128194138408449000000	99						0		0	</DATA>
+    <DATA>	GF20121128203307544548000000		Restrict		Restrict	100	Character		1	LookupMulti				GFLU20121128203307544548000000	8						0		0	</DATA>
+    <DATA>	GF20121126194243845568000000	Roof	Roof		Roof	100	Character		1	LookupMulti				GFLU20121126194243845568000000	99						0		0	</DATA>
+    <DATA>	GF20121128194256026088000000		Rooms		Rooms	100	Character		1	LookupMulti				GFLU20121128194256026088000000	8						0		0	</DATA>
+    <DATA>	GF20121126194243879313000000		Security		Security	100	Character		1	LookupMulti				GFLU20121126194243879313000000	99						0		0	</DATA>
+    <DATA>	GF20121129160105603599000000		Special Info		Special Info	100	Character		1	LookupMulti				GFLU20121129160105603599000000	99						0		0	</DATA>
+    <DATA>	GF20140321155001646303000000		Storm Protection		Storm Protection	100	Character		1	LookupMulti				GFLU20140321155001646303000000	99						0		0	</DATA>
+    <DATA>	GF20121128203214100844000000		Subdiv. Amenities		Subdiv. Amenities	100	Character		1	LookupMulti				GFLU20121128203214100844000000	17						0		0	</DATA>
+    <DATA>	GF20121126194243907252000000		Taxes		Taxes	100	Character		1	LookupMulti				GFLU20121126194243907252000000	4						0		0	</DATA>
+    <DATA>	GF20121126194243889344000000		Terms Considered		Terms Considered	100	Character		1	LookupMulti				GFLU20121126194243889344000000	5						0		0	</DATA>
+    <DATA>	GF20121128190049321246000000		Unit Desc		Unit Desc	100	Character		1	LookupMulti				GFLU20121128190049321246000000	99						0		0	</DATA>
+    <DATA>	GF20121126194244411580000000	Utilities	Utilities		Utilities	100	Character		1	LookupMulti				GFLU20121126194244411580000000	6						0		0	</DATA>
+    <DATA>	GF20121128190237228652000000	View	View		View	100	Character		1	LookupMulti				GFLU20121128190237228652000000	99						0		0	</DATA>
+    <DATA>	GF20121126194243720208000000	WaterFront	Waterfront		Waterfront	100	Character		1	LookupMulti				GFLU20121126194243720208000000	5						0		0	</DATA>
+    <DATA>	GF20121128203631453311000000		Window Treatments		Window Treatments	100	Character		1	LookupMulti				GFLU20121128203631453311000000	99						0		0	</DATA>
+    <DATA>	ROOM_BR2_room_length		Bedroom 2 Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR2_room_width		Bedroom 2 Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR2_room_rem		Bedroom 2 Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR2_room_level		Bedroom 2 Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR3_room_length		Bedroom 3 Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR3_room_width		Bedroom 3 Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR3_room_rem		Bedroom 3 Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR3_room_level		Bedroom 3 Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR4_room_length		Bedroom 4 Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR4_room_width		Bedroom 4 Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR4_room_rem		Bedroom 4 Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR4_room_level		Bedroom 4 Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR5_room_length		Bedroom 5 Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR5_room_width		Bedroom 5 Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR5_room_rem		Bedroom 5 Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR5_room_level		Bedroom 5 Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DE_room_length		Den Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DE_room_width		Den Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DE_room_rem		Den Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DE_room_level		Den Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DA_room_length		Dining Area Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DA_room_width		Dining Area Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DA_room_rem		Dining Area Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DA_room_level		Dining Area Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DN_room_length		Dining Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DN_room_width		Dining Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DN_room_rem		Dining Room Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DN_room_level		Dining Room Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FR_room_length		Family Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FR_room_width		Family Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FR_room_rem		Family Room Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FR_room_level		Family Room Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FL_room_length		Florida Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FL_room_width		Florida Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FL_room_rem		Florida Room Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FL_room_level		Florida Room Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_GR_room_length		Great Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_GR_room_width		Great Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_GR_room_rem		Great Room Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_GR_room_level		Great Room Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_KI_room_length		Kitchen Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_KI_room_width		Kitchen Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_KI_room_rem		Kitchen Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_KI_room_level		Kitchen Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LV_room_length		Living Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LV_room_width		Living Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LV_room_rem		Living Room Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LV_room_level		Living Room Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LF_room_length		Loft Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LF_room_width		Loft Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LF_room_rem		Loft Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LF_room_level		Loft Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_MB_room_length		Master Bedroom Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_MB_room_width		Master Bedroom Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_MB_room_rem		Master Bedroom Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_MB_room_level		Master Bedroom Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PB_room_length		Patio/Balcony Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PB_room_width		Patio/Balcony Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PB_room_rem		Patio/Balcony Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PB_room_level		Patio/Balcony Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PR_room_length		Porch Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PR_room_width		Porch Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PR_room_rem		Porch Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PR_room_level		Porch Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_UR_room_length		Utility Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_UR_room_width		Utility Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_UR_room_rem		Utility Room Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_UR_room_level		Utility Room Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	listing_member_shortid		ListingMemberShortId		ListMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_shortid		CoListingMemberShortId		CoListMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	selling_member_shortid		SellingMemberShortId		SellMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_shortid		CoSellingMemberShortId		CoSellMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	listing_office_shortid		ListingOfficeShortId		ListOffShort	15	Character		0												0		0	</DATA>
+    <DATA>	selling_office_shortid		SellingOfficeShortId		SellOffShort	15	Character		0												0		0	</DATA>
+    <DATA>	listing_member_name		ListingMemberName		ListMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_name		CoListingMemberName		CoListMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	selling_member_name		SellingMemberName		SellMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_name		CoSellingMemberName		CoSellMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	listing_office_name		ListingOfficeName		ListOfcName	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_name		SellingOfficeName		SellOfcName	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_phone		ListingMemberPhone		ListMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_phone		CoListingMemberPhone		CoListMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	selling_member_phone		SellingMemberPhone		SellMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_phone		CoSellingMemberPhone		CoSellMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	listing_office_phone		ListingOfficePhone		ListOffPhone	25	Character		0												0		0	</DATA>
+    <DATA>	selling_office_phone		SellingOfficePhone		SellOffPhone	25	Character		0												0		0	</DATA>
+    <DATA>	listing_member_fax		ListingMemberFax		ListMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_fax		CoListingMemberFax		CoListMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	selling_member_fax		SellingMemberFax		SellMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_fax		CoSellingMemberFax		CoSellMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	listing_office_fax		ListingOfficeFax		ListOffFax	15	Character		0												0		0	</DATA>
+    <DATA>	selling_office_fax		SellingOfficeFax		SellOffFax	15	Character		0												0		0	</DATA>
+    <DATA>	listing_member_address		ListingMemberAddress		ListMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_address		CoListingMemberAddress		CoListMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_address		SellingMemberAddress		SellMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_address		CoSellingMemberAddress		CoSellMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_address		ListingOfficeAddress		ListOffAddy	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_address		SellingOfficeAddress		SellOffAddy	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_email		ListingMemberEmail		ListMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_email		CoListingMemberEmail		CoListMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_email		SellingMemberEmail		SellMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_email		CoSellingMemberEmail		CoSellMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_email		ListingOfficeEmail		ListOffEmail	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_email		SellingOfficeEmail		SellOffEmail	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_url		ListingMemberUrl		ListMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_url		CoListingMemberUrl		CoListMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_url		SellingMemberUrl		SellMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_url		CoSellingMemberUrl		CoSellMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_url		ListingOfficeUrl		ListOffUrl	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_url		SellingOfficeUrl		SellOffUrl	150	Character		0												0		0	</DATA>
+    <DATA>	UNBRANDEDIDXVIRTUALTOUR		UnBranded Virtual Tour		Unbranded (IDX) Virtual 	512	Character		0												0		0	</DATA>
+  </METADATA-TABLE>
+</RETS>
+* Closing connection 15
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#16)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000010, qop=auth, response="09786ccad71b6a675ae3b4d1b0624da7", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=03434547BF34FB33E450D3E333894A6D
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 48
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=Property:B&Type=METADATA-TABLE* upload completely sent off: 48 out of 48 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="C79621ED8A1094BD1AB2240A4B25BCBB" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=C79621ED8A1094BD1AB2240A4B25BCBB; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-TABLE
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:52 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-TABLE Resource="Property" Class="B" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	SystemName	StandardName	LongName	DBName	ShortName	MaximumLength	DataType	Precision	Searchable	Interpretation	Alignment	UseSeparator	EditMaskID	LookupName	MaxSelect	Units	Index	Minimum	Maximum	Default	Required	SearchHelpID	Unique	</COLUMNS>
+    <DATA>	LIST_0		MLS Identifier	matechid	MLSID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_1		Internal Listing ID	techid	LISTID	26	Character		1												0		1	</DATA>
+    <DATA>	LIST_2		List Number Prefix	prefix	ListnoPrefix	2	Character		1												0		0	</DATA>
+    <DATA>	LIST_3		List Number Main	listnbr	ListnoMain	11	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_4		MLS Approved	maapproved	Approved	1	Character		1												0		0	</DATA>
+    <DATA>	LIST_5	AgentID	Agent ID	metechid	AgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_6		CoList Agent ID	colistagen	CoListAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_7		Property Group ID	propgroupi	PropGroupID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_8		Property Type	cardfmt	PropType	2	Character		1												0		0	</DATA>
+    <DATA>	LIST_61		Selling Agency ID	sellagency	SellingAgencyID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_62		Selling Agent ID	sellagenti	SellingAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_63		CoSelling Agent ID	cosellagen	CoSellingAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_87	ModificationTimestamp	Timestamp	modtimesta	Timestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_104		Display on Public Websites	pubweb	PublicWebsites	1	Character		1												0		0	</DATA>
+    <DATA>	LIST_105	ListingID	Listing ID	listingid	ListingID	13	Character		1												0		0	</DATA>
+    <DATA>	LIST_106	OfficeID	Office ID	listoffice	OfficeID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_132		Entry Timestamp	entrydate	EntryTimestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_133		Picture Count	piccount	PicCount	11	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_134		Picture Timestamp	pictimesta	PicTimestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_161		Document Timestamp	documentti	DocTimestamp	25	DateTime		0												0		0	</DATA>
+    <DATA>	LIST_162		Document Count	documentco	DocCount	11	Int		0	Number											0		0	</DATA>
+    <DATA>	LIST_163		List Office Board ID	boardid	LO Board Code ID	26	Character		1												0		0	</DATA>
+    <DATA>	BOARDCODE		List Office Board Code	boardcode	LO Board Code	150	Character		0												0		0	</DATA>
+    <DATA>	VOWList		VOWEntireListingDisplay	vowlist	VOWEntireListingDisplay	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWAddr		VOWAddressDisplay	vowaddr	VOWAddressDisplay	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWComm		VOWConsumerComment	vowcomm	VOWConsumerComment	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWAVM		VOWAutomatedValuationDisplay	vowavm	VOWAutomatedValuationDis	1	Boolean		1												0		0	</DATA>
+    <DATA>	LIST_9	Type	Type	booksec		100	Character		1	Lookup				20121126194254387552000000							0		0	</DATA>
+    <DATA>	LIST_12	CloseDate	Sold Date	solddate		10	Date		1												0		0	</DATA>
+    <DATA>	LIST_15	ListingStatus	Status	status		100	Character		1	Lookup				20121126194254552567000000							0		0	</DATA>
+    <DATA>	LIST_16	StatusChangeDate	Status Change Date	statuschan		10	Date		1												0		0	</DATA>
+    <DATA>	LIST_19		Contingent	contingent		100	Character		1	Lookup				20121126194254408895000000							0		0	</DATA>
+    <DATA>	LIST_22	ListPrice	List Price	listprice		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_23	ClosePrice	Sold Price	soldprice		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_26		Total Assessed Value	assessedva		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_27		REO	terms		100	Character		1	Lookup				20121126194254591542000000							0		0	</DATA>
+    <DATA>	LIST_28		Terms of Sale	financing		100	Character		1	Lookup				20121126194254435375000000							0		0	</DATA>
+    <DATA>	LIST_29	Area	Area	area		100	Character		1	Lookup				20121126194254363449000000							0		0	</DATA>
+    <DATA>	LIST_31	StreetNumber	Street #	housenbr		10	Character		1												0		0	</DATA>
+    <DATA>	LIST_32		Middle School	boxnbr		100	Character		1	Lookup				20121126194254391212000000							0		0	</DATA>
+    <DATA>	LIST_33	StreetDirPrefix	Street Dir	streetdirp		100	Character		1	Lookup				20121126194254565749000000							0		0	</DATA>
+    <DATA>	LIST_34	StreetName	Street Name	streetname		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_35	UnitNumber	Unit #	streetaddl		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_36	StreetDirSuffix	Street Post Dir	streetdirs		100	Character		1	Lookup				20121126194254569036000000							0		0	</DATA>
+    <DATA>	LIST_37	StreetSuffix	Street Suffix	streetsuff		100	Character		1	Lookup				20121126194254574680000000							0		0	</DATA>
+    <DATA>	LIST_39	City	City	city		100	Character		1	Lookup				20121126194254405717000000							0		0	</DATA>
+    <DATA>	LIST_40	StateOrProvince	State/Province	state		100	Character		1	Lookup				20121126194254549269000000							0		0	</DATA>
+    <DATA>	LIST_41	County	County	county		100	Character		1	Lookup				20121126194254419982000000							0		0	</DATA>
+    <DATA>	LIST_43	PostalCode	Zip Code	zip		100	Character		1	Lookup				20121126194254743314000000							0		0	</DATA>
+    <DATA>	LIST_46		Geo Lat	geolat		11	Decimal	6	1	Number											0		0	</DATA>
+    <DATA>	LIST_47		Geo Lon	geolon		11	Decimal	6	1	Number											0		0	</DATA>
+    <DATA>	LIST_48		SqFt - Living	totalsqft		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_49		SqFt - Total	sqft1		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_53	YearBuilt	Year Built	yrbuilt		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_54		Short Sale Addendum	style		100	Character		1	Lookup				20121126194254578066000000							0		0	</DATA>
+    <DATA>	LIST_56		Lot Dimensions	lotsize		50	Character		1												0		0	</DATA>
+    <DATA>	LIST_64	Stories	Number of Stories	stories		6	Decimal	1	1	Number											0		0	</DATA>
+    <DATA>	LIST_65		Total # of Units	totalrooms		6	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_71		Short Sale	garagetype		100	Character		1	Lookup				20121126194254445706000000							0		0	</DATA>
+    <DATA>	LIST_72		Hardship Package	garagestal		100	Character		1	Lookup				20121126194254442353000000							0		0	</DATA>
+    <DATA>	LIST_73		High School	garagerem		100	Character		1	Lookup				20121126194254439005000000							0		0	</DATA>
+    <DATA>	LIST_74	Zoning	Zoning	zoning		15	Character		1												0		0	</DATA>
+    <DATA>	LIST_75		Taxes	taxes		11	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_76		Tax Year	taxyear		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_77	Subdivision	Subdivision	subdivisio		100	Character		1												0		0	</DATA>
+    <DATA>	LIST_78	PublicRemarks	Public Remarks	remark1		800	Character		1												0		0	</DATA>
+    <DATA>	LIST_80		Parcel ID	parcelnbr		50	Character		1												0		0	</DATA>
+    <DATA>	LIST_81	LegalDescription	Legal Desc	legal		120	Character		1												0		0	</DATA>
+    <DATA>	LIST_82	Directions	Directions	directions		400	Character		1												0		0	</DATA>
+    <DATA>	LIST_85		Elementary School	ownerconta		100	Character		1	Lookup				20121126194254507120000000							0		0	</DATA>
+    <DATA>	LIST_86		Geo Area	howtoshow		100	Character		1	Lookup				20121126194254470299000000							0		0	</DATA>
+    <DATA>	LIST_91		Homeowners Assoc	userdefine		100	Character		1	Lookup				20121126194254716610000000							0		0	</DATA>
+    <DATA>	LIST_93		Year Built Desc	userdefine		100	Character		1	Lookup				20121126194254723710000000							0		0	</DATA>
+    <DATA>	LIST_95		Separate Elec Meters	userdefine		100	Character		1	Lookup				20121126194254730279000000							0		0	</DATA>
+    <DATA>	LIST_97		SqFt Source	userdefine		100	Character		1	Lookup				20121126194254618872000000							0		0	</DATA>
+    <DATA>	LIST_108		Waterfront	userdefine		100	Character		1	Lookup				20121126194254625706000000							0		0	</DATA>
+    <DATA>	LIST_109		Private Pool	userdefine		100	Character		1	Lookup				20121126194254629383000000							0		0	</DATA>
+    <DATA>	LIST_110		Special Assessment	userdefine		100	Character		1	Lookup				20121126194254632592000000							0		0	</DATA>
+    <DATA>	LIST_111		Waterfrontage	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_113		Short Sale A/U	userdefine		100	Character		1	Lookup				20121126194254643793000000							0		0	</DATA>
+    <DATA>	LIST_114		Separate Wtr Meters	userdefine		100	Character		1	Lookup				20121126194254647284000000							0		0	</DATA>
+    <DATA>	LIST_115		Multiple Ofrs Acptd	userdefine		100	Character		1	Lookup				20121126194254650806000000							0		0	</DATA>
+    <DATA>	LIST_117		LP Per ASV	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_118		Lot SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_119		Carport Spaces	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_120		HOA/POA/COA	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_121		Application Fee	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_124		Garage Spaces	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_125		List Price/SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_126		Sold Price/SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_130		Development Name	userdefine		50	Character		1												0		0	</DATA>
+    <DATA>	FEAT20121227165041425649000000		Unit 1 Info: Bedrooms		Bedrooms	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227165211548718000000		Unit 1 Info: Full Bath		Full Bath	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227165537602365000000		Unit 1 Info: Half Bath		Half Bath	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227165851095759000000		Unit 1 Info: Furnished		Furnished	100	Character		0	Lookup				20121227165851095759000000							0		0	</DATA>
+    <DATA>	FEAT20121227170743365263000000		Unit 1 Info: SqFt		SqFt	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227170539278543000000		Unit 1 Info: Monthly Income		Monthly Income	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227170555568155000000		Unit 1 Info: Lease Ends		Lease Ends	10	Date		0												0		0	</DATA>
+    <DATA>	FEAT20121227165050028336000000		Unit 2 Info: Bedrooms		Bedrooms	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227165153405893000000		Unit 2 Info: Full Bath		Full Bath	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227165733207664000000		Unit 2 Info: Half Bath		Half Bath	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227165902292745000000		Unit 2 Info: Furnished		Furnished	100	Character		0	Lookup				20121227165902292745000000							0		0	</DATA>
+    <DATA>	FEAT20121227170502399560000000		Unit 2 Info: SqFt		SqFt	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227170530215481000000		Unit 2 Info: Monthly Income		Monthly Income	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227170318331974000000		Unit 2 Info: Lease Ends		Lease Ends	10	Date		0												0		0	</DATA>
+    <DATA>	FEAT20121227165100067673000000		Unit 3 Info: Bedrooms		Bedrooms	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227165140328417000000		Unit 3 Info: Full Bath		Full Bath	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227165742379878000000		Unit 3 Info: Half Bath		Half Bath	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227170051830241000000		Unit 3 Info: Furnished		Furnished	100	Character		0	Lookup				20121227170051830241000000							0		0	</DATA>
+    <DATA>	FEAT20121227171811857020000000		Unit 3 Info: SqFt		SqFt	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227171833310130000000		Unit 3 Info: Monthly Income		Monthly Income	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227170309752492000000		Unit 3 Info: Lease Ends		Lease Ends	10	Date		0												0		0	</DATA>
+    <DATA>	FEAT20121227165115351510000000		Unit 4 Info: Bedrooms		Bedrooms	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227165130834743000000		Unit 4 Info: Full Bath		Full Bath	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227165756927327000000		Unit 4 Info: Half Bath		Half Bath	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227170105604906000000		Unit 4 Info: Furnished		Furnished	100	Character		0	Lookup				20121227170105604906000000							0		0	</DATA>
+    <DATA>	FEAT20121227170152241865000000		Unit 4 Info: SqFt		SqFt	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227170223546124000000		Unit 4 Info: Monthly Income		Monthly Income	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227170248888741000000		Unit 4 Info: Lease Ends		Lease Ends	10	Date		0												0		0	</DATA>
+    <DATA>	FEAT20121227175239658697000000		Income &amp; Expenses: Gross Operating Inc		Gross Operating Inc	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227175302252820000000		Income &amp; Expenses: Annual Total Expense		Annual Total Expense	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227175323892345000000		Income &amp; Expenses: Annual Net Oper Inc		Annual Net Oper Inc	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20130205152346810345000000		Private Pool: Pool Size (W x L)		Pool Size (W x L)	20	Character		0												0		0	</DATA>
+    <DATA>	GF20121231212115765606000000		ADA Compliant		ADA Compliant	100	Character		1	LookupMulti				GFLU20121231212115765606000000	99						0		0	</DATA>
+    <DATA>	GF20121211025311002579000000		Avail Info		Avail Info	100	Character		1	LookupMulti				GFLU20121211025311002579000000	4						0		0	</DATA>
+    <DATA>	GF20121206202429285512000000		Boat Services		Boat Services	100	Character		1	LookupMulti				GFLU20121206202429285512000000	99						0		0	</DATA>
+    <DATA>	GF20121206202429699010000000		Construction		Construction	100	Character		1	LookupMulti				GFLU20121206202429699010000000	3						0		0	</DATA>
+    <DATA>	GF20130305140959216036000000		Contingents		Contingents	100	Character		1	LookupMulti				GFLU20130305140959216036000000	6						0		0	</DATA>
+    <DATA>	GF20121206202429621266000000	Cooling	Cooling		Cooling	100	Character		1	LookupMulti				GFLU20121206202429621266000000	3						0		0	</DATA>
+    <DATA>	GF20121206202429990607000000	ExteriorFeatures	Exterior Features		Exterior Features	100	Character		1	LookupMulti				GFLU20121206202429990607000000	12						0		0	</DATA>
+    <DATA>	GF20121206202430370061000000		Flooring		Flooring	100	Character		1	LookupMulti				GFLU20121206202430370061000000	4						0		0	</DATA>
+    <DATA>	GF20121206202430480207000000	Heating	Heating		Heating	100	Character		1	LookupMulti				GFLU20121206202430480207000000	5						0		0	</DATA>
+    <DATA>	GF20121206202430654127000000		Lot Description		Lot Description	100	Character		1	LookupMulti				GFLU20121206202430654127000000	8						0		0	</DATA>
+    <DATA>	GF20121206202430943072000000		Maintenance Fee Incl		Maintenance Fee Incl	100	Character		1	LookupMulti				GFLU20121206202430943072000000	99						0		0	</DATA>
+    <DATA>	GF20121206202431107780000000		Membership		Membership	100	Character		1	LookupMulti				GFLU20121206202431107780000000	99						0		0	</DATA>
+    <DATA>	GF20121206202431248446000000		Possession		Possession	100	Character		1	LookupMulti				GFLU20121206202431248446000000	2						0		0	</DATA>
+    <DATA>	GF20121206202431279127000000		Private Pool		Private Pool	100	Character		1	LookupMulti				GFLU20121206202431279127000000	8						0		0	</DATA>
+    <DATA>	GF20121206202431535736000000		Restrict		Restrict	100	Character		1	LookupMulti				GFLU20121206202431535736000000	8						0		0	</DATA>
+    <DATA>	GF20121206202431346706000000	Roof	Roof		Roof	100	Character		1	LookupMulti				GFLU20121206202431346706000000	4						0		0	</DATA>
+    <DATA>	GF20121227175716614834000000		Source of Expenses		Source of Expenses	100	Character		1	LookupMulti				GFLU20121227175716614834000000	3						0		0	</DATA>
+    <DATA>	GF20121206202431973610000000		Special Info		Special Info	100	Character		1	LookupMulti				GFLU20121206202431973610000000	99						0		0	</DATA>
+    <DATA>	GF20121206202431812853000000		Subdiv Amenities		Subdiv Amenities	100	Character		1	LookupMulti				GFLU20121206202431812853000000	7						0		0	</DATA>
+    <DATA>	GF20121206202432035635000000		Taxes		Taxes	100	Character		1	LookupMulti				GFLU20121206202432035635000000	4						0		0	</DATA>
+    <DATA>	GF20121211025246111452000000		Tenant Pays		Tenant Pays	100	Character		1	LookupMulti				GFLU20121211025246111452000000	10						0		0	</DATA>
+    <DATA>	GF20121206202432075264000000		Terms Considered		Terms Considered	100	Character		1	LookupMulti				GFLU20121206202432075264000000	5						0		0	</DATA>
+    <DATA>	GF20121211024909824726000000		Unit 1 Desc		Unit 1 Desc	100	Character		1	LookupMulti				GFLU20121211024909824726000000	17						0		0	</DATA>
+    <DATA>	GF20121227164626728117000000		Unit 1 Info		Unit 1 Info	100	Character		1	LookupMulti				GFLU20121227164626728117000000	99						0		0	</DATA>
+    <DATA>	GF20121211024929412648000000		Unit 1 Parking		Unit 1 Parking	100	Character		1	LookupMulti				GFLU20121211024929412648000000	2						0		0	</DATA>
+    <DATA>	GF20121211025047102135000000		Unit 2 Desc		Unit 2 Desc	100	Character		1	LookupMulti				GFLU20121211025047102135000000	17						0		0	</DATA>
+    <DATA>	GF20121227164648718656000000		Unit 2 Info		Unit 2 Info	100	Character		1	LookupMulti				GFLU20121227164648718656000000	99						0		0	</DATA>
+    <DATA>	GF20121211024950069435000000		Unit 2 Parking		Unit 2 Parking	100	Character		1	LookupMulti				GFLU20121211024950069435000000	2						0		0	</DATA>
+    <DATA>	GF20121211025107658704000000		Unit 3 Desc		Unit 3 Desc	100	Character		1	LookupMulti				GFLU20121211025107658704000000	99						0		0	</DATA>
+    <DATA>	GF20121227164709811612000000		Unit 3 Info		Unit 3 Info	100	Character		1	LookupMulti				GFLU20121227164709811612000000	99						0		0	</DATA>
+    <DATA>	GF20121211025129285277000000		Unit 3 Parking		Unit 3 Parking	100	Character		1	LookupMulti				GFLU20121211025129285277000000	99						0		0	</DATA>
+    <DATA>	GF20121211025151415154000000		Unit 4 Desc		Unit 4 Desc	100	Character		1	LookupMulti				GFLU20121211025151415154000000	99						0		0	</DATA>
+    <DATA>	GF20121227164720236810000000		Unit 4 Info		Unit 4 Info	100	Character		1	LookupMulti				GFLU20121227164720236810000000	99						0		0	</DATA>
+    <DATA>	GF20121211025226683460000000		Unit 4 Parking		Unit 4 Parking	100	Character		1	LookupMulti				GFLU20121211025226683460000000	99						0		0	</DATA>
+    <DATA>	GF20121206202432180006000000	Utilities	Utilities		Utilities	100	Character		1	LookupMulti				GFLU20121206202432180006000000	6						0		0	</DATA>
+    <DATA>	GF20121206202432253492000000	View	View		View	100	Character		1	LookupMulti				GFLU20121206202432253492000000	99						0		0	</DATA>
+    <DATA>	GF20121206202432319685000000	WaterFront	Waterfront		Waterfront	100	Character		1	LookupMulti				GFLU20121206202432319685000000	5						0		0	</DATA>
+    <DATA>	GF20121206202432413205000000		Window Treatments		Window Treatments	100	Character		1	LookupMulti				GFLU20121206202432413205000000	10						0		0	</DATA>
+    <DATA>	listing_member_shortid		ListingMemberShortId		ListMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_shortid		CoListingMemberShortId		CoListMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	selling_member_shortid		SellingMemberShortId		SellMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_shortid		CoSellingMemberShortId		CoSellMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	listing_office_shortid		ListingOfficeShortId		ListOffShort	15	Character		0												0		0	</DATA>
+    <DATA>	selling_office_shortid		SellingOfficeShortId		SellOffShort	15	Character		0												0		0	</DATA>
+    <DATA>	listing_member_name		ListingMemberName		ListMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_name		CoListingMemberName		CoListMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	selling_member_name		SellingMemberName		SellMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_name		CoSellingMemberName		CoSellMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	listing_office_name		ListingOfficeName		ListOfcName	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_name		SellingOfficeName		SellOfcName	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_phone		ListingMemberPhone		ListMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_phone		CoListingMemberPhone		CoListMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	selling_member_phone		SellingMemberPhone		SellMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_phone		CoSellingMemberPhone		CoSellMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	listing_office_phone		ListingOfficePhone		ListOffPhone	25	Character		0												0		0	</DATA>
+    <DATA>	selling_office_phone		SellingOfficePhone		SellOffPhone	25	Character		0												0		0	</DATA>
+    <DATA>	listing_member_fax		ListingMemberFax		ListMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_fax		CoListingMemberFax		CoListMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	selling_member_fax		SellingMemberFax		SellMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_fax		CoSellingMemberFax		CoSellMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	listing_office_fax		ListingOfficeFax		ListOffFax	15	Character		0												0		0	</DATA>
+    <DATA>	selling_office_fax		SellingOfficeFax		SellOffFax	15	Character		0												0		0	</DATA>
+    <DATA>	listing_member_address		ListingMemberAddress		ListMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_address		CoListingMemberAddress		CoListMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_address		SellingMemberAddress		SellMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_address		CoSellingMemberAddress		CoSellMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_address		ListingOfficeAddress		ListOffAddy	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_address		SellingOfficeAddress		SellOffAddy	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_email		ListingMemberEmail		ListMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_email		CoListingMemberEmail		CoListMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_email		SellingMemberEmail		SellMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_email		CoSellingMemberEmail		CoSellMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_email		ListingOfficeEmail		ListOffEmail	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_email		SellingOfficeEmail		SellOffEmail	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_url		ListingMemberUrl		ListMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_url		CoListingMemberUrl		CoListMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_url		SellingMemberUrl		SellMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_url		CoSellingMemberUrl		CoSellMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_url		ListingOfficeUrl		ListOffUrl	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_url		SellingOfficeUrl		SellOffUrl	150	Character		0												0		0	</DATA>
+    <DATA>	UNBRANDEDIDXVIRTUALTOUR		UnBranded Virtual Tour		Unbranded (IDX) Virtual 	512	Character		0												0		0	</DATA>
+  </METADATA-TABLE>
+</RETS>
+* Closing connection 16
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#17)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000011, qop=auth, response="92611ae1754c7494faa5692783f239d4", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=C79621ED8A1094BD1AB2240A4B25BCBB
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 48
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=Property:C&Type=METADATA-TABLE* upload completely sent off: 48 out of 48 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="6419609A9502924D3530B99C93613CCF" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=6419609A9502924D3530B99C93613CCF; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-TABLE
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:53 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-TABLE Resource="Property" Class="C" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	SystemName	StandardName	LongName	DBName	ShortName	MaximumLength	DataType	Precision	Searchable	Interpretation	Alignment	UseSeparator	EditMaskID	LookupName	MaxSelect	Units	Index	Minimum	Maximum	Default	Required	SearchHelpID	Unique	</COLUMNS>
+    <DATA>	LIST_0		MLS Identifier	matechid	MLSID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_1		Internal Listing ID	techid	LISTID	26	Character		1												0		1	</DATA>
+    <DATA>	LIST_2		List Number Prefix	prefix	ListnoPrefix	2	Character		1												0		0	</DATA>
+    <DATA>	LIST_3		List Number Main	listnbr	ListnoMain	11	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_4		MLS Approved	maapproved	Approved	1	Character		1												0		0	</DATA>
+    <DATA>	LIST_5	AgentID	Agent ID	metechid	AgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_6		CoList Agent ID	colistagen	CoListAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_7		Property Group ID	propgroupi	PropGroupID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_8		Property Type	cardfmt	PropType	2	Character		1												0		0	</DATA>
+    <DATA>	LIST_61		Selling Agency ID	sellagency	SellingAgencyID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_62		Selling Agent ID	sellagenti	SellingAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_63		CoSelling Agent ID	cosellagen	CoSellingAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_87	ModificationTimestamp	Timestamp	modtimesta	Timestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_104		Display on Public Websites	pubweb	PublicWebsites	1	Character		1												0		0	</DATA>
+    <DATA>	LIST_105	ListingID	Listing ID	listingid	ListingID	13	Character		1												0		0	</DATA>
+    <DATA>	LIST_106	OfficeID	Office ID	listoffice	OfficeID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_132		Entry Timestamp	entrydate	EntryTimestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_133		Picture Count	piccount	PicCount	11	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_134		Picture Timestamp	pictimesta	PicTimestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_161		Document Timestamp	documentti	DocTimestamp	25	DateTime		0												0		0	</DATA>
+    <DATA>	LIST_162		Document Count	documentco	DocCount	11	Int		0	Number											0		0	</DATA>
+    <DATA>	LIST_163		List Office Board ID	boardid	LO Board Code ID	26	Character		1												0		0	</DATA>
+    <DATA>	BOARDCODE		List Office Board Code	boardcode	LO Board Code	150	Character		0												0		0	</DATA>
+    <DATA>	VOWList		VOWEntireListingDisplay	vowlist	VOWEntireListingDisplay	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWAddr		VOWAddressDisplay	vowaddr	VOWAddressDisplay	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWComm		VOWConsumerComment	vowcomm	VOWConsumerComment	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWAVM		VOWAutomatedValuationDisplay	vowavm	VOWAutomatedValuationDis	1	Boolean		1												0		0	</DATA>
+    <DATA>	LIST_9	Type	Type	booksec		100	Character		1	Lookup				20121126194254778804000000							0		0	</DATA>
+    <DATA>	LIST_12	CloseDate	Sold Date	solddate		10	Date		1												0		0	</DATA>
+    <DATA>	LIST_15	ListingStatus	Status	status		100	Character		1	Lookup				20121126194254956195000000							0		0	</DATA>
+    <DATA>	LIST_16	StatusChangeDate	Status Change Date	statuschan		10	Date		1												0		0	</DATA>
+    <DATA>	LIST_19		Contingent	contingent		100	Character		1	Lookup				20121126194254800141000000							0		0	</DATA>
+    <DATA>	LIST_22	ListPrice	List Price	listprice		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_23	ClosePrice	Sold Price	soldprice		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_26		Total Assessed Value	assessedva		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_27		REO	terms		100	Character		1	Lookup				20121126194254999590000000							0		0	</DATA>
+    <DATA>	LIST_28		Terms of Sale	financing		100	Character		1	Lookup				20121126194254827610000000							0		0	</DATA>
+    <DATA>	LIST_29	Area	Area	area		100	Character		1	Lookup				20121126194254750328000000							0		0	</DATA>
+    <DATA>	LIST_31	StreetNumber	Street #	housenbr		10	Character		1												0		0	</DATA>
+    <DATA>	LIST_32		Middle School	boxnbr		100	Character		1	Lookup				20121126194254782370000000							0		0	</DATA>
+    <DATA>	LIST_33	StreetDirPrefix	Street Dir	streetdirp		100	Character		1	Lookup				20121126194254971375000000							0		0	</DATA>
+    <DATA>	LIST_34	StreetName	Street Name	streetname		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_35	UnitNumber	Unit #	streetaddl		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_36	StreetDirSuffix	Street Post Dir	streetdirs		100	Character		1	Lookup				20121126194254974960000000							0		0	</DATA>
+    <DATA>	LIST_37	StreetSuffix	Street Suffix	streetsuff		100	Character		1	Lookup				20121126194254982003000000							0		0	</DATA>
+    <DATA>	LIST_39	City	City	city		100	Character		1	Lookup				20121126194254796817000000							0		0	</DATA>
+    <DATA>	LIST_40	StateOrProvince	State/Province	state		100	Character		1	Lookup				20121126194254952888000000							0		0	</DATA>
+    <DATA>	LIST_41	County	County	county		100	Character		1	Lookup				20121126194254810467000000							0		0	</DATA>
+    <DATA>	LIST_43	PostalCode	Zip Code	zip		100	Character		1	Lookup				20121126194255158711000000							0		0	</DATA>
+    <DATA>	LIST_45		Mbrshp Equity Amount	geoblock		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_46		Geo Lat	geolat		11	Decimal	6	1	Number											0		0	</DATA>
+    <DATA>	LIST_47		Geo Lon	geolon		11	Decimal	6	1	Number											0		0	</DATA>
+    <DATA>	LIST_49		Min Lv SqFt Rstrct	sqft1		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_50		Leasable SqFt	sqft2		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_51		Lot Depth	sqft3		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_54		Short Sale Addendum	style		100	Character		1	Lookup				20121126194254985425000000							0		0	</DATA>
+    <DATA>	LIST_56		Lot Dimensions	lotsize		50	Character		1												0		0	</DATA>
+    <DATA>	LIST_57	LotSize	Acres	lotacres		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_58		Front Exp	buybrokerc		100	Character		1	Lookup				20121126194254786214000000							0		0	</DATA>
+    <DATA>	LIST_65		# Parcels	totalrooms		6	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_71		Short Sale	garagetype		100	Character		1	Lookup				20121126194254840472000000							0		0	</DATA>
+    <DATA>	LIST_72		Hardship Package	garagestal		100	Character		1	Lookup				20121126194254836198000000							0		0	</DATA>
+    <DATA>	LIST_73		High School	garagerem		100	Character		1	Lookup				20121126194254831816000000							0		0	</DATA>
+    <DATA>	LIST_74	Zoning	Zoning	zoning		15	Character		1												0		0	</DATA>
+    <DATA>	LIST_75		Taxes	taxes		11	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_76		Tax Year	taxyear		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_77	Subdivision	Subdivision	subdivisio		100	Character		1												0		0	</DATA>
+    <DATA>	LIST_78	PublicRemarks	Public Remarks	remark1		800	Character		1												0		0	</DATA>
+    <DATA>	LIST_80		Parcel ID	parcelnbr		50	Character		1												0		0	</DATA>
+    <DATA>	LIST_81	LegalDescription	Legal Desc	legal		120	Character		1												0		0	</DATA>
+    <DATA>	LIST_82	Directions	Directions	directions		400	Character		1												0		0	</DATA>
+    <DATA>	LIST_85		Elementary School	ownerconta		100	Character		1	Lookup				20121126194254908170000000							0		0	</DATA>
+    <DATA>	LIST_86		Geo Area	howtoshow		100	Character		1	Lookup				20121126194254869434000000							0		0	</DATA>
+    <DATA>	LIST_91		Homeowners Assoc	userdefine		100	Character		1	Lookup				20121126194255131127000000							0		0	</DATA>
+    <DATA>	LIST_93		AKA	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_95		Membrshp Equity	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_101		Parcel ID 2	permbookms		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_108		Waterfront	userdefine		100	Character		1	Lookup				20121126194255036743000000							0		0	</DATA>
+    <DATA>	LIST_110		Special Assessment	userdefine		100	Character		1	Lookup				20121126194255044047000000							0		0	</DATA>
+    <DATA>	LIST_111		Waterfrontage	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_113		Short Sale A/U	userdefine		100	Character		1	Lookup				20121126194255054702000000							0		0	</DATA>
+    <DATA>	LIST_115		Multiple Ofrs Acptd	userdefine		100	Character		1	Lookup				20121126194255061865000000							0		0	</DATA>
+    <DATA>	LIST_117		LP Per ASV	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_118		Lot SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_119		Lot Frontage	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_120		HOA Fee/Month	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_121		Application Fee	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_122		Price/Acre	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_123		Price/SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_124		Price/Front Feet	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_125		List Price/Acre	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_126		Sold Price/Acre	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_130		Development Name	userdefine		50	Character		1												0		0	</DATA>
+    <DATA>	FEAT20140321154926602283000000		Equestrian Features: # of Barns		# of Barns	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20140321154856397684000000		Equestrian Features: # of Stalls		# of Stalls	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	GF20121212012128917589000000		Avail Docs		Avail Docs	100	Character		1	LookupMulti				GFLU20121212012128917589000000	12						0		0	</DATA>
+    <DATA>	GF20121212011913198640000000		Bldgs Include		Bldgs Include	100	Character		1	LookupMulti				GFLU20121212011913198640000000	99						0		0	</DATA>
+    <DATA>	GF20121206202839083270000000		Boat Services		Boat Services	100	Character		1	LookupMulti				GFLU20121206202839083270000000	99						0		0	</DATA>
+    <DATA>	GF20121212011847002912000000		Comp Plan Use		Comp Plan Use	100	Character		1	LookupMulti				GFLU20121212011847002912000000	99						0		0	</DATA>
+    <DATA>	GF20130305141024716345000000		Contingents		Contingents	100	Character		1	LookupMulti				GFLU20130305141024716345000000	6						0		0	</DATA>
+    <DATA>	GF20121212011824746523000000		Develop Status		Develop Status	100	Character		1	LookupMulti				GFLU20121212011824746523000000	1						0		0	</DATA>
+    <DATA>	GF20121212012359516131000000		Elev at Sea Leval		Elev at Sea Leval	100	Character		1	LookupMulti				GFLU20121212012359516131000000	99						0		0	</DATA>
+    <DATA>	GF20140321154556237699000000		Equestrian Features		Equestrian Features	100	Character		1	LookupMulti				GFLU20140321154556237699000000	99						0		0	</DATA>
+    <DATA>	GF20130204201733780866000000		Ground Cover		Ground Cover	100	Character		1	LookupMulti				GFLU20130204201733780866000000	2						0		0	</DATA>
+    <DATA>	GF20121212011939214790000000		Improvements		Improvements	100	Character		1	LookupMulti				GFLU20121212011939214790000000	12						0		0	</DATA>
+    <DATA>	GF20121212011743686236000000		Location		Location	100	Character		1	LookupMulti				GFLU20121212011743686236000000	5						0		0	</DATA>
+    <DATA>	GF20121206202840172334000000		Lot Description		Lot Description	100	Character		1	LookupMulti				GFLU20121206202840172334000000	8						0		0	</DATA>
+    <DATA>	GF20121206202840610602000000		Membership		Membership	100	Character		1	LookupMulti				GFLU20121206202840610602000000	99						0		0	</DATA>
+    <DATA>	GF20121212012111824567000000		Miscellaneous		Miscellaneous	100	Character		1	LookupMulti				GFLU20121212012111824567000000	99						0		0	</DATA>
+    <DATA>	GF20121212012036130762000000		Roads		Roads	100	Character		1	LookupMulti				GFLU20121212012036130762000000	8						0		0	</DATA>
+    <DATA>	GF20121212012200798860000000		Soil Type		Soil Type	100	Character		1	LookupMulti				GFLU20121212012200798860000000	99						0		0	</DATA>
+    <DATA>	GF20121206202841532905000000		Special Info		Special Info	100	Character		1	LookupMulti				GFLU20121206202841532905000000	99						0		0	</DATA>
+    <DATA>	GF20121212011728862864000000	Style	Style		Style	100	Character		1	LookupMulti				GFLU20121212011728862864000000	3						0		0	</DATA>
+    <DATA>	GF20121206202841357230000000		Subdiv Info		Subdiv Info	100	Character		1	LookupMulti				GFLU20121206202841357230000000	99						0		0	</DATA>
+    <DATA>	GF20121206202841653258000000		Terms Considered		Terms Considered	100	Character		1	LookupMulti				GFLU20121206202841653258000000	3						0		0	</DATA>
+    <DATA>	GF20121212012307995894000000		Trees		Trees	100	Character		1	LookupMulti				GFLU20121212012307995894000000	5						0		0	</DATA>
+    <DATA>	GF20121212012332663101000000		Usage		Usage	100	Character		1	LookupMulti				GFLU20121212012332663101000000	4						0		0	</DATA>
+    <DATA>	GF20121212012012374000000000		Utilities Avail		Utilities Avail	100	Character		1	LookupMulti				GFLU20121212012012374000000000	6						0		0	</DATA>
+    <DATA>	GF20121206202841774017000000		Utilities On Site		Utilities On Site	100	Character		1	LookupMulti				GFLU20121206202841774017000000	6						0		0	</DATA>
+    <DATA>	GF20121206202841857761000000	View	View		View	100	Character		1	LookupMulti				GFLU20121206202841857761000000	99						0		0	</DATA>
+    <DATA>	GF20121206202841938447000000	WaterFront	Waterfront		Waterfront	100	Character		1	LookupMulti				GFLU20121206202841938447000000	99						0		0	</DATA>
+    <DATA>	listing_member_shortid		ListingMemberShortId		ListMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_shortid		CoListingMemberShortId		CoListMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	selling_member_shortid		SellingMemberShortId		SellMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_shortid		CoSellingMemberShortId		CoSellMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	listing_office_shortid		ListingOfficeShortId		ListOffShort	15	Character		0												0		0	</DATA>
+    <DATA>	selling_office_shortid		SellingOfficeShortId		SellOffShort	15	Character		0												0		0	</DATA>
+    <DATA>	listing_member_name		ListingMemberName		ListMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_name		CoListingMemberName		CoListMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	selling_member_name		SellingMemberName		SellMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_name		CoSellingMemberName		CoSellMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	listing_office_name		ListingOfficeName		ListOfcName	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_name		SellingOfficeName		SellOfcName	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_phone		ListingMemberPhone		ListMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_phone		CoListingMemberPhone		CoListMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	selling_member_phone		SellingMemberPhone		SellMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_phone		CoSellingMemberPhone		CoSellMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	listing_office_phone		ListingOfficePhone		ListOffPhone	25	Character		0												0		0	</DATA>
+    <DATA>	selling_office_phone		SellingOfficePhone		SellOffPhone	25	Character		0												0		0	</DATA>
+    <DATA>	listing_member_fax		ListingMemberFax		ListMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_fax		CoListingMemberFax		CoListMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	selling_member_fax		SellingMemberFax		SellMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_fax		CoSellingMemberFax		CoSellMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	listing_office_fax		ListingOfficeFax		ListOffFax	15	Character		0												0		0	</DATA>
+    <DATA>	selling_office_fax		SellingOfficeFax		SellOffFax	15	Character		0												0		0	</DATA>
+    <DATA>	listing_member_address		ListingMemberAddress		ListMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_address		CoListingMemberAddress		CoListMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_address		SellingMemberAddress		SellMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_address		CoSellingMemberAddress		CoSellMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_address		ListingOfficeAddress		ListOffAddy	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_address		SellingOfficeAddress		SellOffAddy	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_email		ListingMemberEmail		ListMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_email		CoListingMemberEmail		CoListMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_email		SellingMemberEmail		SellMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_email		CoSellingMemberEmail		CoSellMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_email		ListingOfficeEmail		ListOffEmail	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_email		SellingOfficeEmail		SellOffEmail	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_url		ListingMemberUrl		ListMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_url		CoListingMemberUrl		CoListMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_url		SellingMemberUrl		SellMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_url		CoSellingMemberUrl		CoSellMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_url		ListingOfficeUrl		ListOffUrl	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_url		SellingOfficeUrl		SellOffUrl	150	Character		0												0		0	</DATA>
+    <DATA>	UNBRANDEDIDXVIRTUALTOUR		UnBranded Virtual Tour		Unbranded (IDX) Virtual 	512	Character		0												0		0	</DATA>
+  </METADATA-TABLE>
+</RETS>
+* Closing connection 17
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#18)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000012, qop=auth, response="586c68c1a9063639434d82527dd5ffeb", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=6419609A9502924D3530B99C93613CCF
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 48
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=Property:D&Type=METADATA-TABLE* upload completely sent off: 48 out of 48 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="D9CF4195F00183103350CDFECEB2C43A" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=D9CF4195F00183103350CDFECEB2C43A; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-TABLE
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:53 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-TABLE Resource="Property" Class="D" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	SystemName	StandardName	LongName	DBName	ShortName	MaximumLength	DataType	Precision	Searchable	Interpretation	Alignment	UseSeparator	EditMaskID	LookupName	MaxSelect	Units	Index	Minimum	Maximum	Default	Required	SearchHelpID	Unique	</COLUMNS>
+    <DATA>	LIST_0		MLS Identifier	matechid	MLSID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_1		Internal Listing ID	techid	LISTID	26	Character		1												0		1	</DATA>
+    <DATA>	LIST_2		List Number Prefix	prefix	ListnoPrefix	2	Character		1												0		0	</DATA>
+    <DATA>	LIST_3		List Number Main	listnbr	ListnoMain	11	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_4		MLS Approved	maapproved	Approved	1	Character		1												0		0	</DATA>
+    <DATA>	LIST_5	AgentID	Agent ID	metechid	AgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_6		CoList Agent ID	colistagen	CoListAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_7		Property Group ID	propgroupi	PropGroupID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_8		Property Type	cardfmt	PropType	2	Character		1												0		0	</DATA>
+    <DATA>	LIST_61		Selling Agency ID	sellagency	SellingAgencyID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_62		Selling Agent ID	sellagenti	SellingAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_63		CoSelling Agent ID	cosellagen	CoSellingAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_87	ModificationTimestamp	Timestamp	modtimesta	Timestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_104		Display on Public Websites	pubweb	PublicWebsites	1	Character		1												0		0	</DATA>
+    <DATA>	LIST_105	ListingID	Listing ID	listingid	ListingID	13	Character		1												0		0	</DATA>
+    <DATA>	LIST_106	OfficeID	Office ID	listoffice	OfficeID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_132		Entry Timestamp	entrydate	EntryTimestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_133		Picture Count	piccount	PicCount	11	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_134		Picture Timestamp	pictimesta	PicTimestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_161		Document Timestamp	documentti	DocTimestamp	25	DateTime		0												0		0	</DATA>
+    <DATA>	LIST_162		Document Count	documentco	DocCount	11	Int		0	Number											0		0	</DATA>
+    <DATA>	LIST_163		List Office Board ID	boardid	LO Board Code ID	26	Character		1												0		0	</DATA>
+    <DATA>	BOARDCODE		List Office Board Code	boardcode	LO Board Code	150	Character		0												0		0	</DATA>
+    <DATA>	VOWList		VOWEntireListingDisplay	vowlist	VOWEntireListingDisplay	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWAddr		VOWAddressDisplay	vowaddr	VOWAddressDisplay	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWComm		VOWConsumerComment	vowcomm	VOWConsumerComment	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWAVM		VOWAutomatedValuationDisplay	vowavm	VOWAutomatedValuationDis	1	Boolean		1												0		0	</DATA>
+    <DATA>	LIST_9	Type	Type	booksec		100	Character		1	Lookup				20121126194255191277000000							0		0	</DATA>
+    <DATA>	LIST_12	CloseDate	Sold Date	solddate		10	Date		1												0		0	</DATA>
+    <DATA>	LIST_15	ListingStatus	Status	status		100	Character		1	Lookup				20121126194255366362000000							0		0	</DATA>
+    <DATA>	LIST_16	StatusChangeDate	Status Change Date	statuschan		10	Date		1												0		0	</DATA>
+    <DATA>	LIST_19		Contingent	contingent		100	Character		1	Lookup				20121126194255213560000000							0		0	</DATA>
+    <DATA>	LIST_22	ListPrice	List Price	listprice		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_23	ClosePrice	Sold Price	soldprice		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_27		REO	terms		100	Character		1	Lookup				20121126194255412512000000							0		0	</DATA>
+    <DATA>	LIST_28		Terms of Sale	financing		100	Character		1	Lookup				20121126194255238476000000							0		0	</DATA>
+    <DATA>	LIST_29	Area	Area	area		100	Character		1	Lookup				20121126194255165699000000							0		0	</DATA>
+    <DATA>	LIST_31	StreetNumber	Street #	housenbr		10	Character		1												0		0	</DATA>
+    <DATA>	LIST_32		Middle School	boxnbr		100	Character		1	Lookup				20121126194255195521000000							0		0	</DATA>
+    <DATA>	LIST_33	StreetDirPrefix	Street Dir	streetdirp		100	Character		1	Lookup				20121126194255382883000000							0		0	</DATA>
+    <DATA>	LIST_34	StreetName	Street Name	streetname		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_35	UnitNumber	Unit #	streetaddl		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_36	StreetDirSuffix	Street Post Dir	streetdirs		100	Character		1	Lookup				20121126194255386212000000							0		0	</DATA>
+    <DATA>	LIST_37	StreetSuffix	Street Suffix	streetsuff		100	Character		1	Lookup				20121126194255394100000000							0		0	</DATA>
+    <DATA>	LIST_39	City	City	city		100	Character		1	Lookup				20121126194255210007000000							0		0	</DATA>
+    <DATA>	LIST_40	StateOrProvince	State/Province	state		100	Character		1	Lookup				20121126194255363093000000							0		0	</DATA>
+    <DATA>	LIST_41	County	County	county		100	Character		1	Lookup				20121126194255224470000000							0		0	</DATA>
+    <DATA>	LIST_43	PostalCode	Zip Code	zip		100	Character		1	Lookup				20121126194255570563000000							0		0	</DATA>
+    <DATA>	LIST_46		Geo Lat	geolat		11	Decimal	6	1	Number											0		0	</DATA>
+    <DATA>	LIST_47		Geo Lon	geolon		11	Decimal	6	1	Number											0		0	</DATA>
+    <DATA>	LIST_48		SqFt Included	totalsqft		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_50		SqFt  - Occupied	sqft2		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_51		% Air Conditioned	sqft3		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_53	YearBuilt	Year Built	yrbuilt		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_54		Short Sale Addendum	style		100	Character		1	Lookup				20121126194255398611000000							0		0	</DATA>
+    <DATA>	LIST_64		# of Stories	stories		6	Decimal	1	1	Number											0		0	</DATA>
+    <DATA>	LIST_67		Baths - # Toilets	totalbath		7	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_71		Short Sale	garagetype		100	Character		1	Lookup				20121126194255249200000000							0		0	</DATA>
+    <DATA>	LIST_72		Hardship Package	garagestal		100	Character		1	Lookup				20121126194255245658000000							0		0	</DATA>
+    <DATA>	LIST_73		High School	garagerem		100	Character		1	Lookup				20121126194255242179000000							0		0	</DATA>
+    <DATA>	LIST_74	Zoning	Zoning	zoning		15	Character		1												0		0	</DATA>
+    <DATA>	LIST_75		Real Estate Taxes	taxes		11	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_76		Tax Year	taxyear		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_78	PublicRemarks	Public Remarks	remark1		800	Character		1												0		0	</DATA>
+    <DATA>	LIST_80		Parcel ID	parcelnbr		50	Character		1												0		0	</DATA>
+    <DATA>	LIST_81	LegalDescription	Legal Desc	legal		120	Character		1												0		0	</DATA>
+    <DATA>	LIST_82	Directions	Directions	directions		400	Character		1												0		0	</DATA>
+    <DATA>	LIST_85		Elementary School	ownerconta		100	Character		1	Lookup				20121126194255313222000000							0		0	</DATA>
+    <DATA>	LIST_86		Geo Area	howtoshow		100	Character		1	Lookup				20121126194255273525000000							0		0	</DATA>
+    <DATA>	LIST_91		Business Type	userdefine		100	Character		1	Lookup				20121126194255541983000000							0		0	</DATA>
+    <DATA>	LIST_93		Year Built Desc	userdefine		100	Character		1	Lookup				20121126194255548981000000							0		0	</DATA>
+    <DATA>	LIST_97		SqFt Source	userdefine		100	Character		1	Lookup				20121126194255442172000000							0		0	</DATA>
+    <DATA>	LIST_108		Waterfront	userdefine		100	Character		1	Lookup				20121126194255449281000000							0		0	</DATA>
+    <DATA>	LIST_109		Renewal Option	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_110		Training Available	userdefine		100	Character		1	Lookup				20121126194255456365000000							0		0	</DATA>
+    <DATA>	LIST_112		Business Name	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_113		Short Sale A/U	userdefine		100	Character		1	Lookup				20121126194255467122000000							0		0	</DATA>
+    <DATA>	LIST_114		Additional Business	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_115		Multiple Ofrs Acptd	userdefine		100	Character		1	Lookup				20121126194255474274000000							0		0	</DATA>
+    <DATA>	LIST_121		Annual Base Rent	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_122		Year Established	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_125		List Price/SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_126		Sold Price/SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_127		Lease Expires	userdefine		10	Date		1												0		0	</DATA>
+    <DATA>	FEAT20121227211413283292000000		Building Info: # of Offices		# of Offices	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227211732273682000000		Building Info: # of Employees		# of Employees	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227211504168891000000		Building Info: Seating Capacity		Seating Capacity	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227211748376588000000		Building Info: Bar Stools		Bar Stools	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227211342123569000000		Building Info: Door Height		Door Height	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227211525945049000000		Building Info: # of Loading Docks		# of Loading Docks	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227211803599191000000		Building Info: # of Bays		# of Bays	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227211833783556000000		Building Info: Miles to Expressway		Miles to Expressway	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227211655246294000000		Building Info: Miles to Beach		Miles to Beach	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227212329016412000000		Monetary Info: Assum Chattel Bal		Assum Chattel Bal	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227212355160226000000		Monetary Info: Ttl Assume Loans		Ttl Assume Loans	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227212544890655000000		Monetary Info: Total Mrtg Balance		Total Mrtg Balance	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227212427414084000000		Monetary Info: Annual Gross Income		Annual Gross Income	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227212559287029000000		Monetary Info: Cost of Sales		Cost of Sales	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227212449139134000000		Monetary Info: Gross Oper Income		Gross Oper Income	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227212610982048000000		Monetary Info: Other Income		Other Income	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227212507613058000000		Monetary Info: Total Expenses		Total Expenses	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227212627704911000000		Monetary Info: Net Oper Income		Net Oper Income	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227212804645302000000		Monetary Info: Inc/Exp Stmnt Period		Inc/Exp Stmnt Period	20	Character		0												0		0	</DATA>
+    <DATA>	FEAT20121227212658054620000000		Monetary Info: Source of Expenses		Source of Expenses	100	Character		0	Lookup				20121227212658054620000000							0		0	</DATA>
+    <DATA>	FEAT20121227212844508171000000		Monetary Info: Inventory		Inventory	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227212725929800000000		Monetary Info: Fixtures/Equipment		Fixtures/Equipment	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121227212856394893000000		Monetary Info: Insurance		Insurance	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	GF20121209033308089362000000		Avail Docs		Avail Docs	100	Character		1	LookupMulti				GFLU20121209033308089362000000	4						0		0	</DATA>
+    <DATA>	GF20121209033248961257000000		Avail Info		Avail Info	100	Character		1	LookupMulti				GFLU20121209033248961257000000	4						0		0	</DATA>
+    <DATA>	GF20121209033551300773000000		Ceiling		Ceiling	100	Character		1	LookupMulti				GFLU20121209033551300773000000	99						0		0	</DATA>
+    <DATA>	GF20121206202913690592000000		Construction		Construction	100	Character		1	LookupMulti				GFLU20121206202913690592000000	99						0		0	</DATA>
+    <DATA>	GF20130305141057035991000000		Contingents		Contingents	100	Character		1	LookupMulti				GFLU20130305141057035991000000	6						0		0	</DATA>
+    <DATA>	GF20121206202913609761000000	Cooling	Cooling		Cooling	100	Character		1	LookupMulti				GFLU20121206202913609761000000	99						0		0	</DATA>
+    <DATA>	GF20121209033225595741000000		Expenses Incl		Expenses Incl	100	Character		1	LookupMulti				GFLU20121209033225595741000000	12						0		0	</DATA>
+    <DATA>	GF20121209033517950242000000		Fire Protect		Fire Protect	100	Character		1	LookupMulti				GFLU20121209033517950242000000	99						0		0	</DATA>
+    <DATA>	GF20121206202914212504000000		Flooring		Flooring	100	Character		1	LookupMulti				GFLU20121206202914212504000000	99						0		0	</DATA>
+    <DATA>	GF20121206202914323008000000	Heating	Heating		Heating	100	Character		1	LookupMulti				GFLU20121206202914323008000000	99						0		0	</DATA>
+    <DATA>	GF20121209033352612005000000		Lease Term Rem		Lease Term Rem	100	Character		1	LookupMulti				GFLU20121209033352612005000000	99						0		0	</DATA>
+    <DATA>	GF20121209033813826417000000		License		License	100	Character		1	LookupMulti				GFLU20121209033813826417000000	5						0		0	</DATA>
+    <DATA>	GF20121209033014363719000000		Location		Location	100	Character		1	LookupMulti				GFLU20121209033014363719000000	5						0		0	</DATA>
+    <DATA>	GF20121206202914743943000000		Maintenance Fee Incl		Maintenance Fee Incl	100	Character		1	LookupMulti				GFLU20121206202914743943000000	99						0		0	</DATA>
+    <DATA>	GF20121209033435812725000000		Miscellaneous 1		Miscellaneous 1	100	Character		1	LookupMulti				GFLU20121209033435812725000000	99						0		0	</DATA>
+    <DATA>	GF20121209033454571173000000		Miscellaneous 2		Miscellaneous 2	100	Character		1	LookupMulti				GFLU20121209033454571173000000	99						0		0	</DATA>
+    <DATA>	GF20121209033414179386000000		Ownership		Ownership	100	Character		1	LookupMulti				GFLU20121209033414179386000000	99						0		0	</DATA>
+    <DATA>	GF20121206202914938674000000		Parking		Parking	100	Character		1	LookupMulti				GFLU20121206202914938674000000	99						0		0	</DATA>
+    <DATA>	GF20121206202915041661000000		Possession		Possession	100	Character		1	LookupMulti				GFLU20121206202915041661000000	99						0		0	</DATA>
+    <DATA>	GF20121209033611927253000000		Road		Road	100	Character		1	LookupMulti				GFLU20121209033611927253000000	8						0		0	</DATA>
+    <DATA>	GF20121206202915149760000000	Roof	Roof		Roof	100	Character		1	LookupMulti				GFLU20121206202915149760000000	99						0		0	</DATA>
+    <DATA>	GF20121209033138992260000000		Sale Includes		Sale Includes	100	Character		1	LookupMulti				GFLU20121209033138992260000000	5						0		0	</DATA>
+    <DATA>	GF20121206202915449375000000		Security		Security	100	Character		1	LookupMulti				GFLU20121206202915449375000000	99						0		0	</DATA>
+    <DATA>	GF20121206202915832531000000		Special Info		Special Info	100	Character		1	LookupMulti				GFLU20121206202915832531000000	6						0		0	</DATA>
+    <DATA>	GF20121206202915944331000000		Terms Considered		Terms Considered	100	Character		1	LookupMulti				GFLU20121206202915944331000000	5						0		0	</DATA>
+    <DATA>	GF20121209033034262092000000		Type of Building		Type of Building	100	Character		1	LookupMulti				GFLU20121209033034262092000000	99						0		0	</DATA>
+    <DATA>	GF20121206202916054421000000	Utilities	Utilities		Utilities	100	Character		1	LookupMulti				GFLU20121206202916054421000000	99						0		0	</DATA>
+    <DATA>	listing_member_shortid		ListingMemberShortId		ListMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_shortid		CoListingMemberShortId		CoListMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	selling_member_shortid		SellingMemberShortId		SellMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_shortid		CoSellingMemberShortId		CoSellMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	listing_office_shortid		ListingOfficeShortId		ListOffShort	15	Character		0												0		0	</DATA>
+    <DATA>	selling_office_shortid		SellingOfficeShortId		SellOffShort	15	Character		0												0		0	</DATA>
+    <DATA>	listing_member_name		ListingMemberName		ListMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_name		CoListingMemberName		CoListMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	selling_member_name		SellingMemberName		SellMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_name		CoSellingMemberName		CoSellMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	listing_office_name		ListingOfficeName		ListOfcName	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_name		SellingOfficeName		SellOfcName	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_phone		ListingMemberPhone		ListMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_phone		CoListingMemberPhone		CoListMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	selling_member_phone		SellingMemberPhone		SellMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_phone		CoSellingMemberPhone		CoSellMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	listing_office_phone		ListingOfficePhone		ListOffPhone	25	Character		0												0		0	</DATA>
+    <DATA>	selling_office_phone		SellingOfficePhone		SellOffPhone	25	Character		0												0		0	</DATA>
+    <DATA>	listing_member_fax		ListingMemberFax		ListMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_fax		CoListingMemberFax		CoListMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	selling_member_fax		SellingMemberFax		SellMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_fax		CoSellingMemberFax		CoSellMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	listing_office_fax		ListingOfficeFax		ListOffFax	15	Character		0												0		0	</DATA>
+    <DATA>	selling_office_fax		SellingOfficeFax		SellOffFax	15	Character		0												0		0	</DATA>
+    <DATA>	listing_member_address		ListingMemberAddress		ListMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_address		CoListingMemberAddress		CoListMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_address		SellingMemberAddress		SellMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_address		CoSellingMemberAddress		CoSellMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_address		ListingOfficeAddress		ListOffAddy	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_address		SellingOfficeAddress		SellOffAddy	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_email		ListingMemberEmail		ListMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_email		CoListingMemberEmail		CoListMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_email		SellingMemberEmail		SellMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_email		CoSellingMemberEmail		CoSellMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_email		ListingOfficeEmail		ListOffEmail	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_email		SellingOfficeEmail		SellOffEmail	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_url		ListingMemberUrl		ListMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_url		CoListingMemberUrl		CoListMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_url		SellingMemberUrl		SellMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_url		CoSellingMemberUrl		CoSellMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_url		ListingOfficeUrl		ListOffUrl	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_url		SellingOfficeUrl		SellOffUrl	150	Character		0												0		0	</DATA>
+    <DATA>	UNBRANDEDIDXVIRTUALTOUR		UnBranded Virtual Tour		Unbranded (IDX) Virtual 	512	Character		0												0		0	</DATA>
+  </METADATA-TABLE>
+</RETS>
+* Closing connection 18
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#19)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000013, qop=auth, response="6b780347584be88a4af4121797a66f37", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=D9CF4195F00183103350CDFECEB2C43A
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 48
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=Property:E&Type=METADATA-TABLE* upload completely sent off: 48 out of 48 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="A34F5946CE93D50C429E97541F34B295" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=A34F5946CE93D50C429E97541F34B295; Path=/rets2_1
+MIME-Version: 1.0
+Content-ID: METADATA-TABLE
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:54 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-TABLE Resource="Property" Class="E" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	SystemName	StandardName	LongName	DBName	ShortName	MaximumLength	DataType	Precision	Searchable	Interpretation	Alignment	UseSeparator	EditMaskID	LookupName	MaxSelect	Units	Index	Minimum	Maximum	Default	Required	SearchHelpID	Unique	</COLUMNS>
+    <DATA>	LIST_0		MLS Identifier	matechid	MLSID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_1		Internal Listing ID	techid	LISTID	26	Character		1												0		1	</DATA>
+    <DATA>	LIST_2		List Number Prefix	prefix	ListnoPrefix	2	Character		1												0		0	</DATA>
+    <DATA>	LIST_3		List Number Main	listnbr	ListnoMain	11	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_4		MLS Approved	maapproved	Approved	1	Character		1												0		0	</DATA>
+    <DATA>	LIST_5	AgentID	Agent ID	metechid	AgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_6		CoList Agent ID	colistagen	CoListAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_7		Property Group ID	propgroupi	PropGroupID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_8		Property Type	cardfmt	PropType	2	Character		1												0		0	</DATA>
+    <DATA>	LIST_61		Selling Agency ID	sellagency	SellingAgencyID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_62		Selling Agent ID	sellagenti	SellingAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_63		CoSelling Agent ID	cosellagen	CoSellingAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_87	ModificationTimestamp	Timestamp	modtimesta	Timestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_104		Display on Public Websites	pubweb	PublicWebsites	1	Character		1												0		0	</DATA>
+    <DATA>	LIST_105	ListingID	Listing ID	listingid	ListingID	13	Character		1												0		0	</DATA>
+    <DATA>	LIST_106	OfficeID	Office ID	listoffice	OfficeID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_132		Entry Timestamp	entrydate	EntryTimestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_133		Picture Count	piccount	PicCount	11	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_134		Picture Timestamp	pictimesta	PicTimestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_161		Document Timestamp	documentti	DocTimestamp	25	DateTime		0												0		0	</DATA>
+    <DATA>	LIST_162		Document Count	documentco	DocCount	11	Int		0	Number											0		0	</DATA>
+    <DATA>	LIST_163		List Office Board ID	boardid	LO Board Code ID	26	Character		1												0		0	</DATA>
+    <DATA>	BOARDCODE		List Office Board Code	boardcode	LO Board Code	150	Character		0												0		0	</DATA>
+    <DATA>	VOWList		VOWEntireListingDisplay	vowlist	VOWEntireListingDisplay	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWAddr		VOWAddressDisplay	vowaddr	VOWAddressDisplay	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWComm		VOWConsumerComment	vowcomm	VOWConsumerComment	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWAVM		VOWAutomatedValuationDisplay	vowavm	VOWAutomatedValuationDis	1	Boolean		1												0		0	</DATA>
+    <DATA>	LIST_9	Type	Type	booksec		100	Character		1	Lookup				20121126194255601489000000							0		0	</DATA>
+    <DATA>	LIST_12	CloseDate	Sold Date	solddate		10	Date		1												0		0	</DATA>
+    <DATA>	LIST_15	ListingStatus	Status	status		100	Character		1	Lookup				20121126194255771141000000							0		0	</DATA>
+    <DATA>	LIST_16	StatusChangeDate	Status Change Date	statuschan		10	Date		1												0		0	</DATA>
+    <DATA>	LIST_19		Contingent	contingent		100	Character		1	Lookup				20121126194255621722000000							0		0	</DATA>
+    <DATA>	LIST_22	ListPrice	List Price	listprice		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_23	ClosePrice	Sold Price	soldprice		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_28		Terms of Sale	financing		100	Character		1	Lookup				20121126194255647177000000							0		0	</DATA>
+    <DATA>	LIST_29	Area	Area	area		100	Character		1	Lookup				20121126194255577437000000							0		0	</DATA>
+    <DATA>	LIST_31	StreetNumber	Street #	housenbr		10	Character		1												0		0	</DATA>
+    <DATA>	LIST_33	StreetDirPrefix	Street Dir	streetdirp		100	Character		1	Lookup				20121126194255785237000000							0		0	</DATA>
+    <DATA>	LIST_34	StreetName	Street Name	streetname		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_35	UnitNumber	Unit #	streetaddl		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_36	StreetDirSuffix	Street Post Dir	streetdirs		100	Character		1	Lookup				20121126194255788736000000							0		0	</DATA>
+    <DATA>	LIST_37	StreetSuffix	Street Suffix	streetsuff		100	Character		1	Lookup				20121126194255796433000000							0		0	</DATA>
+    <DATA>	LIST_39	City	City	city		100	Character		1	Lookup				20121126194255618215000000							0		0	</DATA>
+    <DATA>	LIST_40	StateOrProvince	State/Province	state		100	Character		1	Lookup				20121126194255767594000000							0		0	</DATA>
+    <DATA>	LIST_41	County	County	county		100	Character		1	Lookup				20121126194255632833000000							0		0	</DATA>
+    <DATA>	LIST_43	PostalCode	Zip Code	zip		100	Character		1	Lookup				20121126194255985081000000							0		0	</DATA>
+    <DATA>	LIST_46		Geo Lat	geolat		11	Decimal	6	1	Number											0		0	</DATA>
+    <DATA>	LIST_47		Geo Lon	geolon		11	Decimal	6	1	Number											0		0	</DATA>
+    <DATA>	LIST_48		Total Building SqFt	totalsqft		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_51		% Air Conditioned	sqft3		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_53	YearBuilt	Year Built	yrbuilt		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_57	LotSize	Acres	lotacres		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_64	Stories	# of Stories	stories		6	Decimal	1	1	Number											0		0	</DATA>
+    <DATA>	LIST_65	TotalUnits	Total Units	totalrooms		6	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_67		Baths - # Toilets	totalbath		7	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_72		Hardship Package	garagestal		100	Character		1	Lookup				20121126194255654425000000							0		0	</DATA>
+    <DATA>	LIST_74	Zoning	Zoning	zoning		15	Character		1												0		0	</DATA>
+    <DATA>	LIST_75		Real Estate Taxes	taxes		11	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_76		Tax Year	taxyear		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_77	Subdivision	Subdivision	subdivisio		100	Character		1												0		0	</DATA>
+    <DATA>	LIST_78	PublicRemarks	Public Remarks	remark1		800	Character		1												0		0	</DATA>
+    <DATA>	LIST_80		Parcel ID	parcelnbr		50	Character		1												0		0	</DATA>
+    <DATA>	LIST_81	LegalDescription	Legal Desc	legal		120	Character		1												0		0	</DATA>
+    <DATA>	LIST_82	Directions	Directions	directions		400	Character		1												0		0	</DATA>
+    <DATA>	LIST_86		Geo Area	howtoshow		100	Character		1	Lookup				20121126194255682016000000							0		0	</DATA>
+    <DATA>	LIST_93		Year Built Desc	userdefine		100	Character		1	Lookup				20121126194255963909000000							0		0	</DATA>
+    <DATA>	LIST_95		For Sale	userdefine		100	Character		1	Lookup				20121126194255971019000000							0		0	</DATA>
+    <DATA>	LIST_97		SqFt Source	userdefine		100	Character		1	Lookup				20121126194255846760000000							0		0	</DATA>
+    <DATA>	LIST_108		Waterfront	userdefine		100	Character		1	Lookup				20121126194255854234000000							0		0	</DATA>
+    <DATA>	LIST_109		Property Desc	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_112		For Lease	userdefine		100	Character		1	Lookup				20121126194255871922000000							0		0	</DATA>
+    <DATA>	LIST_115		Multiple Ofrs Acptd	userdefine		100	Character		1	Lookup				20121126194255883538000000							0		0	</DATA>
+    <DATA>	LIST_119		# of Meters	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_121		Lease Price SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_122		Lease Year	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_123		Min Lease Months	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_124		Ann Assoc/Condo Dues	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_125		List Price/Bldg SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_126		Sold Price/Bldg SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	FEAT20121228141330591036000000		Building Info: # of Offices		# of Offices	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228141522363023000000		Building Info: Interior Ceiling Hgt		Interior Ceiling Hgt	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228141538045232000000		Building Info: Seating Capacity		Seating Capacity	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20130102140646336002000000		Building Info: # of Tenants		# of Tenants	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228141707970724000000		Building Info: # of Bays		# of Bays	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228141728638669000000		Building Info: Door Height		Door Height	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228141754532717000000		Building Info: # of Loading Docks		# of Loading Docks	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228141956418528000000		Building Info: Miles to Expressway		Miles to Expressway	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228141945056231000000		Building Info: Miles to Beach		Miles to Beach	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228143849385595000000		Monetary Info: Ttl Assume Loans		Ttl Assume Loans	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228143906827998000000		Monetary Info: Total Mrtg Balance		Total Mrtg Balance	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228143940136446000000		Monetary Info: Gross Sched Income		Gross Sched Income	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228144115925394000000		Monetary Info: Vacancy Rate		Vacancy Rate	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228143958474731000000		Monetary Info: Gross Oper Income		Gross Oper Income	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228144131654032000000		Monetary Info: Other Income		Other Income	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228144034116911000000		Monetary Info: Total Expenses		Total Expenses	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228144155207443000000		Monetary Info: Net Oper Income		Net Oper Income	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228144726491665000000		Monetary Info: Inc/Exp Stmnt Period		Inc/Exp Stmnt Period	20	Character		0												0		0	</DATA>
+    <DATA>	FEAT20121228144216205797000000		Monetary Info: Source of Expenses		Source of Expenses	100	Character		0	Lookup				20121228144216205797000000							0		0	</DATA>
+    <DATA>	FEAT20121228144834605276000000		Expenses: Management		Management	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228144849850194000000		Expenses: Accounting &amp; Legal		Accounting &amp; Legal	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228144903378327000000		Expenses: Advertising		Advertising	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228144922388596000000		Expenses: Insurance		Insurance	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228144941199867000000		Expenses: R.E. Taxes		R.E. Taxes	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228145108140836000000		Expenses: Service		Service	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228144951848504000000		Expenses: Trash		Trash	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228145127514372000000		Expenses: Supplies		Supplies	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228145005508012000000		Expenses: Utilities		Utilities	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228145143907518000000		Expenses: Maint &amp; Repair		Maint &amp; Repair	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228145025715008000000		Expenses: Miscellaneous		Miscellaneous	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228145207443843000000		Expenses: Common Area Maint		Common Area Maint	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228145049104661000000		Expenses: Total Expenses		Total Expenses	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228150107369062000000		Unit 1: Unit Desc		Unit Desc	100	Character		0	Lookup				20121228150107369062000000							0		0	</DATA>
+    <DATA>	FEAT20121228154021272636000000		Unit 1: # of Units		# of Units	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154116024380000000		Unit 1: Full Baths		Full Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154423541852000000		Unit 1: Half Baths		Half Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154927948803000000		Unit 1: Ann Rent		Ann Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155003865659000000		Unit 1: Seasonal Rent		Seasonal Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155340869917000000		Unit 1: Off Season Rent		Off Season Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155411234104000000		Unit 1: Rent Period		Rent Period	100	Character		0	Lookup				20121228155411234104000000							0		0	</DATA>
+    <DATA>	FEAT20121228150119205304000000		Unit 2: Unit Desc		Unit Desc	100	Character		0	Lookup				20121228150119205304000000							0		0	</DATA>
+    <DATA>	FEAT20121228154010395842000000		Unit 2: # of Units		# of Units	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154125162810000000		Unit 2: Full Baths		Full Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154414206789000000		Unit 2: Half Baths		Half Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154912728882000000		Unit 2: Ann Rent		Ann Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155016249275000000		Unit 2: Seasonal Rent		Seasonal Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155331603346000000		Unit 2: Off Season Rent		Off Season Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155418009250000000		Unit 2: Rent Period		Rent Period	100	Character		0	Lookup				20121228155418009250000000							0		0	</DATA>
+    <DATA>	FEAT20121228150131464025000000		Unit 3: Unit Desc		Unit Desc	100	Character		0	Lookup				20121228150131464025000000							0		0	</DATA>
+    <DATA>	FEAT20121228154001544152000000		Unit 3: # of Units		# of Units	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154134499206000000		Unit 3: Full Baths		Full Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154402787088000000		Unit 3: Half Baths		Half Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154853060349000000		Unit 3: Ann Rent		Ann Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155027600055000000		Unit 3: Seasonal Rent		Seasonal Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155321538104000000		Unit 3: Off Season Rent		Off Season Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155425827751000000		Unit 3: Rent Period		Rent Period	100	Character		0	Lookup				20121228155425827751000000							0		0	</DATA>
+    <DATA>	FEAT20121228150142256837000000		Unit 4: Unit Desc		Unit Desc	100	Character		0	Lookup				20121228150142256837000000							0		0	</DATA>
+    <DATA>	FEAT20121228153953273352000000		Unit 4: # of Units		# of Units	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154144683049000000		Unit 4: Full Baths		Full Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154309379431000000		Unit 4: Half Baths		Half Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154845614814000000		Unit 4: Ann Rent		Ann Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155038353401000000		Unit 4: Seasonal Rent		Seasonal Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155313756060000000		Unit 4: Off Season Rent		Off Season Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155435275225000000		Unit 4: Rent Period		Rent Period	100	Character		0	Lookup				20121228155435275225000000							0		0	</DATA>
+    <DATA>	FEAT20121228150214842921000000		Unit 5: Unit Desc		Unit Desc	100	Character		0	Lookup				20121228150214842921000000							0		0	</DATA>
+    <DATA>	FEAT20121228153939518098000000		Unit 5: # of Units		# of Units	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154201501293000000		Unit 5: Full Baths		Full Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154353803528000000		Unit 5: Half Baths		Half Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154838316596000000		Unit 5: Ann Rent		Ann Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155047638721000000		Unit 5: Seasonal Rent		Seasonal Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155303348838000000		Unit 5: Off Season Rent		Off Season Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155443618722000000		Unit 5: Rent Period		Rent Period	100	Character		0	Lookup				20121228155443618722000000							0		0	</DATA>
+    <DATA>	FEAT20121228150253031892000000		Unit 6: Unit Desc		Unit Desc	100	Character		0	Lookup				20121228150253031892000000							0		0	</DATA>
+    <DATA>	FEAT20121228153930032152000000		Unit 6: # of Units		# of Units	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154209801697000000		Unit 6: Full Baths		Full Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154258585861000000		Unit 6: Half Baths		Half Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154736068731000000		Unit 6: Ann Rent		Ann Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155056435209000000		Unit 6: Seasonal Rent		Seasonal Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155255397322000000		Unit 6: Off Season Rent		Off Season Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155451456770000000		Unit 6: Rent Period		Rent Period	100	Character		0	Lookup				20121228155451456770000000							0		0	</DATA>
+    <DATA>	FEAT20121228150302685332000000		Unit 7: Unit Desc		Unit Desc	100	Character		0	Lookup				20121228150302685332000000							0		0	</DATA>
+    <DATA>	FEAT20121228153917479224000000		Unit 7: # of Units		# of Units	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154224153901000000		Unit 7: Full Baths		Full Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154244640263000000		Unit 7: Half Baths		Half Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228154721588420000000		Unit 7: Ann Rent		Ann Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155109244719000000		Unit 7: Seasonal Rent		Seasonal Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155245565733000000		Unit 7: Off Season Rent		Off Season Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228155459763060000000		Unit 7: Rent Period		Rent Period	100	Character		0	Lookup				20121228155459763060000000							0		0	</DATA>
+    <DATA>	FEAT20131004121644107567000000		Unit 8: Unit Desc		Unit Desc	100	Character		0	Lookup				20131004121644107567000000							0		0	</DATA>
+    <DATA>	FEAT20131004121715739619000000		Unit 8: # of Units		# of Units	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20131004121920825897000000		Unit 8: Full Baths		Full Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20131004121952502251000000		Unit 8: Half Baths		Half Baths	20	Int		0	Number											0		0	</DATA>
+    <DATA>	FEAT20131004122101346071000000		Unit 8: Ann Rent		Ann Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20131004122115989264000000		Unit 8: Seasonal Rent		Seasonal Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20131004122137592114000000		Unit 8: Off Season Rent		Off Season Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20131004122154260837000000		Unit 8: Rent Period		Rent Period	100	Character		0	Lookup				20131004122154260837000000							0		0	</DATA>
+    <DATA>	GF20121210032048203667000000		Avail Docs		Avail Docs	100	Character		1	LookupMulti				GFLU20121210032048203667000000	4						0		0	</DATA>
+    <DATA>	GF20121210032110757551000000		Avail Info		Avail Info	100	Character		1	LookupMulti				GFLU20121210032110757551000000	11						0		0	</DATA>
+    <DATA>	GF20121210031948632516000000		Ceiling		Ceiling	100	Character		1	LookupMulti				GFLU20121210031948632516000000	99						0		0	</DATA>
+    <DATA>	GF20121210032303651504000000		Comm Desc		Comm Desc	100	Character		1	LookupMulti				GFLU20121210032303651504000000	99						0		0	</DATA>
+    <DATA>	GF20121206202935157741000000		Construction		Construction	100	Character		1	LookupMulti				GFLU20121206202935157741000000	99						0		0	</DATA>
+    <DATA>	GF20130305141131323666000000		Contingents		Contingents	100	Character		1	LookupMulti				GFLU20130305141131323666000000	6						0		0	</DATA>
+    <DATA>	GF20121206202935069920000000	Cooling	Cooling		Cooling	100	Character		1	LookupMulti				GFLU20121206202935069920000000	3						0		0	</DATA>
+    <DATA>	GF20121210032202398521000000		Fire Protect		Fire Protect	100	Character		1	LookupMulti				GFLU20121210032202398521000000	3						0		0	</DATA>
+    <DATA>	GF20121206202935671233000000		Flooring		Flooring	100	Character		1	LookupMulti				GFLU20121206202935671233000000	4						0		0	</DATA>
+    <DATA>	GF20121206202935801841000000	Heating	Heating		Heating	100	Character		1	LookupMulti				GFLU20121206202935801841000000	5						0		0	</DATA>
+    <DATA>	GF20121210031919968945000000		Land Income		Land Income	100	Character		1	LookupMulti				GFLU20121210031919968945000000	99						0		0	</DATA>
+    <DATA>	GF20121210032248421202000000		Lease		Lease	100	Character		1	LookupMulti				GFLU20121210032248421202000000	7						0		0	</DATA>
+    <DATA>	GF20121210032004030746000000		Location		Location	100	Character		1	LookupMulti				GFLU20121210032004030746000000	5						0		0	</DATA>
+    <DATA>	GF20121206202936296956000000		Maintenance Fee Incl		Maintenance Fee Incl	100	Character		1	LookupMulti				GFLU20121206202936296956000000	99						0		0	</DATA>
+    <DATA>	GF20121210032127871857000000		Miscellaneous 1		Miscellaneous 1	100	Character		1	LookupMulti				GFLU20121210032127871857000000	99						0		0	</DATA>
+    <DATA>	GF20121210032143719113000000		Miscellaneous 2		Miscellaneous 2	100	Character		1	LookupMulti				GFLU20121210032143719113000000	99						0		0	</DATA>
+    <DATA>	GF20121206202936574401000000		Possession		Possession	100	Character		1	LookupMulti				GFLU20121206202936574401000000	2						0		0	</DATA>
+    <DATA>	GF20121206202936671897000000	Roof	Roof		Roof	100	Character		1	LookupMulti				GFLU20121206202936671897000000	4						0		0	</DATA>
+    <DATA>	GF20121210032031601627000000		Sale Includes		Sale Includes	100	Character		1	LookupMulti				GFLU20121210032031601627000000	11						0		0	</DATA>
+    <DATA>	GF20121206202936970585000000		Security		Security	100	Character		1	LookupMulti				GFLU20121206202936970585000000	99						0		0	</DATA>
+    <DATA>	GF20121206202937320302000000		Special Info		Special Info	100	Character		1	LookupMulti				GFLU20121206202937320302000000	99						0		0	</DATA>
+    <DATA>	GF20121210032219382370000000		Tenant Pays		Tenant Pays	100	Character		1	LookupMulti				GFLU20121210032219382370000000	4						0		0	</DATA>
+    <DATA>	GF20121206202937431318000000		Terms Considered		Terms Considered	100	Character		1	LookupMulti				GFLU20121206202937431318000000	5						0		0	</DATA>
+    <DATA>	GF20121210031859306151000000		Type of Building		Type of Building	100	Character		1	LookupMulti				GFLU20121210031859306151000000	8						0		0	</DATA>
+    <DATA>	GF20121228145915105714000000		Unit 1		Unit 1	100	Character		1	LookupMulti				GFLU20121228145915105714000000	99						0		0	</DATA>
+    <DATA>	GF20121228145926063730000000		Unit 2		Unit 2	100	Character		1	LookupMulti				GFLU20121228145926063730000000	99						0		0	</DATA>
+    <DATA>	GF20121228145933917618000000		Unit 3		Unit 3	100	Character		1	LookupMulti				GFLU20121228145933917618000000	99						0		0	</DATA>
+    <DATA>	GF20121228145942310459000000		Unit 4		Unit 4	100	Character		1	LookupMulti				GFLU20121228145942310459000000	99						0		0	</DATA>
+    <DATA>	GF20121228145949988804000000		Unit 5		Unit 5	100	Character		1	LookupMulti				GFLU20121228145949988804000000	99						0		0	</DATA>
+    <DATA>	GF20121228145959662728000000		Unit 6		Unit 6	100	Character		1	LookupMulti				GFLU20121228145959662728000000	99						0		0	</DATA>
+    <DATA>	GF20121228150011364129000000		Unit 7		Unit 7	100	Character		1	LookupMulti				GFLU20121228150011364129000000	99						0		0	</DATA>
+    <DATA>	GF20131004121429113880000000		Unit 8		Unit 8	100	Character		1	LookupMulti				GFLU20131004121429113880000000	99						0		0	</DATA>
+    <DATA>	GF20121210031838533711000000		Use		Use	100	Character		1	LookupMulti				GFLU20121210031838533711000000	3						0		0	</DATA>
+    <DATA>	GF20121206202937541928000000	Utilities	Utilities		Utilities	100	Character		1	LookupMulti				GFLU20121206202937541928000000	6						0		0	</DATA>
+    <DATA>	GF20121206202937679400000000	WaterFront	Waterfront		Waterfront	100	Character		1	LookupMulti				GFLU20121206202937679400000000	99						0		0	</DATA>
+    <DATA>	ROOM_BR1_room_length		Bedroom 1 Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR1_room_width		Bedroom 1 Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR2_room_length		Bedroom 2 Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR2_room_width		Bedroom 2 Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR3_room_length		Bedroom 3 Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR3_room_width		Bedroom 3 Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR4_room_length		Bedroom 4 Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR4_room_width		Bedroom 4 Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DN_room_length		Dining Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DN_room_width		Dining Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FR_room_length		Family Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FR_room_width		Family Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BA_room_length		Full Bath Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BA_room_width		Full Bath Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_B1_room_length		Half Bath Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_B1_room_width		Half Bath Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_KI_room_length		Kitchen Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_KI_room_width		Kitchen Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LV_room_length		Living Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LV_room_width		Living Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_OR1_room_length		Other Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_OR1_room_width		Other Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	listing_member_shortid		ListingMemberShortId		ListMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_shortid		CoListingMemberShortId		CoListMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	selling_member_shortid		SellingMemberShortId		SellMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_shortid		CoSellingMemberShortId		CoSellMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	listing_office_shortid		ListingOfficeShortId		ListOffShort	15	Character		0												0		0	</DATA>
+    <DATA>	selling_office_shortid		SellingOfficeShortId		SellOffShort	15	Character		0												0		0	</DATA>
+    <DATA>	listing_member_name		ListingMemberName		ListMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_name		CoListingMemberName		CoListMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	selling_member_name		SellingMemberName		SellMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_name		CoSellingMemberName		CoSellMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	listing_office_name		ListingOfficeName		ListOfcName	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_name		SellingOfficeName		SellOfcName	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_phone		ListingMemberPhone		ListMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_phone		CoListingMemberPhone		CoListMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	selling_member_phone		SellingMemberPhone		SellMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_phone		CoSellingMemberPhone		CoSellMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	listing_office_phone		ListingOfficePhone		ListOffPhone	25	Character		0												0		0	</DATA>
+    <DATA>	selling_office_phone		SellingOfficePhone		SellOffPhone	25	Character		0												0		0	</DATA>
+    <DATA>	listing_member_fax		ListingMemberFax		ListMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_fax		CoListingMemberFax		CoListMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	selling_member_fax		SellingMemberFax		SellMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_fax		CoSellingMemberFax		CoSellMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	listing_office_fax		ListingOfficeFax		ListOffFax	15	Character		0												0		0	</DATA>
+    <DATA>	selling_office_fax		SellingOfficeFax		SellOffFax	15	Character		0												0		0	</DATA>
+    <DATA>	listing_member_address		ListingMemberAddress		ListMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_address		CoListingMemberAddress		CoListMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_address		SellingMemberAddress		SellMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_address		CoSellingMemberAddress		CoSellMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_address		ListingOfficeAddress		ListOffAddy	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_address		SellingOfficeAddress		SellOffAddy	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_email		ListingMemberEmail		ListMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_email		CoListingMemberEmail		CoListMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_email		SellingMemberEmail		SellMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_email		CoSellingMemberEmail		CoSellMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_email		ListingOfficeEmail		ListOffEmail	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_email		SellingOfficeEmail		SellOffEmail	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_url		ListingMemberUrl		ListMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_url		CoListingMemberUrl		CoListMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_url		SellingMemberUrl		SellMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_url		CoSellingMemberUrl		CoSellMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_url		ListingOfficeUrl		ListOffUrl	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_url		SellingOfficeUrl		SellOffUrl	150	Character		0												0		0	</DATA>
+    <DATA>	UNBRANDEDIDXVIRTUALTOUR		UnBranded Virtual Tour		Unbranded (IDX) Virtual 	512	Character		0												0		0	</DATA>
+  </METADATA-TABLE>
+</RETS>
+* Closing connection 19
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#20)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+POST /rets2_1/GetMetadata HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/GetMetadata", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000014, qop=auth, response="ef57e0bc624608762727128af6fae8d7", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=A34F5946CE93D50C429E97541F34B295
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+Content-Length: 48
+Content-Type: application/x-www-form-urlencoded
+
+Format=COMPACT&ID=Property:F&Type=METADATA-TABLE* upload completely sent off: 48 out of 48 bytes
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+MIME-Version: 1.0
+Content-ID: METADATA-TABLE
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:54 GMT
+Connection: close
+
+<RETS ReplyCode="0" ReplyText="Success">
+  <METADATA-TABLE Resource="Property" Class="F" Version="01.02.92538" Date="Thu, 14 May 2015 01:38:22 GMT">
+    <COLUMNS>	SystemName	StandardName	LongName	DBName	ShortName	MaximumLength	DataType	Precision	Searchable	Interpretation	Alignment	UseSeparator	EditMaskID	LookupName	MaxSelect	Units	Index	Minimum	Maximum	Default	Required	SearchHelpID	Unique	</COLUMNS>
+    <DATA>	LIST_0		MLS Identifier	matechid	MLSID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_1		Internal Listing ID	techid	LISTID	26	Character		1												0		1	</DATA>
+    <DATA>	LIST_2		List Number Prefix	prefix	ListnoPrefix	2	Character		1												0		0	</DATA>
+    <DATA>	LIST_3		List Number Main	listnbr	ListnoMain	11	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_4		MLS Approved	maapproved	Approved	1	Character		1												0		0	</DATA>
+    <DATA>	LIST_5	AgentID	Agent ID	metechid	AgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_6		CoList Agent ID	colistagen	CoListAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_7		Property Group ID	propgroupi	PropGroupID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_8		Property Type	cardfmt	PropType	2	Character		1												0		0	</DATA>
+    <DATA>	LIST_61		Selling Agency ID	sellagency	SellingAgencyID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_62		Selling Agent ID	sellagenti	SellingAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_63		CoSelling Agent ID	cosellagen	CoSellingAgentID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_87	ModificationTimestamp	Timestamp	modtimesta	Timestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_104		Display on Public Websites	pubweb	PublicWebsites	1	Character		1												0		0	</DATA>
+    <DATA>	LIST_105	ListingID	Listing ID	listingid	ListingID	13	Character		1												0		0	</DATA>
+    <DATA>	LIST_106	OfficeID	Office ID	listoffice	OfficeID	26	Character		1												0		0	</DATA>
+    <DATA>	LIST_132		Entry Timestamp	entrydate	EntryTimestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_133		Picture Count	piccount	PicCount	11	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_134		Picture Timestamp	pictimesta	PicTimestamp	25	DateTime		1												0		0	</DATA>
+    <DATA>	LIST_161		Document Timestamp	documentti	DocTimestamp	25	DateTime		0												0		0	</DATA>
+    <DATA>	LIST_162		Document Count	documentco	DocCount	11	Int		0	Number											0		0	</DATA>
+    <DATA>	LIST_163		List Office Board ID	boardid	LO Board Code ID	26	Character		1												0		0	</DATA>
+    <DATA>	BOARDCODE		List Office Board Code	boardcode	LO Board Code	150	Character		0												0		0	</DATA>
+    <DATA>	VOWList		VOWEntireListingDisplay	vowlist	VOWEntireListingDisplay	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWAddr		VOWAddressDisplay	vowaddr	VOWAddressDisplay	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWComm		VOWConsumerComment	vowcomm	VOWConsumerComment	1	Boolean		1												0		0	</DATA>
+    <DATA>	VOWAVM		VOWAutomatedValuationDisplay	vowavm	VOWAutomatedValuationDis	1	Boolean		1												0		0	</DATA>
+    <DATA>	LIST_9	Type	Type	booksec		100	Character		1	Lookup				20121126194256017784000000							0		0	</DATA>
+    <DATA>	LIST_12	CloseDate	Rented Date	solddate		10	Date		1												0		0	</DATA>
+    <DATA>	LIST_15	ListingStatus	Status	status		100	Character		1	Lookup				20121126194256185939000000							0		0	</DATA>
+    <DATA>	LIST_16	StatusChangeDate	Status Change Date	statuschan		10	Date		1												0		0	</DATA>
+    <DATA>	LIST_19		Contingent	contingent		100	Character		1	Lookup				20121126194256039295000000							0		0	</DATA>
+    <DATA>	LIST_22	ListPrice	Rental Price	listprice		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_23	ClosePrice	Rented Price	soldprice		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_28		Terms of Sale	financing		100	Character		1	Lookup				20121126194256064780000000							0		0	</DATA>
+    <DATA>	LIST_29	Area	Area	area		100	Character		1	Lookup				20121126194255992005000000							0		0	</DATA>
+    <DATA>	LIST_31	StreetNumber	Street #	housenbr		10	Character		1												0		0	</DATA>
+    <DATA>	LIST_32		Middle School	boxnbr		100	Character		1	Lookup				20121126194256021515000000							0		0	</DATA>
+    <DATA>	LIST_33	StreetDirPrefix	Street Dir	streetdirp		100	Character		1	Lookup				20121126194256200189000000							0		0	</DATA>
+    <DATA>	LIST_34	StreetName	Street Name	streetname		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_35	UnitNumber	Unit #	streetaddl		30	Character		1												0		0	</DATA>
+    <DATA>	LIST_36	StreetDirSuffix	Street Post Dir	streetdirs		100	Character		1	Lookup				20121126194256203929000000							0		0	</DATA>
+    <DATA>	LIST_37	StreetSuffix	Street Suffix	streetsuff		100	Character		1	Lookup				20121126194256211626000000							0		0	</DATA>
+    <DATA>	LIST_39	City	City	city		100	Character		1	Lookup				20121126194256035871000000							0		0	</DATA>
+    <DATA>	LIST_40	StateOrProvince	State/Province	state		100	Character		1	Lookup				20121126194256182024000000							0		0	</DATA>
+    <DATA>	LIST_41	County	County	county		100	Character		1	Lookup				20121126194256050605000000							0		0	</DATA>
+    <DATA>	LIST_43	PostalCode	Zip Code	zip		100	Character		1	Lookup				20121126194256371262000000							0		0	</DATA>
+    <DATA>	LIST_46		Geo Lat	geolat		11	Decimal	6	1	Number											0		0	</DATA>
+    <DATA>	LIST_47		Geo Lon	geolon		11	Decimal	6	1	Number											0		0	</DATA>
+    <DATA>	LIST_48		SqFt - Living	totalsqft		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_49		SqFt - Total	sqft1		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_50		Damage Deposit	sqft2		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_51		Total Floors in Bldg	sqft3		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_52		Ttl Units in Complex	sqft4		10	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_53		Year Built	yrbuilt		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_58		Front Exp	buybrokerc		100	Character		1	Lookup				20121126194256025135000000							0		0	</DATA>
+    <DATA>	LIST_59		Governing Bodies	sellbroker		100	Character		1	Lookup				20121126194256159095000000							0		0	</DATA>
+    <DATA>	LIST_65		Total Units in Bldg	totalrooms		6	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_66	Bedrooms	Total Bedrooms	totalbr		4	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_67	BathsTotal	Baths - Total	totalbath		7	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_68	BathsFull	Baths - Full	bathsfull		6	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_69	BathsHalf	Baths - Half	bathshalf		6	Int		1	Number											0		0	</DATA>
+    <DATA>	LIST_73		High School	garagerem		100	Character		1	Lookup				20121126194256068423000000							0		0	</DATA>
+    <DATA>	LIST_77	Subdivision	Subdivision	subdivisio		100	Character		1												0		0	</DATA>
+    <DATA>	LIST_78	PublicRemarks	Public Remarks	remark1		800	Character		1												0		0	</DATA>
+    <DATA>	LIST_80		Parcel ID	parcelnbr		50	Character		1												0		0	</DATA>
+    <DATA>	LIST_81		Legal Desc	legal		120	Character		1												0		0	</DATA>
+    <DATA>	LIST_82	Directions	Directions	directions		400	Character		1												0		0	</DATA>
+    <DATA>	LIST_85		Elementary School	ownerconta		100	Character		1	Lookup				20121126194256137759000000							0		0	</DATA>
+    <DATA>	LIST_86		Geo Area	howtoshow		100	Character		1	Lookup				20121126194256099732000000							0		0	</DATA>
+    <DATA>	LIST_93		For Sale	userdefine		100	Character		1	Lookup				20121126194256351604000000							0		0	</DATA>
+    <DATA>	LIST_95		Management Phone	userdefine		20	Character		0												0		0	</DATA>
+    <DATA>	LIST_96		HOPA	userdefine		100	Character		1	Lookup				20121126194256361304000000							0		0	</DATA>
+    <DATA>	LIST_97		MLS #	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_101		Management Co	permbookms		30	Character		0												0		0	</DATA>
+    <DATA>	LIST_108		Waterfront	userdefine		100	Character		1	Lookup				20121126194256260997000000							0		0	</DATA>
+    <DATA>	LIST_109		Private Pool	userdefine		100	Character		1	Lookup				20121126194256264316000000							0		0	</DATA>
+    <DATA>	LIST_111		Waterfrontage	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_112		Pets Allowed	userdefine		100	Character		1	Lookup				20121126194256273498000000							0		0	</DATA>
+    <DATA>	LIST_114		Bldg #	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_118		Min Days for Lease	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_121		Application Fee	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_122		Dock #	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_123		Unit Floor #	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_124		Garage Spaces	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_125		Rental Price/SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_126		Rented Price/SqFt	userdefine		15	Decimal	2	1	Number											0		0	</DATA>
+    <DATA>	LIST_127		Date Available	userdefine		10	Date		1												0		0	</DATA>
+    <DATA>	LIST_130		Development Name	userdefine		50	Character		1												0		0	</DATA>
+    <DATA>	LIST_131		Move-in Requirements	userdefine		100	Character		1												0		0	</DATA>
+    <DATA>	LIST_147		Sale MLS ID	userdefine		20	Character		1												0		0	</DATA>
+    <DATA>	LIST_153		SqFt Source	userdefine		100	Character		1	Lookup				20130819094205088506000000							0		0	</DATA>
+    <DATA>	FEAT20121228204141894186000000		Rental Info: 1st Month Deposit		1st Month Deposit	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228204154327948000000		Rental Info: Last Month Deposit		Last Month Deposit	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228204213247044000000		Rental Info: Pet Fee		Pet Fee	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228204252432334000000		Rental Info: Furn Annual Rent		Furn Annual Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228204318929526000000		Rental Info: Furn Seasonal Rent		Furn Seasonal Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228204340438095000000		Rental Info: Furn Off Season Rent		Furn Off Season Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228204543063125000000		Rental Info: Unfurn Annual Rent		Unfurn Annual Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228204525335245000000		Rental Info: Unfurn Seasonal Rent		Unfurn Seasonal Rent	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228204453924199000000		Rental Info: Unfur Off Season Rnt		Unfur Off Season Rnt	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20121228204622615353000000		Rental Info: January		January	100	Character		0	Lookup				20121228204622615353000000							0		0	</DATA>
+    <DATA>	FEAT20121228204631585068000000		Rental Info: February		February	100	Character		0	Lookup				20121228204631585068000000							0		0	</DATA>
+    <DATA>	FEAT20121228204639885393000000		Rental Info: March		March	100	Character		0	Lookup				20121228204639885393000000							0		0	</DATA>
+    <DATA>	FEAT20121228204648276729000000		Rental Info: April		April	100	Character		0	Lookup				20121228204648276729000000							0		0	</DATA>
+    <DATA>	FEAT20121228204654956995000000		Rental Info: May		May	100	Character		0	Lookup				20121228204654956995000000							0		0	</DATA>
+    <DATA>	FEAT20121228204701748902000000		Rental Info: June		June	100	Character		0	Lookup				20121228204701748902000000							0		0	</DATA>
+    <DATA>	FEAT20121228204709932098000000		Rental Info: July		July	100	Character		0	Lookup				20121228204709932098000000							0		0	</DATA>
+    <DATA>	FEAT20121228204719305693000000		Rental Info: August		August	100	Character		0	Lookup				20121228204719305693000000							0		0	</DATA>
+    <DATA>	FEAT20121228204732235299000000		Rental Info: September		September	100	Character		0	Lookup				20121228204732235299000000							0		0	</DATA>
+    <DATA>	FEAT20121228204741883892000000		Rental Info: October		October	100	Character		0	Lookup				20121228204741883892000000							0		0	</DATA>
+    <DATA>	FEAT20121228204751605885000000		Rental Info: November		November	100	Character		0	Lookup				20121228204751605885000000							0		0	</DATA>
+    <DATA>	FEAT20121228204848261899000000		Rental Info: December		December	100	Character		0	Lookup				20121228204848261899000000							0		0	</DATA>
+    <DATA>	FEAT20140321160712934648000000		Equestrian Features: # of Stalls		# of Stalls	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20140321160736457388000000		Equestrian Features: # of Barns		# of Barns	23	Decimal	2	0	Number											0		0	</DATA>
+    <DATA>	FEAT20140321161032643134000000		Equestrian Features: Ring		Ring	20	Character		0												0		0	</DATA>
+    <DATA>	FEAT20140515193211844806000000		Storm Protection: Accordian Shutters		Accordian Shutters	100	Character		0	Lookup				20140515193211844806000000							0		0	</DATA>
+    <DATA>	FEAT20140515193409428740000000		Storm Protection: Electric/Power Shutters		Electric/Power Shutters	100	Character		0	Lookup				20140515193409428740000000							0		0	</DATA>
+    <DATA>	FEAT20140515193530653223000000		Storm Protection: Panel Shutters		Panel Shutters	100	Character		0	Lookup				20140515193530653223000000							0		0	</DATA>
+    <DATA>	FEAT20140515193737175101000000		Storm Protection: Roll-Down Shutters		Roll-Down Shutters	100	Character		0	Lookup				20140515193737175101000000							0		0	</DATA>
+    <DATA>	FEAT20140515193910666377000000		Storm Protection: Impact Glass		Impact Glass	100	Character		0	Lookup				20140515193910666377000000							0		0	</DATA>
+    <DATA>	FEAT20140515194210116897000000		Storm Protection: Other Protection		Other Protection	100	Character		0	Lookup				20140515194210116897000000							0		0	</DATA>
+    <DATA>	FEAT20140515194433921267000000		Storm Protection: Permanent Generator		Permanent Generator	100	Character		0	Lookup				20140515194433921267000000							0		0	</DATA>
+    <DATA>	GF20130103182729732508000000		ADA Compliant		ADA Compliant	100	Character		1	LookupMulti				GFLU20130103182729732508000000	99						0		0	</DATA>
+    <DATA>	GF20121206203002310888000000		Boat Services		Boat Services	100	Character		1	LookupMulti				GFLU20121206203002310888000000	99						0		0	</DATA>
+    <DATA>	GF20121207034401645617000000		Comm Desc		Comm Desc	100	Character		1	LookupMulti				GFLU20121207034401645617000000	99						0		0	</DATA>
+    <DATA>	GF20121206203002461896000000	Cooling	Cooling		Cooling	100	Character		1	LookupMulti				GFLU20121206203002461896000000	3						0		0	</DATA>
+    <DATA>	GF20140321160621922979000000		Equestrian Features		Equestrian Features	100	Character		1	LookupMulti				GFLU20140321160621922979000000	99						0		0	</DATA>
+    <DATA>	GF20121206203002864650000000		Equip/Appl Included		Equip/Appl Included	100	Character		1	LookupMulti				GFLU20121206203002864650000000	17						0		0	</DATA>
+    <DATA>	GF20121206203002756811000000	ExteriorFeatures	Exterior Features		Exterior Features	100	Character		1	LookupMulti				GFLU20121206203002756811000000	12						0		0	</DATA>
+    <DATA>	GF20121206203002977441000000		Flooring		Flooring	100	Character		1	LookupMulti				GFLU20121206203002977441000000	4						0		0	</DATA>
+    <DATA>	GF20121206203003026714000000		Furnished		Furnished	100	Character		1	LookupMulti				GFLU20121206203003026714000000	2						0		0	</DATA>
+    <DATA>	GF20121206203003104396000000	Heating	Heating		Heating	100	Character		1	LookupMulti				GFLU20121206203003104396000000	5						0		0	</DATA>
+    <DATA>	GF20121206203003177597000000	InteriorFeatures	Interior Features		Interior Features	100	Character		1	LookupMulti				GFLU20121206203003177597000000	17						0		0	</DATA>
+    <DATA>	GF20130917171925858182000000		Master Bedroom/Bath		Master Bedroom/Bath	100	Character		1	LookupMulti				GFLU20130917171925858182000000	7						0		0	</DATA>
+    <DATA>	GF20121206203003810971000000		Membership		Membership	100	Character		1	LookupMulti				GFLU20121206203003810971000000	99						0		0	</DATA>
+    <DATA>	GF20121207034326840518000000		Miscellaneous		Miscellaneous	100	Character		1	LookupMulti				GFLU20121207034326840518000000	17						0		0	</DATA>
+    <DATA>	GF20121206203003854226000000		Parking		Parking	100	Character		1	LookupMulti				GFLU20121206203003854226000000	99						0		0	</DATA>
+    <DATA>	GF20121206203004209266000000		Restrict		Restrict	100	Character		1	LookupMulti				GFLU20121206203004209266000000	8						0		0	</DATA>
+    <DATA>	GF20121206203004130697000000		Rooms		Rooms	100	Character		1	LookupMulti				GFLU20121206203004130697000000	99						0		0	</DATA>
+    <DATA>	GF20121206203004310572000000		Security		Security	100	Character		1	LookupMulti				GFLU20121206203004310572000000	99						0		0	</DATA>
+    <DATA>	GF20140515192737500316000000		Storm Protection		Storm Protection	100	Character		1	LookupMulti				GFLU20140515192737500316000000	99						0		0	</DATA>
+    <DATA>	GF20121206203004466211000000		Subdiv Amenities		Subdiv Amenities	100	Character		1	LookupMulti				GFLU20121206203004466211000000	99						0		0	</DATA>
+    <DATA>	GF20121207033556924996000000		Tenant Pays		Tenant Pays	100	Character		1	LookupMulti				GFLU20121207033556924996000000	10						0		0	</DATA>
+    <DATA>	GF20121206203004740051000000		Unit Desc		Unit Desc	100	Character		1	LookupMulti				GFLU20121206203004740051000000	99						0		0	</DATA>
+    <DATA>	GF20121206203004843709000000	View	View		View	100	Character		1	LookupMulti				GFLU20121206203004843709000000	99						0		0	</DATA>
+    <DATA>	GF20121206203004910529000000	WaterFront	Waterfront		Waterfront	100	Character		1	LookupMulti				GFLU20121206203004910529000000	5						0		0	</DATA>
+    <DATA>	ROOM_BR2_room_level		Bedroom 2 Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR2_room_width		Bedroom 2 Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR2_room_rem		Bedroom 2 Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR2_room_length		Bedroom 2 Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR3_room_level		Bedroom 3 Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR3_room_width		Bedroom 3 Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR3_room_rem		Bedroom 3 Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR3_room_length		Bedroom 3 Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR4_room_level		Bedroom 4 Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR4_room_width		Bedroom 4 Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR4_room_rem		Bedroom 4 Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR4_room_length		Bedroom 4 Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR5_room_level		Bedroom 5 Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR5_room_width		Bedroom 5 Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR5_room_rem		Bedroom 5 Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_BR5_room_length		Bedroom 5 Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DE_room_level		Den Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DE_room_width		Den Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DE_room_rem		Den Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DE_room_length		Den Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DA_room_level		Dining Area Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DA_room_width		Dining Area Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DA_room_rem		Dining Area Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DA_room_length		Dining Area Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DN_room_level		Dining Room Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DN_room_width		Dining Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DN_room_rem		Dining Room Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_DN_room_length		Dining Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FR_room_level		Family Room Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FR_room_width		Family Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FR_room_rem		Family Room Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FR_room_length		Family Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FL_room_level		Florida Room Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FL_room_width		Florida Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FL_room_rem		Florida Room Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_FL_room_length		Florida Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_GR_room_level		Great Room Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_GR_room_width		Great Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_GR_room_rem		Great Room Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_GR_room_length		Great Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_KI_room_level		Kitchen Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_KI_room_width		Kitchen Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_KI_room_rem		Kitchen Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_KI_room_length		Kitchen Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LV_room_level		Living Room Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LV_room_width		Living Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LV_room_rem		Living Room Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LV_room_length		Living Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LF_room_level		Loft Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LF_room_width		Loft Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LF_room_rem		Loft Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_LF_room_length		Loft Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_MB_room_level		Master Bedroom Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_MB_room_width		Master Bedroom Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_MB_room_rem		Master Bedroom Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_MB_room_length		Master Bedroom Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PB_room_level		Patio/Balcony Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PB_room_width		Patio/Balcony Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PB_room_rem		Patio/Balcony Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PB_room_length		Patio/Balcony Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PR_room_level		Porch Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PR_room_width		Porch Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PR_room_rem		Porch Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_PR_room_length		Porch Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_UR_room_level		Utility Room Room Level		Room Level	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_UR_room_width		Utility Room Width		Width	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_UR_room_rem		Utility Room Room Remarks		Room Remarks	50	Character		0												0		0	</DATA>
+    <DATA>	ROOM_UR_room_length		Utility Room Length		Length	50	Character		0												0		0	</DATA>
+    <DATA>	listing_member_shortid		ListingMemberShortId		ListMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_shortid		CoListingMemberShortId		CoListMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	selling_member_shortid		SellingMemberShortId		SellMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_shortid		CoSellingMemberShortId		CoSellMbrShort	15	Character		0												0		0	</DATA>
+    <DATA>	listing_office_shortid		ListingOfficeShortId		ListOffShort	15	Character		0												0		0	</DATA>
+    <DATA>	selling_office_shortid		SellingOfficeShortId		SellOffShort	15	Character		0												0		0	</DATA>
+    <DATA>	listing_member_name		ListingMemberName		ListMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_name		CoListingMemberName		CoListMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	selling_member_name		SellingMemberName		SellMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_name		CoSellingMemberName		CoSellMbrName	72	Character		0												0		0	</DATA>
+    <DATA>	listing_office_name		ListingOfficeName		ListOfcName	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_name		SellingOfficeName		SellOfcName	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_phone		ListingMemberPhone		ListMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_phone		CoListingMemberPhone		CoListMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	selling_member_phone		SellingMemberPhone		SellMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_phone		CoSellingMemberPhone		CoSellMbrPhone	25	Character		0												0		0	</DATA>
+    <DATA>	listing_office_phone		ListingOfficePhone		ListOffPhone	25	Character		0												0		0	</DATA>
+    <DATA>	selling_office_phone		SellingOfficePhone		SellOffPhone	25	Character		0												0		0	</DATA>
+    <DATA>	listing_member_fax		ListingMemberFax		ListMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_fax		CoListingMemberFax		CoListMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	selling_member_fax		SellingMemberFax		SellMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_fax		CoSellingMemberFax		CoSellMbrFax	15	Character		0												0		0	</DATA>
+    <DATA>	listing_office_fax		ListingOfficeFax		ListOffFax	15	Character		0												0		0	</DATA>
+    <DATA>	selling_office_fax		SellingOfficeFax		SellOffFax	15	Character		0												0		0	</DATA>
+    <DATA>	listing_member_address		ListingMemberAddress		ListMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_address		CoListingMemberAddress		CoListMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_address		SellingMemberAddress		SellMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_address		CoSellingMemberAddress		CoSellMbrAddy	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_address		ListingOfficeAddress		ListOffAddy	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_address		SellingOfficeAddress		SellOffAddy	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_email		ListingMemberEmail		ListMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_email		CoListingMemberEmail		CoListMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_email		SellingMemberEmail		SellMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_email		CoSellingMemberEmail		CoSellMbrEmail	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_email		ListingOfficeEmail		ListOffEmail	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_email		SellingOfficeEmail		SellOffEmail	150	Character		0												0		0	</DATA>
+    <DATA>	listing_member_url		ListingMemberUrl		ListMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	colisting_member_url		CoListingMemberUrl		CoListMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	selling_member_url		SellingMemberUrl		SellMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	coselling_member_url		CoSellingMemberUrl		CoSellMbrUrl	150	Character		0												0		0	</DATA>
+    <DATA>	listing_office_url		ListingOfficeUrl		ListOffUrl	150	Character		0												0		0	</DATA>
+    <DATA>	selling_office_url		SellingOfficeUrl		SellOffUrl	150	Character		0												0		0	</DATA>
+    <DATA>	UNBRANDEDIDXVIRTUALTOUR		UnBranded Virtual Tour		Unbranded (IDX) Virtual 	512	Character		0												0		0	</DATA>
+  </METADATA-TABLE>
+</RETS>
+* Closing connection 20
+* Hostname was found in DNS cache
+*   Trying 64.21.238.171...
+* Connected to retsgw.flexmls.com (64.21.238.171) port 80 (#21)
+* Server auth using Digest with user 'fl.rets.dbarr'
+
+>>> Sent
+GET /rets2_1/Logout HTTP/1.1
+Authorization: Digest username="fl.rets.dbarr", realm="rets@flexmls.com", nonce="ee4028bfdb60e5e48eba6fb55603ffbb", uri="/rets2_1/Logout", cnonce="NDgwMDVlYzk0ODIyZTg2NTAwMmUxMjIwMDAwMTBkN2E=", nc=00000015, qop=auth, response="24e8796b164feaeddf626fc53df70c12", opaque="e740e530f881b719ac847f225d70ef26"
+Host: retsgw.flexmls.com
+Accept: */*
+Cookie: JSESSIONID=A34F5946CE93D50C429E97541F34B295
+RETS-Version: RETS/1.5
+User-Agent: librets/1.6.1
+X-Librets-Version: 1.6.1, libCURL - libcurl/7.35.0 GnuTLS/2.12.23 zlib/1.2.8 libidn/1.28 librtmp/2.3
+
+
+<<< Received
+HTTP/1.1 200 OK
+* Server Apache-Coyote/1.1 is not blacklisted
+
+<<< Received
+Server: Apache-Coyote/1.1
+Cache-Control: private
+RETS-Version: RETS/1.5
+* Replaced cookie JSESSIONID="7ADFF6ECEDBB4F29130DB3C53405E33D" for domain retsgw.flexmls.com, path /rets2_1, expire 0
+
+<<< Received
+Set-Cookie: JSESSIONID=7ADFF6ECEDBB4F29130DB3C53405E33D; Path=/rets2_1
+Content-Type: text/xml;charset=US-ASCII
+Date: Tue, 19 May 2015 13:59:54 GMT
+Connection: close
+
+<RETS ReplyText="Logout Successful" ReplyCode="0">
+  <RETS-RESPONSE>
+SignOffMessage=Good Bye
+</RETS-RESPONSE>
+</RETS>
+* Closing connection 21

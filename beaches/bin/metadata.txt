@@ -1,0 +1,73 @@
+System ID: fl
+Desription: Regional MLS
+Comment :
+
+Resource name: ActiveAgent [ActiveAgent]
+Key Field: MEMBER_0
+, classcount, classdate, classversion, description, editmaskdate, editmaskversion, keyfield, lookupdate, lookupversion, objectdate, objectversion, resourceid, searchhelpdate, searchhelpversion, standardname, updatehelpdate, updatehelpversion, validationexpressiondate, validationexpressionversion, validationexternaldate, validationexternalversion, validationlookupdate, validationlookupversion, visiblename
+OBJECTS
+        ID: Photo
+        Type: Photo
+        Mime Type: image/jpeg
+
+Class name: Agent [Agent] Agent
+Resource name: Office [Office]
+Key Field: OFFICE_0
+, classcount, classdate, classversion, description, editmaskdate, editmaskversion, keyfield, lookupdate, lookupversion, objectdate, objectversion, resourceid, searchhelpdate, searchhelpversion, standardname, updatehelpdate, updatehelpversion, validationexpressiondate, validationexpressionversion, validationexternaldate, validationexternalversion, validationlookupdate, validationlookupversion, visiblename
+OBJECTS
+        ID: Photo
+        Type: Photo
+        Mime Type: image/jpeg
+
+Class name: Office [Office] Office
+Resource name: OpenHouse [OpenHouse]
+Key Field: EVENT0
+, classcount, classdate, classversion, description, editmaskdate, editmaskversion, keyfield, lookupdate, lookupversion, objectdate, objectversion, resourceid, searchhelpdate, searchhelpversion, standardname, updatehelpdate, updatehelpversion, validationexpressiondate, validationexpressionversion, validationexternaldate, validationexternalversion, validationlookupdate, validationlookupversion, visiblename
+OBJECTS
+Class name: OpenHouse [] Open House
+Resource name: Property [Property]
+Key Field: LIST_1
+, classcount, classdate, classversion, description, editmaskdate, editmaskversion, keyfield, lookupdate, lookupversion, objectdate, objectversion, resourceid, searchhelpdate, searchhelpversion, standardname, updatehelpdate, updatehelpversion, validationexpressiondate, validationexpressionversion, validationexternaldate, validationexternalversion, validationlookupdate, validationlookupversion, visiblename
+OBJECTS
+        ID: Photo
+        Type: Photo
+        Mime Type: image/jpeg
+
+        ID: 640x480
+        Type: 640x480
+        Mime Type: image/jpeg
+
+        ID: Thumbnail
+        Type: Thumbnail
+        Mime Type: image/jpeg
+
+        ID: HiRes
+        Type: HiRes
+        Mime Type: image/jpeg
+
+        ID: Supplement
+        Type: Supplement
+        Mime Type: text/plain
+
+        ID: OfficeRemarks
+        Type: OfficeRemarks
+        Mime Type: text/plain
+
+        ID: PDF
+        Type: PDF
+        Mime Type: application/pdf
+
+        ID: PNG
+        Type: PNG
+        Mime Type: image/png
+
+        ID: UnbrandedVideo
+        Type: UnbrandedVideo
+        Mime Type: text/html
+
+Class name: A [ResidentialProperty] Residential
+Class name: B [MultiFamily] Residential Income
+Class name: C [LotsAndLand] Land
+Class name: D [CommonInterest] Business
+Class name: E [] Comm/Industry
+Class name: F [] Rental

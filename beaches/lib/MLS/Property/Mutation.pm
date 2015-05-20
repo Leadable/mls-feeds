@@ -1,0 +1,279 @@
+package MLS::Property::Mutation;
+use strict;
+
+$| = 1;
+
+use Data::Dumper qw(Dumper);
+
+sub new {
+  my ($class, $opts) = @_;
+
+  $opts->{remote} = {};
+  $opts->{local} = {};
+
+  return bless $opts, $class;
+}
+
+sub go {
+  my ($self) = @_;
+
+  $self->{temp_log} = '';
+  $self->{totals} = { new => 0, updated => 0, removed => 0, resurrected => 0 };
+
+  $self->fetch_remote();
+  $self->fetch_local();
+
+  $self->new_remote_rows();
+  $self->updated_remote_rows();
+  $self->deleted_remote_rows();
+  $self->resurrect_remote_rows();
+
+  print "MUTATION REPORT\n";
+  print "\tNEW: $self->{totals}->{new}\n";
+  print "\tUPDATED $self->{totals}->{updated}\n";
+  print "\tREMOVED $self->{totals}->{removed}\n";
+  print "\tRESURRECTED $self->{totals}->{resurrected}\n";
+  print "\n\tTOTAL MUTATIONS: " . ($self->{totals}->{new} + $self->{totals}->{updated} + $self->{totals}->{removed} + $self->{totals}->{resurrected}) . "\n";
+}
+
+# fetch remote rows
+sub fetch_remote {
+  my ($self) = @_;
+
+  my $rets = $self->{rets};
+  my $remote = $self->{remote};
+
+  print "Fetching remote rows.\n";
+
+  foreach my $class_id (sort keys %MLS::Property::Config::CLASSES) {
+    my $class = $MLS::Property::Config::CLASSES{ $class_id };
+    print "Resource Class: $class_id\n";
+    print "Ignoring this class\n" if $class->{ignore};
+
+    next if $class->{ignore};
+
+    eval {
+      print "Search request: " . $class->{SearchRequest} . "\n";
+
+      my $request = $rets->CreateSearchRequest($MLS::Property::Config::RESOURCE, $class_id, $class->{SearchRequest});
+      $request->SetSelect("$MLS::Property::Config::PRIMARY_KEY{SystemName},$MLS::Property::Config::ROW_MOD_TS_COLUMN{SystemName},$MLS::Property::Config::IMG_MOD_TS_COLUMN{SystemName}");
+      $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
+      $request->SetOffset($librets::SearchRequest::OFFSET_NONE);
+      $request->SetStandardNames(0);
+      $request->SetCountType($librets::SearchRequest::RECORD_COUNT_AND_RESULTS);
+      $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
+
+      my $results = $rets->Search($request);
+
+      print "Record count: " . $results->GetCount() . "\n\n";
+
+      my $x = 0;
+      while ($results->HasNext()) {
+        #last if ($x++ > 10);
+
+        #print Dumper(\%MLS::Property::Config::ROW_MOD_TS_COLUMN);
+        #print Dumper(\%MLS::Property::Config::IMG_MOD_TS_COLUMN);
+
+        my $row_mod_ts = $results->GetString( $MLS::Property::Config::ROW_MOD_TS_COLUMN{SystemName} );
+        my $img_mod_ts = $results->GetString( $MLS::Property::Config::IMG_MOD_TS_COLUMN{SystemName} );
+
+        my %data = (
+          remote_row_mod_ts => $row_mod_ts,
+          remote_img_mod_ts => $img_mod_ts,
+          class => $class_id
+        );
+
+        $remote->{ $results->GetString( $MLS::Property::Config::PRIMARY_KEY{SystemName} ) } = \%data;
+      }
+    };
+
+    if ($@) {
+      print "librets::RetsException: " . $@->GetFullReport();
+      die $@;
+    }
+  }
+
+  $rets->Logout();
+}
+
+# fetch local 
+sub fetch_local {
+  my ($self) = @_;
+
+  my $dbh = $self->{dbh};
+  my $local = $self->{local};
+
+  print "Fetching local rows\n";
+
+  my $sql = "SELECT remote_id, remote_row_mod_ts, remote_img_mod_ts, remote_removed_at FROM $MLS::Property::Config::MLS.mutation";
+  
+  my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
+  foreach (@$rs) {
+    my %data = (
+      remote_row_mod_ts => $_->{remote_row_mod_ts},
+      remote_img_mod_ts => $_->{remote_img_mod_ts},
+      remote_removed_at => $_->{remote_removed_at}
+    );
+
+    $local->{ $_->{remote_id} } = \%data;
+  }
+}
+
+# NEW
+# look for rows that don't exist in the local hash
+# create row in mutation table
+sub new_remote_rows {
+  my ($self) = @_;
+ 
+  print "Looking for new remote rows\n";
+ 
+  my $dbh = $self->{dbh};
+  my ($local, $remote) = ($self->{local}, $self->{remote});
+
+  my $i = 0;
+  foreach my $remote_id (keys %$remote) {
+
+    next if ($local->{ $remote_id }); 
+   
+    my $remote_row = $remote->{ $remote_id };
+
+    my @cols = qw(resource class remote_id remote_row_mod_ts remote_img_mod_ts); 
+    my @vals = (
+      $dbh->quote($MLS::Property::Config::RESOURCE),
+      $dbh->quote($remote_row->{class}),
+      $dbh->quote($remote_id),
+      $dbh->quote($remote_row->{remote_row_mod_ts}),
+      $dbh->quote($remote_row->{remote_img_mod_ts})
+    );
+
+    my $sql = "INSERT INTO $MLS::Property::Config::MLS.mutation(" . join(', ', @cols) . ") VALUES (" . join(', ', @vals) . ")";
+    $self->{temp_log} = "$sql\n";
+    $dbh->do($sql);
+
+    $self->{totals}->{new}++;
+    print ".";
+    print "\n" if ($i++ % 100 == 0);
+  }
+}
+
+#UPDATE
+# look for rows in remote and local and compare remote_row_mod_ts and remote_img_mod_ts
+sub updated_remote_rows {
+  my ($self) = @_;
+ 
+  print "Looking for updated rows.\n";
+ 
+  my $dbh = $self->{dbh};
+  my ($local, $remote) = ($self->{local}, $self->{remote});
+
+  my $i = 0;
+
+  foreach my $remote_id (keys %$remote) {
+
+    next unless ($local->{ $remote_id });
+
+    my $remote_row = $remote->{ $remote_id };
+    my $local_row = $local->{ $remote_id };
+
+    my $row_mod_ts_mutated = ($remote_row->{remote_row_mod_ts} eq $local_row->{remote_row_mod_ts}) ? 0 : 1;
+    my $img_mod_ts_mutated = ($remote_row->{remote_img_mod_ts} eq $local_row->{remote_img_mod_ts}) ? 0 : 1;
+    
+    if ($row_mod_ts_mutated or $img_mod_ts_mutated) {
+      my @data = (
+        'remote_row_mod_ts = ' . $dbh->quote($remote_row->{remote_row_mod_ts}),
+        'remote_img_mod_ts = ' . $dbh->quote($remote_row->{remote_img_mod_ts}),
+        'remote_removed_at = NULL',
+        'local_removed_at = NULL'
+      );
+
+      my @conditions = (
+        'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+        'remote_id = ' . $dbh->quote($remote_id)
+      );
+
+      my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET " . join(', ', @data) . " WHERE " . join(' AND ', @conditions);
+      $self->{temp_log} = "$sql\n";
+      $dbh->do($sql);
+
+      $self->{totals}->{updated}++;
+      print ".";
+      print "\n" if ($i++ % 100 == 0);
+    }
+  } 
+}
+
+# DELETED
+# look for rows in local that are no longer in remote
+sub deleted_remote_rows {
+  my ($self) = @_;
+ 
+  print "Looking for removed rows.\n";
+ 
+  my $dbh = $self->{dbh};
+  my ($local, $remote) = ($self->{local}, $self->{remote});
+
+  my $i = 0;
+
+  foreach my $remote_id (keys %$local) {
+
+    # still exists on remote?
+    next if ($remote->{ $remote_id });
+
+    # already removed locally?
+    next if ($local->{ $remote_id }->{remote_removed_at});
+
+    my @conditions = (
+      'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+      'remote_id = ' . $dbh->quote($remote_id)
+    );
+
+    my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET remote_removed_at = NOW() WHERE " . join(' AND ', @conditions);
+    $self->{temp_log} = "$sql\n";
+    $dbh->do($sql);
+
+    $self->{totals}->{removed}++;
+    print ".";
+    print "\n" if ($i++ % 100 == 0);
+  }
+}
+
+# RESURRECTED
+# look for rows that were removed but now are back in the remote feed
+sub resurrect_remote_rows {
+  my ($self) = @_;
+ 
+  print "Looking for resurrected rows.\n";
+ 
+  my $dbh = $self->{dbh};
+  my ($local, $remote) = ($self->{local}, $self->{remote});
+
+  my $i = 0;
+
+  foreach my $remote_id (keys %$remote) {
+    my $remote_row = $remote->{ $remote_id };
+    my $local_row = $local->{ $remote_id };
+ 
+    next unless ($local_row && $local_row->{remote_removed_at});
+
+    my @conditions = (
+      'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+      'remote_id = ' . $dbh->quote($remote_id)
+    );
+
+    my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET remote_removed_at = NULL WHERE " . join(' AND ', @conditions);
+    print "$sql\n";
+    $dbh->do($sql);
+
+    my $pkey_ident = $MLS::Property::Config::PRIMARY_KEY{SystemName};
+
+    $sql = 'UPDATE ' . $MLS::Property::Config::MLS . '."' . $MLS::Property::Config::RESOURCE . '" SET __removed_at = NULL WHERE ' . $dbh->quote_identifier($pkey_ident) .' = ' . $dbh->quote($remote_id);
+    $self->{temp_log} = "$sql\n";
+    $dbh->do($sql);
+
+    $self->{totals}->{resurrected}++;
+    print ".";
+    print "\n" if ($i++ % 100 == 0);
+  }
+}
+
+1;
