@@ -268,8 +268,6 @@ sub geocode_bing {
     die;
   }
 
-  #warn Dumper($json);
-
   unless (@{ $json->{resourceSets}->[0]->{resources} }) {
     $self->{fail}++;
     $self->{bing}->{fail}++;
@@ -279,8 +277,6 @@ sub geocode_bing {
 
   my $result = $json->{resourceSets}->[0]->{resources}->[0];
   my @codes = @{ $result->{matchCodes} };
- 
-  #my $matches = does_request_equal_response($remote_row->{remote_address}, $result->{address}->{formattedAddress});
   
   # https://msdn.microsoft.com/en-us/library/ff701725.aspx
   if ($result->{confidence} eq 'High' && (scalar(@codes) == 1 and $codes[0] eq 'Good')) {

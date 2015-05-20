@@ -71,8 +71,6 @@ sub fetch_remote {
 
   my $response = $rets->GetObject($request);
 
-  #print Dumper($response);
-
   my @urls;
 
   my $objectDescriptor = $response->NextObject();

@@ -33,7 +33,6 @@ sub go {
     next unless $mutated;
 
     while (@$mutated) {
-      #print Dumper($mutated);
       print "Class [$class_id] was found to be mutated\n";
 
       my @chunk = splice(@$mutated, 0, $self->{rets_search_limit});
@@ -63,9 +62,7 @@ sub fetch_pg_col_info {
     ORDER  BY attnum';
  
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
-  #print Dumper($rs);
   my %pg_col_info = map { $_->{attname}, $_ } @$rs;
-  #print Dumper(\%pg_col_info);
 
   $self->{pg_col_info} = \%pg_col_info;
 }
@@ -153,7 +150,6 @@ sub fetch_remote {
 
   eval {
     my $request = $rets->CreateSearchRequest($MLS::Property::Config::RESOURCE, $class_id, $search);
-    #$request->SetSelect("*");
     $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
     $request->SetOffset($librets::SearchRequest::OFFSET_NONE);
     $request->SetStandardNames(0);
@@ -164,7 +160,6 @@ sub fetch_remote {
     my $results = $rets->Search($request);
 
     print "Record count: [" . $results->GetCount() . "]\n";
-    #die unless $results->GetCount();
 
     my $i = 0;
     while ($results->HasNext()) {
@@ -174,7 +169,6 @@ sub fetch_remote {
       my %data = ( __class_name => $dbh->quote($class_id), __modified_at => 'NOW()', __removed_at => 'NULL' );
 
       foreach my $column (@$rets_columns) {
-        #print $column . ": " . $results->GetString($column) . "\n";
         my $value = $results->GetString($column);
 
         my $pg_col_name = $rets_table_info->{ $column }->{SystemName};
@@ -187,20 +181,14 @@ sub fetch_remote {
 
         if ($pg_col_type eq 'text[]') {
           my @vals = split(',', $results->GetString($column));
-          #print "$pg_col_name raw => :" . $results->GetString($column) . ":\n";
-          #print "$pg_col_name split => :" . join(' | ', @vals) . ":\n";
-
           $data{ $pg_col_name } = 'ARRAY[' . join(',', map( $dbh->quote($_), @vals)) . ']';
         } else {
           $data{ $pg_col_name } = $dbh->quote($results->GetString($column));
         }
       }
-      #print Dumper(\%data);
 
       my $pkey_val = $results->GetString($MLS::Property::Config::PRIMARY_KEY{SystemName});
       my $local_row = $local_rows->{ $pkey_val };
-
-      #print Dumper($local_row);
 
       $local_row ? $self->update($results, \%data, $local_row) : $self->insert($results, \%data);
 

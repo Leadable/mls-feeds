@@ -72,11 +72,6 @@ sub fetch_remote {
 
       my $x = 0;
       while ($results->HasNext()) {
-        #last if ($x++ > 10);
-
-        #print Dumper(\%MLS::Property::Config::ROW_MOD_TS_COLUMN);
-        #print Dumper(\%MLS::Property::Config::IMG_MOD_TS_COLUMN);
-
         my $row_mod_ts = $results->GetString( $MLS::Property::Config::ROW_MOD_TS_COLUMN{SystemName} );
         my $img_mod_ts = $results->GetString( $MLS::Property::Config::IMG_MOD_TS_COLUMN{SystemName} );
 
