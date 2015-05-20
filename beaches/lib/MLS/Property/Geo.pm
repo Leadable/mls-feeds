@@ -131,7 +131,29 @@ sub request {
 
   return j($row->{response}) if ($row && !($row->{expired}));
 
-  my $tx = $ua->get($url);
+  my $attempts = 0;
+  my $tx;
+
+  while (1) {
+    $tx = $ua->get($url);
+   
+    last unless $tx->error;
+ 
+    my ($err, $code) = $tx->error;
+    
+    print "HTTP USER AGENT ERROR:";
+    print $code ? "$code response: $err" : "Connection error: $err\n"; 
+    print "HTTP Error. Attempt #" . ($attempts + 1) . "\n";
+
+    $attempts++;
+
+    die if ($attempts == 10);
+
+
+    $ua = $self->{ua} = Mojo::UserAgent->new(); # try to get a different server process from the remote resource
+
+    sleep(10);
+  }
 
   my $res = $tx->success;
 
