@@ -1,6 +1,8 @@
 package MLS::Property::Geo;
 use strict;
 
+$| = 1;
+
 use Mojo::Util qw(url_escape);
 use Data::Dumper qw(Dumper);
 use Text::LevenshteinXS qw(distance);
@@ -25,11 +27,16 @@ sub new {
 sub go {
   my ($self) = @_;
 
+  print "----Geocoding----\n\n";
+
   my $mutated = $self->mutated();
   return unless $mutated;
 
+  my $i = 0;
   foreach my $remote_row (@$mutated) {
     $self->{total}++;
+    print '.';
+    print "\n" if (++$i % 100 == 0);
 
     if ($remote_row->{remote_address} eq 'INVALID') {
       $self->{invalid}++;
@@ -47,8 +54,6 @@ sub go {
     # if we got here none of the geocoders found an address
     $self->update_local_row($remote_row);
     $self->update_mutation_row($remote_row->{remote_id});
-
-    print "\n";
   }
 
   print "\nREPORT:\n";
@@ -71,6 +76,8 @@ sub go {
   print "\tPASS: $self->{google}->{pass}\n";
   print "\tFAIL: $self->{google}->{fail}\n";
   print "\tTOTAL: $self->{google}->{total}\n";
+
+  print "\n[DONE]\n\n";
 }
 
 sub mutated {
@@ -88,11 +95,11 @@ sub mutated {
   @conditions = ('remote_id = ' . $dbh->quote($ARGV[0])) if ($ARGV[0]);
 
   my $sql = "SELECT remote_id, remote_address, local_address FROM $MLS::Property::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id DESC";
-  print "$sql\n";
+  $self->{temp_error} = "$sql\n";
 
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
 
-  print "found " . scalar(@$rs) . "\n";
+  print "Geocoding [" . scalar(@$rs) . "] records\n";
   return @$rs ? $rs : 0;
 }
 
@@ -127,7 +134,6 @@ sub request {
 
   my $sql = 'SELECT *, ts + expires::interval <= NOW() as expired FROM geocoder_cache WHERE ' . join(' AND ', @conditions);
   my $row = $dbh->selectrow_hashref($sql);
-  warn Dumper($row);
 
   return j($row->{response}) if ($row && !($row->{expired}));
 
@@ -168,7 +174,7 @@ sub request {
     $sql = 'INSERT INTO geocoder_cache(service, query, response) VALUES(' . $dbh->quote($service) .', ' . $dbh->quote($url) . ', ' . $dbh->quote(j($json)) . ')';
   }
 
-  print "$sql\n";
+  $self->{temp_error} = "$sql\n";
 
   $dbh->do($sql);
 
@@ -179,9 +185,6 @@ sub does_request_equal_response {
   my $request = lc($_[0]);
   my $response = lc($_[1]);
 
-  print "REQUEST ADDRESS => :" . $request . ":\n";
-  print "RESPONSE ADDRESS => :" . $response . ":\n";
-
   my $a = Geo::StreetAddress::US->parse_address($request);
   my $b = Geo::StreetAddress::US->parse_address($response);
 
@@ -189,9 +192,6 @@ sub does_request_equal_response {
  
   foreach (qw(number street type suffix city state zip)) { 
     if (lc($a->{$_}) ne lc($b->{$_})) {
-      print "$_ :" . lc($a->{$_}) . ": ne :" . lc($b->{$_}) . ":\n";
-      print "EDIT DISTANCE: " . distance($a->{$_}, $b->{$_}) . "\n";
-
       next if ($_ eq 'street' and (distance($a->{$_}, $b->{$_}) <= 2)); # 10th without th is ok
 
       next if ($_ eq 'type' and ($a->{$_} eq '')); # it's ok if the address from the mls is missing a type
@@ -210,19 +210,16 @@ sub geocode_mapbox {
 
   $self->{mapbox}->{total}++;
 
-  print "Mapbox geocode request for address => :" . $remote_row->{remote_address} . ":\n";
-
   my $url = sprintf('http://api.tiles.mapbox.com/v4/geocode/mapbox.places/%s.json?access_token=%s'
     , url_escape($remote_row->{remote_address})
     , $MLS::Property::Config::MAPBOX_ACCESS_TOKEN
   );
 
-  print "$url\n";
+  $self->{temp_error} = "$url\n";
 
   my $json = $self->request('mapbox', $url);
 
   my $feature = $json->{features}->[0];
-  print "RELEVANCE: " . $feature->{relevance} . "\n";
 
   my @place = split(', ', $json->{features}->[0]->{place_name});
   my $place = $place[0] . ', ' . $place[1] . ', ' . $place[3] . ' '  . $place[2];
@@ -230,7 +227,6 @@ sub geocode_mapbox {
   my $matches = does_request_equal_response($remote_row->{remote_address}, $place);
 
   if ($matches and $feature->{relevance} > .8) {
-    print "PASSED\n";
     $self->{pass}++;
     $self->{mapbox}->{pass}++;
 
@@ -246,8 +242,7 @@ sub geocode_mapbox {
 
     return 1;
   }
- 
-  print "FAILED\n";
+
   $self->{fail}++;
   $self->{mapbox}->{fail}++;
 
@@ -259,14 +254,12 @@ sub geocode_bing {
 
   $self->{bing}->{total}++;
 
-  print "Bing geocode request for address => :" . $remote_row->{remote_address} . ":\n";
-
   my $url = sprintf('http://dev.virtualearth.net/REST/v1/Locations?query=%s&key=%s'
     , url_escape($remote_row->{remote_address})
     , $MLS::Property::Config::BING_ACCESS_TOKEN
   );
 
-  print "$url\n";
+  $self->{temp_error} = "$url\n";
 
   my $json = $self->request('bing', $url);
 
@@ -275,10 +268,7 @@ sub geocode_bing {
     die;
   }
 
-  #warn Dumper($json);
-
   unless (@{ $json->{resourceSets}->[0]->{resources} }) {
-    print "FAILED\n";
     $self->{fail}++;
     $self->{bing}->{fail}++;
 
@@ -287,12 +277,9 @@ sub geocode_bing {
 
   my $result = $json->{resourceSets}->[0]->{resources}->[0];
   my @codes = @{ $result->{matchCodes} };
- 
-  #my $matches = does_request_equal_response($remote_row->{remote_address}, $result->{address}->{formattedAddress});
   
   # https://msdn.microsoft.com/en-us/library/ff701725.aspx
   if ($result->{confidence} eq 'High' && (scalar(@codes) == 1 and $codes[0] eq 'Good')) {
-    print "PASSED\n";
     $self->{pass}++;
     $self->{bing}->{pass}++;
 
@@ -310,7 +297,6 @@ sub geocode_bing {
     return 1;
   }
 
-  print "FAILED\n";
   $self->{fail}++;
   $self->{bing}->{fail}++;
 
@@ -322,21 +308,16 @@ sub geocode_google {
 
   $self->{google}->{total}++;
 
-  print "Google geocode request for address => :" . $remote_row->{remote_address} . ":\n";
-
   my $url = sprintf('https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s'
     , url_escape($remote_row->{remote_address})
     , $MLS::Property::Config::GOOGLE_ACCESS_TOKEN
   );
 
-  print "$url\n";
+  $self->{temp_error} = "$url\n";
 
   my $json = $self->request('google', $url);
 
-  warn Dumper($json);
-
   if ($json->{status} eq 'ZERO_RESULTS') {
-    print "FAILED\n";
     $self->{fail}++;
     $self->{google}->{fail}++;
 
@@ -345,13 +326,12 @@ sub geocode_google {
 
   if ($json->{status} ne 'OK') {
     warn Dumper($json);
-    die; 
+    die;
   }
 
   my $result = $json->{results}->[0];
 
   unless ($result) {
-    print "FAILED\n";
     $self->{fail}++;
     $self->{google}->{fail}++;
 
@@ -366,7 +346,6 @@ sub geocode_google {
   my $matches = does_request_equal_response($remote_row->{remote_address}, $place);
   
   if (($result->{geometry}->{location_type} eq 'ROOFTOP' or $result->{geometry}->{location_type} eq 'RANGE_INTERPOLATED') && (scalar(@types) == 1 and $types[0] eq 'street_address')) {
-    print "PASSED\n";
     $self->{pass}++;
     $self->{google}->{pass}++;
 
@@ -383,7 +362,6 @@ sub geocode_google {
     return 1;
   }
 
-  print "FAILED\n";
   $self->{fail}++;
   $self->{google}->{fail}++;
 
@@ -419,10 +397,9 @@ sub update_local_row {
       '__geo_confidence = NULL'
     );
   }
-  #print Dumper(\@vals);
 
   my $sql = "UPDATE $MLS::Property::Config::MLS.\"$MLS::Property::Config::RESOURCE\" SET " . join(', ', @vals) . " WHERE " . $dbh->quote_identifier($MLS::Property::Config::PRIMARY_KEY{SystemName}) . " = " . $dbh->quote($remote_row->{remote_id});
-  print "$sql\n";
+  $self->{temp_error} = "$sql\n";
   $dbh->do($sql);
 }
 
@@ -440,11 +417,11 @@ sub update_mutation_row {
       'remote_id = ' . $dbh->quote($remote_id)
     );
     my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET local_address = remote_address WHERE " . join(' AND ', @conditions);
-    print "$sql\n";
+    $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
 
     my $sql = "SELECT * FROM $MLS::Property::Config::MLS.mutation WHERE " . join(' AND ', @conditions);
-    print "$sql\n";
+    $self->{temp_error} = "$sql\n";
     my $row = $dbh->selectrow_hashref($sql);
 
     my $transaction_complete = 1;
@@ -459,7 +436,7 @@ sub update_mutation_row {
     # The publisher job will detect the change and publish the row to the materialized (live) tables
     if ($transaction_complete) {
       my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET last_transaction_completed_at = NOW() WHERE " . join(' AND ', @conditions);
-      print "$sql\n";
+      $self->{temp_error} = "$sql\n";
       $dbh->do($sql);
     }
   };

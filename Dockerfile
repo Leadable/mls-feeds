@@ -5,6 +5,7 @@ RUN apt-get install -y aptitude
 RUN aptitude safe-upgrade -y
 RUN apt-get install -y build-essential libboost-all-dev libcurl4-gnutls-dev autoconf antlr swig wget libmojolicious-perl libpq-dev libclass-dbi-pg-perl libnet-amazon-s3-perl cpanminus
 RUN cpanm install Geo::StreetAddress::US
+RUN cpanm install Text::LevenshteinXS
 
 RUN wget https://github.com/NationalAssociationOfRealtors/libRETS/archive/1.6.1.tar.gz
 RUN tar xzf 1.6.1.tar.gz
