@@ -11,7 +11,7 @@ sub new {
   $opts->{remote} = {};
   $opts->{local} = {};
 
-  return bless $opts, $class;
+  bless $opts, $class;
 }
 
 sub go {
@@ -34,6 +34,18 @@ sub go {
   print "\tREMOVED $self->{totals}->{removed}\n";
   print "\tRESURRECTED $self->{totals}->{resurrected}\n";
   print "\n\tTOTAL MUTATIONS: " . ($self->{totals}->{new} + $self->{totals}->{updated} + $self->{totals}->{removed} + $self->{totals}->{resurrected}) . "\n";
+}
+
+sub monitor {
+  my($self, $key, $value) = @_;
+
+  my $monitor = $self->{monitor} or return;
+
+  my @class = split(/::/, ref($self));
+  
+  shift @class; # remove MLS
+  
+  $monitor->status({ namespace => \@class, key => $key, value => $value });
 }
 
 # fetch remote rows
@@ -154,6 +166,8 @@ sub new_remote_rows {
     print ".";
     print "\n" if ($i++ % 100 == 0);
   }
+
+  $self->monitor('new', $self->{totals}->{new});
 }
 
 #UPDATE
@@ -200,6 +214,8 @@ sub updated_remote_rows {
       print "\n" if ($i++ % 100 == 0);
     }
   } 
+
+  $self->monitor('updated', $self->{totals}->{updated});
 }
 
 # DELETED
@@ -235,6 +251,8 @@ sub deleted_remote_rows {
     print ".";
     print "\n" if ($i++ % 100 == 0);
   }
+
+  $self->monitor('removed', $self->{totals}->{removed});
 }
 
 # RESURRECTED
@@ -274,6 +292,8 @@ sub resurrect_remote_rows {
     print ".";
     print "\n" if ($i++ % 100 == 0);
   }
+
+  $self->monitor('resurrected', $self->{totals}->{resurrected});
 }
 
 1;
