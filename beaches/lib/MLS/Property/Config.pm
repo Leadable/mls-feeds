@@ -16,6 +16,9 @@ $MLS::Property::Config::RESOURCE = 'Property';
 # Name of the RETS Resource Photo Object
 $MLS::Property::Config::OBJECT = 'HiRes';
 
+# Location of logging
+$MLS::Property::Config::LOG_DIR = "/tmp/log/$MLS::Property::Config::MLS";
+
 # RETS Resource Classes
 %MLS::Property::Config::CLASSES = (
   A => { StandardName => 'ResidentialProperty', 'SearchRequest' => "((LIST_87=1950-01-01T00:00:00+),(LIST_15=|12LL26N0CFUH,12LL26N0CKTY,PWC_15429SGZYQIT))" }, # Single Family

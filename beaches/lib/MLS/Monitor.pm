@@ -1,16 +1,16 @@
 package MLS::Monitor;
 use strict;
 
-$| = 1;
-
 use Data::Dumper qw(Dumper);
+use File::Path qw(mkpath);
 
 sub new {
   my ($class, $opts) = @_;
 
-  $opts ||= {};
+  die "Monitor missing arguments" if (!$opts->{log_dir} || !$opts->{dbh});
 
   $opts->{stats} = {};
+  $opts->{log_file} = "$opts->{log_dir}/monitor.log";
 
   bless $opts, $class; 
 }
@@ -18,29 +18,20 @@ sub new {
 sub start {
   my ($self) = @_;
 
+  if (! -d $self->{log_dir}) {
+    mkpath($self->{log_dir});
+  }
+
   # capture STDOUT, STDIN to log file
+  open(STDOUT, '>>', $self->{log_file}) or
+    die "Cannot redirect STDOUT to [$self->{log_file}]: $!";
+  open(STDERR, '>>', $self->{log_file}) or
+    die "Cannot redirect STDERR to [$self->{log_file}]: $!";
 
   # Get row from monitor table
   
   # Create new row in monitor_journal
 
-}
-
-sub _walk_status_tree {
-  my ($namespace, $level, $node) = @_;
-
-  #warn "in _walk_status_tree\n";
-  #warn "\tnamespace: " . join(', ', @$namespace) . "\n";
-  #warn "\tlevel: " . Dumper($level) . "\n";
-  #warn "\tnode: " . Dumper($node) . "\n";
-
-  my $name = shift @$namespace;
-  return unless $name;
-
-  $level->{$name} ||= {};
-  $$node = $level->{$name};
-
-  _walk_status_tree($namespace, $level->{$name}, $node);
 }
 
 sub status {
@@ -55,19 +46,15 @@ sub status {
   warn "MISSING value option\n" unless defined($value);
 
   my $stats = $self->{stats};
-  my $node;
+  foreach (@namespace) {
+      $stats = $stats->{$_} ||= {};
+  }
 
-  _walk_status_tree(\@namespace, $stats, \$node);
+  warn "$key ALREADY EXISTS?!?\nExisting Value: $stats->{$key}, New Value: $value\n" if defined($stats->{$key});
 
-  #warn "node after: " . Dumper($node);
-  #warn "key: $key\n";
-  #warn "value: $value\n";
+  $stats->{$key} = $value;
 
-  warn "$key ALREADY EXISTS?!?\nExisting Value: $node->{$key}, New Value: $value\n" if defined($node->{$key});
-
-  $node->{$key} = $value;
-
-  warn Dumper($stats);
+  warn Dumper($self->{stats});
 
   # update monitor row
   # update monitor_journal row

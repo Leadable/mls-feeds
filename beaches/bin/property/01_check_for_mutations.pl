@@ -11,10 +11,10 @@ use MLS::Property::Mutation;
 
 my $dbh = $MLS::Util::DBH->($MLS::Property::Config::MLS_DB_SHARD, $MLS::Property::Config::MLS) or die $DBI::errstr;
 my $rets = $MLS::Property::Config::RETS->();
-my $monitor = MLS::Monitor->new({ dbh => $dbh });
-my $log = "/tmp/$MLS::Property::Config::MLS/check_for_mutations.log";
 
-$rets->SetHttpLogName($log);
+my $monitor = MLS::Monitor->new({ dbh => $dbh, log_dir => $MLS::Property::Config::LOG_DIR });
+$monitor->start();
+$rets->SetHttpLogName("$MLS::Property::Config::LOG_DIR/check_for_mutations.log");
 
 MLS::Property::Mutation->new({
   dbh => $dbh,
@@ -23,6 +23,6 @@ MLS::Property::Mutation->new({
 })->go();
 
 $dbh->disconnect;
-$rets->Logout();
+#$rets->Logout();
 
 exit(0);
