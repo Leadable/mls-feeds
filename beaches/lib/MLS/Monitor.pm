@@ -28,7 +28,30 @@ sub start {
   open(STDERR, '>>', $self->{log_file}) or
     die "Cannot redirect STDERR to [$self->{log_file}]: $!";
 
+  my $dbh = $self->{dbh};
+
   # Get row from monitor table
+  my $sql = "SELECT id from public.monitor where mls = \'$MLS::Property::Config::MLS\'";
+  $dbh->do($sql);
+  my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
+  if (!scalar(@$rs)) {
+    # create the row for this board
+    my %row_data = (
+      mls               => $dbh->quote($MLS::Property::Config::MLS),
+      ec2_id            => $dbh->quote(`wget -q -O - http://169.254.169.254/latest/meta-data/instance-id`),
+      container_id      => $dbh->quote(`cat /proc/self/cgroup | grep "docker" | sed s/\\\\//\\\\n/g | tail -1`),
+      pid               => $$,
+      started_at        => 'NOW()',
+      failed_at         => 'NULL',
+      completed_at      => 'NULL',
+      stats             => $dbh->quote('{}'),
+      log_monitor_url   => 'NULL',
+      log_librets_url   => 'NULL',
+    );
+
+    $sql = "INSERT INTO public.monitor(" . join(',', keys %row_data) . ") VALUES (" . join(',', values %row_data) . ")";
+    $dbh->do($sql);
+  }
   
   # Create new row in monitor_journal
 
