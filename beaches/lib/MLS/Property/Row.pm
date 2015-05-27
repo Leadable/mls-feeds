@@ -3,8 +3,6 @@ use strict;
 
 $| = 1;
 
-my $report = {add => 0, update => 0};
-
 use Data::Dumper qw(Dumper);
 
 sub new {
@@ -21,6 +19,7 @@ sub go {
   my ($self) = @_;
 
   print "----Syncing listing rows----\n\n";
+  $self->{totals} = { new => 0, updated => 0 };
   $self->fetch_pg_col_info();
 
   foreach my $class_id (sort keys %MLS::Property::Config::CLASSES) {
@@ -41,12 +40,29 @@ sub go {
     }
   }
 
-  print "\nSYNC LISTINGS REPORT\n";
-  print "\tNEW: $report->{add}\n";
-  print "\tUPDATED $report->{update}\n";
-  print "\n\tTOTAL: " . ($report->{add} + $report->{update}) . "\n";
+  $self->finish();
+}
+
+sub finish {
+  my $self = shift;
+
+  print "\nReport:\n";
+  print Dumper $self->{totals};
   print "\n[DONE]\n\n";
 }
+
+sub monitor {
+  my($self, $key, $value) = @_;
+
+  my $monitor = $self->{monitor} or return;
+
+  my @class = split(/::/, ref($self));
+
+  shift @class; # remove MLS
+
+  $monitor->status({ namespace => \@class, key => $key, value => $value });
+}
+
 
 sub fetch_pg_col_info {
   my ($self) = @_;
@@ -203,6 +219,9 @@ sub fetch_remote {
     print "librets::RetsException: " . $@->GetFullReport() if ($@ =~ /librets/);
     die $@;
   }
+
+  $self->monitor('new', $self->{totals}{new});
+  $self->monitor('updated', $self->{totals}{updated});
 }
 
 sub update {
@@ -256,7 +275,7 @@ sub update {
   $self->{temp_error} = "$sql\n";
   $dbh->do($sql);
 
-  $report->{update}++;
+  $self->{totals}->{updated}++;
 }
 
 sub insert {
@@ -298,7 +317,7 @@ sub insert {
   $self->{temp_error} = "$sql\n";
   $dbh->do($sql);
 
-  $report->{add}++;
+  $self->{totals}{new}++;
 }
 
 sub update_mutation_table {

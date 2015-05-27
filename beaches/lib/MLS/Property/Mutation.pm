@@ -30,12 +30,14 @@ sub go {
   $self->deleted_remote_rows();
   $self->resurrect_remote_rows();
 
-  print "MUTATION REPORT\n";
-  print "\tNEW: $self->{totals}->{new}\n";
-  print "\tUPDATED $self->{totals}->{updated}\n";
-  print "\tREMOVED $self->{totals}->{removed}\n";
-  print "\tRESURRECTED $self->{totals}->{resurrected}\n";
-  print "\n\tTOTAL MUTATIONS: " . ($self->{totals}->{new} + $self->{totals}->{updated} + $self->{totals}->{removed} + $self->{totals}->{resurrected}) . "\n";
+  $self->finish();
+}
+
+sub finish {
+  my $self = shift;
+
+  print "\nReport:\n";
+  print Dumper $self->{totals};
   print "\n[DONE]\n\n";
 }
 

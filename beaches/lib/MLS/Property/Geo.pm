@@ -12,15 +12,6 @@ use Mojo::JSON qw(j);
 sub new {
   my ($class, $opts) = @_;
 
-  $opts->{pass} = 0;
-  $opts->{fail} = 0;
-  $opts->{invalid} = 0;
-  $opts->{total} = 0;
-
-  $opts->{mapbox} = { pass => 0, fail => 0, total => 0 };
-  $opts->{bing} = { pass => 0, fail => 0, total => 0 };
-  $opts->{google} = { pass => 0, fail => 0, total => 0 };
-
   return bless $opts, $class;
 }
 
@@ -28,18 +19,42 @@ sub go {
   my ($self) = @_;
 
   print "----Geocoding----\n\n";
+  $self->{totals} = {
+    pass    => 0,
+    fail    => 0,
+    invalid => 0,
+    total   => 0,
+
+    mapbox => {
+      pass  => 0,
+      fail  => 0,
+      total => 0,
+    },
+
+    bing => {
+      pass  => 0,
+      fail  => 0,
+      total => 0,
+    },
+
+    google => {
+      pass  => 0,
+      fail  => 0,
+      total => 0,
+    },
+  };
 
   my $mutated = $self->mutated();
-  return unless $mutated;
+  return $self->finish() unless $mutated;
 
   my $i = 0;
   foreach my $remote_row (@$mutated) {
-    $self->{total}++;
+    $self->{totals}{total}++;
     print '.';
     print "\n" if (++$i % 100 == 0);
 
     if ($remote_row->{remote_address} eq 'INVALID') {
-      $self->{invalid}++;
+      $self->{totals}{invalid}++;
       
       $self->update_local_row($remote_row);
       $self->update_mutation_row($remote_row->{remote_id});
@@ -56,29 +71,32 @@ sub go {
     $self->update_mutation_row($remote_row->{remote_id});
   }
 
-  print "\nREPORT:\n";
-  print "\tPASS: $self->{pass}\n";
-  print "\tFAIL: $self->{fail}\n";
-  print "\tINVALID: $self->{invalid}\n";
-  print "\tTOTAL: $self->{total}\n";
+  $self->finish();
+}
 
-  print "MAPBOX:\n";
-  print "\tPASS: $self->{mapbox}->{pass}\n";
-  print "\tFAIL: $self->{mapbox}->{fail}\n";
-  print "\tTOTAL: $self->{mapbox}->{total}\n";
+sub finish {
+  my $self = shift;
 
-  print "BING\n";
-  print "\tPASS: $self->{bing}->{pass}\n";
-  print "\tFAIL: $self->{bing}->{fail}\n";
-  print "\tTOTAL: $self->{bing}->{total}\n";
+  # TODO: Periodic updates
+  $self->monitor('totals', $self->{totals});
 
-  print "GOOGLE\n";
-  print "\tPASS: $self->{google}->{pass}\n";
-  print "\tFAIL: $self->{google}->{fail}\n";
-  print "\tTOTAL: $self->{google}->{total}\n";
-
+  print "\nReport:\n";
+  print Dumper $self->{totals};
   print "\n[DONE]\n\n";
 }
+
+sub monitor {
+  my($self, $key, $value) = @_;
+
+  my $monitor = $self->{monitor} or return;
+
+  my @class = split(/::/, ref($self));
+
+  shift @class; # remove MLS
+
+  $monitor->status({ namespace => \@class, key => $key, value => $value });
+}
+
 
 sub mutated {
   my ($self) = @_;
@@ -208,7 +226,7 @@ sub does_request_equal_response {
 sub geocode_mapbox {
   my ($self, $remote_row) = @_;
 
-  $self->{mapbox}->{total}++;
+  $self->{totals}{mapbox}{total}++;
 
   my $url = sprintf('http://api.tiles.mapbox.com/v4/geocode/mapbox.places/%s.json?access_token=%s'
     , url_escape($remote_row->{remote_address})
@@ -227,8 +245,8 @@ sub geocode_mapbox {
   my $matches = does_request_equal_response($remote_row->{remote_address}, $place);
 
   if ($matches and $feature->{relevance} > .8) {
-    $self->{pass}++;
-    $self->{mapbox}->{pass}++;
+    $self->{totals}{pass}++;
+    $self->{totals}{mapbox}{pass}++;
 
     my %data = (
       lat => $feature->{geometry}->{coordinates}->[1],
@@ -243,8 +261,8 @@ sub geocode_mapbox {
     return 1;
   }
 
-  $self->{fail}++;
-  $self->{mapbox}->{fail}++;
+  $self->{totals}{fail}++;
+  $self->{totals}{mapbox}{fail}++;
 
   return 0;
 }
@@ -252,7 +270,7 @@ sub geocode_mapbox {
 sub geocode_bing {
   my ($self, $remote_row) = @_;
 
-  $self->{bing}->{total}++;
+  $self->{totals}{bing}{total}++;
 
   my $url = sprintf('http://dev.virtualearth.net/REST/v1/Locations?query=%s&key=%s'
     , url_escape($remote_row->{remote_address})
@@ -269,8 +287,8 @@ sub geocode_bing {
   }
 
   unless (@{ $json->{resourceSets}->[0]->{resources} }) {
-    $self->{fail}++;
-    $self->{bing}->{fail}++;
+    $self->{totals}{fail}++;
+    $self->{totals}{bing}{fail}++;
 
     return 0;
   }
@@ -280,8 +298,8 @@ sub geocode_bing {
   
   # https://msdn.microsoft.com/en-us/library/ff701725.aspx
   if ($result->{confidence} eq 'High' && (scalar(@codes) == 1 and $codes[0] eq 'Good')) {
-    $self->{pass}++;
-    $self->{bing}->{pass}++;
+    $self->{totals}{pass}++;
+    $self->{totals}{bing}{pass}++;
 
     
     my %data = (
@@ -297,8 +315,8 @@ sub geocode_bing {
     return 1;
   }
 
-  $self->{fail}++;
-  $self->{bing}->{fail}++;
+  $self->{totals}{fail}++;
+  $self->{totals}{bing}{fail}++;
 
   return 0;
 }
@@ -306,7 +324,7 @@ sub geocode_bing {
 sub geocode_google {
   my ($self, $remote_row) = @_;
 
-  $self->{google}->{total}++;
+  $self->{totals}{google}{total}++;
 
   my $url = sprintf('https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s'
     , url_escape($remote_row->{remote_address})
@@ -318,8 +336,8 @@ sub geocode_google {
   my $json = $self->request('google', $url);
 
   if ($json->{status} eq 'ZERO_RESULTS') {
-    $self->{fail}++;
-    $self->{google}->{fail}++;
+    $self->{totals}{fail}++;
+    $self->{totals}{google}{fail}++;
 
     return 0;
   }
@@ -332,8 +350,8 @@ sub geocode_google {
   my $result = $json->{results}->[0];
 
   unless ($result) {
-    $self->{fail}++;
-    $self->{google}->{fail}++;
+    $self->{totals}{fail}++;
+    $self->{totals}{google}{fail}++;
 
     return 0;
   }
@@ -346,8 +364,8 @@ sub geocode_google {
   my $matches = does_request_equal_response($remote_row->{remote_address}, $place);
   
   if (($result->{geometry}->{location_type} eq 'ROOFTOP' or $result->{geometry}->{location_type} eq 'RANGE_INTERPOLATED') && (scalar(@types) == 1 and $types[0] eq 'street_address')) {
-    $self->{pass}++;
-    $self->{google}->{pass}++;
+    $self->{totals}{pass}++;
+    $self->{totals}{google}{pass}++;
 
     my %data = (
       lat => $result->{geometry}->{location}->{lat},
@@ -362,8 +380,8 @@ sub geocode_google {
     return 1;
   }
 
-  $self->{fail}++;
-  $self->{google}->{fail}++;
+  $self->{totals}{fail}++;
+  $self->{totals}{google}{fail}++;
 
   #sleep(2);
   return 0;

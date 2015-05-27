@@ -11,8 +11,6 @@ my %extentions = (
  'text/xml' => "xml"
 );
 
-my $fetch_count = 0;
-
 sub new {
   my ($class, $opts) = @_;
 
@@ -23,9 +21,10 @@ sub go {
   my ($self) = @_;
 
   print "----Fetching photos----\n\n";
+  $self->{totals} = {photo_urls_fetched => 0};
 
   my $mutated = $self->mutated();
-  return unless $mutated;
+  return $self->finish() unless $mutated;
 
   my $i = 0;
   foreach my $remote_row (@$mutated) {
@@ -34,7 +33,29 @@ sub go {
     print "\n" if (++$i % 100 == 0);
   }
 
-  print "\nFetched [$fetch_count] photo urls\n\n[DONE]\n\n";
+  $self->finish();
+}
+
+sub finish {
+  my $self = shift;
+
+  $self->monitor('photo_urls_fetched', $self->{totals}{photo_urls_fetched});
+
+  print "\nReport:\n";
+  print Dumper $self->{totals};
+  print "\n[DONE]\n\n";
+}
+
+sub monitor {
+  my($self, $key, $value) = @_;
+
+  my $monitor = $self->{monitor} or return;
+
+  my @class = split(/::/, ref($self));
+
+  shift @class; # remove MLS
+
+  $monitor->status({ namespace => \@class, key => $key, value => $value });
 }
 
 sub mutated {
@@ -79,7 +100,7 @@ sub fetch_remote {
     my $location = $objectDescriptor->GetLocationUrl();
 
     push(@urls, $location);
-    $fetch_count++;
+    $self->{totals}{photo_urls_fetched}++;
     $objectDescriptor = $response->NextObject();
   }
 

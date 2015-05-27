@@ -15,9 +15,10 @@ sub go {
   my ($self) = @_;
 
   print "----Purging removed records----\n\n";
+  $self->{totals} = {removed => 0};
 
   my $mutated = $self->mutated();
-  return unless $mutated;
+  return $self->finish() unless $mutated;
 
   my $i = 0;
   foreach my $remote_row (@$mutated) {
@@ -25,7 +26,30 @@ sub go {
     print '.';
     print "\n" if (++$i % 100 == 0);
   }
+
+  $self->finish();
+}
+
+sub finish {
+  my $self = shift;
+
+  $self->monitor('removed', $self->{totals}{removed});
+
+  print "\nReport:\n";
+  print Dumper $self->{totals};
   print "\n[DONE]\n\n";
+}
+
+sub monitor {
+  my($self, $key, $value) = @_;
+
+  my $monitor = $self->{monitor} or return;
+
+  my @class = split(/::/, ref($self));
+
+  shift @class; # remove MLS
+
+  $monitor->status({ namespace => \@class, key => $key, value => $value });
 }
 
 sub mutated {
@@ -79,6 +103,8 @@ sub mark_as_removed {
 
   $dbh->do('COMMIT');
   $dbh->{AutoCommit} = 1;
+
+  $self->{totals}{removed}++;
 }
 
 1;
