@@ -29,8 +29,8 @@ sub start {
   # capture STDOUT, STDIN to log file
   open(STDOUT, '>', $self->{log_file}) or
     die "Cannot redirect STDOUT to [$self->{log_file}]: $!";
-  open(STDERR, '>', $self->{log_file}) or
-    die "Cannot redirect STDERR to [$self->{log_file}]: $!";
+  open(STDERR, ">&STDOUT") or
+    die "Cannot redirect STDERR to STDOUT: $!";
 
   my $dbh = $self->{dbh};
 
@@ -124,7 +124,7 @@ sub status {
 }
 
 sub finish {
-  my $self = shift;
+  my ($self, $error) = @_;
 
   # Store logs here, update log_monitor_url
   my $s3_client = $MLS::Util::S3_CLIENT->();
@@ -147,16 +147,20 @@ sub finish {
   );
   $s3_rets_object->put_filename("$self->{log_dir}/rets.log");
 
-  my $dbh = $self->{dbh};
-  my %new_data = (
-    completed_at    => 'NOW()',
-    log_monitor_url => $dbh->quote($s3_monitor_object->uri),
-    log_librets_url => $dbh->quote($s3_rets_object->uri),
-    status          => $dbh->quote('IDLE'),
-  );
+  # If start() dies before the id is found (rare but possible)
+  # do not attempt to update the monitor table
+  if ($self->{id}) {
+    my $dbh = $self->{dbh};
+    my %new_data = (
+      status          => $error ? $dbh->quote('ERROR') : $dbh->quote('IDLE'),
+      log_monitor_url => $dbh->quote($s3_monitor_object->uri),
+      log_librets_url => $dbh->quote($s3_rets_object->uri),
+    );
+    $new_data{$error ? 'failed_at' : 'completed_at'} = 'NOW()';
 
-  my $sql = "UPDATE monitor SET (" . join(',', keys %new_data) . ") = (" . join(',', values %new_data) .") where id = $self->{id}";
-  $dbh->do($sql);
+    my $sql = "UPDATE monitor SET (" . join(',', keys %new_data) . ") = (" . join(',', values %new_data) .") where id = $self->{id}";
+    $dbh->do($sql);
+  }
 }
 
 1;
