@@ -5,6 +5,7 @@ use DBI;
 use librets;
 use Mojo::UserAgent;
 use Net::Amazon::S3;
+use MLS::Monitor;
 
 use MLS::Util;
 
@@ -21,17 +22,18 @@ my $rets = $MLS::Property::Config::RETS->();
 my $s3_client = $MLS::Util::S3_CLIENT->();
 my $ua = Mojo::UserAgent->new();
 
-my $log = "/tmp/$MLS::Property::Config::MLS/all.log";
-
-$rets->SetHttpLogName($log);
+my $monitor = MLS::Monitor->new({ dbh => $dbh, log_dir => $MLS::Property::Config::LOG_DIR });
+$monitor->start();
+$rets->SetHttpLogName("$MLS::Property::Config::LOG_DIR/rets.log");
 
 # Property
-MLS::Property::Mutation->new({ dbh => $dbh, rets => $rets })->go();
-MLS::Property::Row->new({ dbh => $dbh, rets => $rets, rets_search_limit => 100 })->go();
-MLS::Property::Purge->new({ dbh => $dbh, })->go();
-MLS::Property::Photo->new({ dbh => $dbh, rets => $rets, s3_client => $s3_client })->go();
-MLS::Property::Geo->new({ dbh => $dbh, ua => $ua })->go();
+MLS::Property::Mutation->new({ dbh => $dbh, rets => $rets, monitor => $monitor, })->go();
+MLS::Property::Row->new({ dbh => $dbh, rets => $rets, monitor => $monitor, rets_search_limit => 100 })->go();
+MLS::Property::Purge->new({ dbh => $dbh, monitor => $monitor, })->go();
+MLS::Property::Photo->new({ dbh => $dbh, rets => $rets, monitor => $monitor, s3_client => $s3_client })->go();
+MLS::Property::Geo->new({ dbh => $dbh, monitor => $monitor, ua => $ua })->go();
 
+$monitor->finish();
 $dbh->disconnect;
 
 exit(0);

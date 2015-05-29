@@ -104,8 +104,6 @@ sub fetch_remote {
       die $@;
     }
   }
-
-  $rets->Logout();
 }
 
 # fetch local 

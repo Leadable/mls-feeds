@@ -31,11 +31,9 @@ sub go {
     my $mutated = $self->mutated($class_id);
     next unless $mutated;
 
+    print "Class [$class_id] was found to be mutated\n";
     while (@$mutated) {
-      print "Class [$class_id] was found to be mutated\n";
-
       my @chunk = splice(@$mutated, 0, $self->{rets_search_limit});
-
       $self->fetch_remote($class_id, $class, \@chunk);
     }
   }
