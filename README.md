@@ -46,17 +46,15 @@ dependants.
 
 # Setting up the environment
 
-1. ssh into dev instance `ssh ec2-user@[first name]-dev.leadable.com`
-2. install docker if not already installed `sudo yum install -y docker ; sudo service docker start`
-3. install git `sudo yum install -y git`
-4. generate ssh public key and add it to your github profile `ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`
-3. checkout the mls-feeds repo `git clone git@github.com:Leadable/mls-feeds.git`
-4. Go into mls-feeds directory. `cd mls-feeds`
-5. Build the docker image. `sudo docker build -t [your name]/mls-feeds .`
-6. Create the docker container. `sudo docker run -t -i --name rets -v ~/mls-feeds/:/opt/mls-feeds -p 3000 --rm [your name]/mls-feeds /bin/bash`
-7. `cd /opt/mls-feeds`
-8. run screen in container
-9. open seperate ssh conection to ec2 instance and run screen for editing code
+1. Install boot2docker for osx https://docs.docker.com/installation/mac/
+2. Pull docker image for postgres with postgis: `docker pull mdillon/postgis:9.4`
+3. Create container to hold postgres data directory: `docker create -v /var/lib/postgresql/data --name mls-feeds-data mdillon/postgis:9.4 /bin/true`
+4. Start postgres container: `docker run --name postgres -e POSTGRES_PASSWORD=[password] -d -p 5432:5432 --volumes-from mls-feeds-data mdillon/postgis:9.4`
+5. Clone mls-feeds repository: `git clone git@github.com:Leadable/mls-feeds.git`
+6. Build mls-feeds image: `docker build -t leadable/mls-feeds .`
+7. Run mls-feeds container: `docker run -ti --name mls-feeds --link postgres:postgres -v [path to repository]/mls-feeds/:/opt/mls-feeds --rm leadable/mls-feeds /bin/bash`
+8. You should now be in the shell on the new container.
+9. Create the mls database: `psql -h $POSTGRES_PORT_5432_TCP_ADDR -U postgres < /opt/mls-feeds/mls.sql`
 
 # Starting a new board
 
