@@ -1,15 +1,15 @@
 #!/usr/bin/env perl
-use strict; 
+use strict;
 
 use Data::Dumper qw(Dumper);
 use DBI;
 
 sub dbh {
   my $dbname = 'mls';
-  my $host = 'mls-feeds-2.c9ny87bfc9il.us-west-2.rds.amazonaws.com';
+  my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};
   my $port = '5432';
-  my $user = 'mlsadmin';
-  my $pass = 'al2istic';
+  my $user = 'postgres';
+  my $pass = 'password';
 
   my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
 
@@ -22,15 +22,10 @@ my $mls = $ARGV[0];
 my $dbh = dbh();
 
 my @sql = (
-  "CREATE ROLE $mls NOSUPERUSER NOINHERIT NOCREATEDB NOCREATEROLE NOREPLICATION",
-  "CREATE ROLE " . $mls . "_login LOGIN PASSWORD 'al2istic' VALID UNTIL 'infinity'",
-  "GRANT $mls TO " . $mls . "_login",
-  
-  "CREATE SCHEMA $mls AUTHORIZATION mlsadmin",
+  # schema
+  "CREATE SCHEMA $mls",
 
-  "GRANT ALL ON SCHEMA $mls to mlsadmin",
-  "GRANT USAGE ON SCHEMA $mls TO GROUP $mls",
-
+  # mutation
   "CREATE TABLE $mls.mutation
   (
     remote_id text NOT NULL,
@@ -48,8 +43,6 @@ my @sql = (
     last_published_at timestamp without time zone, -- last time the listing was published to the live tables *._mv and *._mv_active
     CONSTRAINT pkey_mutation PRIMARY KEY (resource, remote_id)
   ) WITH (OIDS=FALSE)",
-  "ALTER TABLE $mls.mutation OWNER TO mlsadmin",
-  "GRANT SELECT, UPDATE, INSERT ON TABLE $mls.mutation TO GROUP $mls",
 
   "CREATE INDEX idx_mutation_remote_row_mod_ts ON $mls.mutation USING btree (remote_row_mod_ts)",
   "CREATE INDEX idx_mutation_local_row_mod_ts ON $mls.mutation USING btree (local_row_mod_ts)",
@@ -61,6 +54,17 @@ my @sql = (
   "CREATE INDEX idx_mutation_local_removed_at ON $mls.mutation USING btree (local_removed_at)",
   "CREATE INDEX idx_mutation_last_transaction_completed_at ON $mls.mutation USING btree (last_transaction_completed_at)",
   "CREATE INDEX idx_mutation_last_published_at ON $mls.mutation USING btree (last_published_at)",
+
+  # geocoder_cache
+  "CREATE TABLE $mls.geocoder_cache
+  (
+    service text NOT NULL,
+    query text NOT NULL,
+    ts timestamp without time zone NOT NULL DEFAULT now(),
+    expires text NOT NULL DEFAULT '30 days'::text,
+    response jsonb,
+    CONSTRAINT pkey_geocoder_cache PRIMARY KEY (service, query)
+  ) WITH (OIDS=FALSE)",
 );
 
 for my $sql (@sql) {
