@@ -1,5 +1,5 @@
-use strict; 
-use lib "../../lib", "blib/lib", "blib/arch"; 
+use strict;
+use lib "../../lib", "blib/lib", "blib/arch";
 
 use DBI;
 
