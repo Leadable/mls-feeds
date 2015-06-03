@@ -83,7 +83,6 @@ sub get_blank_row {
     mls               => $dbh->quote($MLS::Property::Config::MLS),
     created_at        => 'DEFAULT',
     status            => $dbh->quote('RUNNING'),
-    ec2_id            => $dbh->quote(`wget -q -O - http://169.254.169.254/latest/meta-data/instance-id`),
     container_id      => $dbh->quote(`cat /proc/self/cgroup | grep "docker" | sed s/\\\\//\\\\n/g | tail -1`),
     pid               => $$,
     started_at        => 'NOW()',
