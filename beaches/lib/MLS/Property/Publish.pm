@@ -22,7 +22,6 @@ sub go {
 
     print "----Generate Publish Data---\n\n";
     $self->{id_lists} = {new => [], updated => []};
-    $self->{totals} =   {new => 0,  updated => 0};
 
     # get data from view and materialized view
     $self->get_data;
@@ -54,15 +53,32 @@ sub go {
 }
 
 sub finish {
-  my $self = shift;
+    my $self = shift;
 
-  $self->{totals}{new}     = scalar (@{$self->{id_lists}{new}});
-  $self->{totals}{updated} = scalar (@{$self->{id_lists}{updated}});
+    my $totals = {
+        new     => scalar @{$self->{id_lists}{new}},
+        updated => scalar @{$self->{id_lists}{updated}},
+    };
 
-  print "\nReport:\n";
-  print Dumper $self->{totals};
-  print "Wrote SQL diff to [$self->{sql_file_out}]\n";
-  print "\n[DONE]\n\n";
+    $self->monitor('new', $totals->{new});
+    $self->monitor('updated', $totals->{updated});
+
+    print "\nReport:\n";
+    print Dumper $totals;
+    print "Wrote SQL diff to [$self->{sql_file_out}]\n";
+    print "\n[DONE]\n\n";
+}
+
+sub monitor {
+    my($self, $key, $value) = @_;
+
+    my $monitor = $self->{monitor} or return;
+
+    my @class = split(/::/, ref($self));
+
+    shift @class; # remove MLS
+
+    $monitor->status({ namespace => \@class, key => $key, value => $value });
 }
 
 sub get_data {

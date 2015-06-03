@@ -16,6 +16,7 @@ use MLS::Property::Row;
 use MLS::Property::Purge;
 use MLS::Property::Photo;
 use MLS::Property::Geo;
+use MLS::Property::Publish;
 
 my $dbh = $MLS::Util::DBH->($MLS::Property::Config::MLS_DB_SHARD, $MLS::Property::Config::MLS) or die $DBI::errstr;
 my $rets = $MLS::Property::Config::RETS->();
@@ -33,6 +34,7 @@ eval {
     MLS::Property::Purge->new({ dbh => $dbh, monitor => $monitor, })->go();
     MLS::Property::Photo->new({ dbh => $dbh, rets => $rets, monitor => $monitor, s3_client => $s3_client })->go();
     MLS::Property::Geo->new({ dbh => $dbh, monitor => $monitor, ua => $ua })->go();
+    MLS::Property::Publish->new({ dbh => $dbh, monitor => $monitor, })->go();
 };
 
 if ($@) {
