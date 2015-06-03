@@ -47,6 +47,9 @@ sub go {
     print $fh "--$md5_json\n";
     print $fh $sql_to_write;
 
+    # write new version string to live table
+    print $fh qq|COMMENT ON table $MLS::Property::Config::MLS.test_live is '$self->{view_md5}';|;
+
     # recreate materialized view from our new view
 
     $self->finish();
@@ -164,7 +167,7 @@ sub generate_sql {
     my $update_sql = join "\n",
                      map {format_row_data('update', $_, $dbh)} @$update_rs;
 
-    return "$new_sql\n$update_sql";
+    return "$new_sql\n$update_sql\n";
 
 }
 
