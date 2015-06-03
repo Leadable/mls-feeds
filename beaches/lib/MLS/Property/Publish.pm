@@ -91,31 +91,41 @@ sub generate_sql {
 
     my $dbh = $self->{dbh};
 
-    # dump columns from view
-    my $cols = $dbh->selectcol_arrayref("select column_name from information_schema.columns
-                                         where table_schema = '$MLS::Property::Config::MLS' and table_name = 'view_listings'");
+    # new
+    my $new_ids_str = join ' OR ',
+                      map {"listing_id = " . $dbh->quote($_)} @{$self->{id_lists}{new}};
+    my $new_rs = $dbh->selectall_arrayref("SELECT * from $MLS::Property::Config::MLS.view_listings where $new_ids_str", {Slice => {}});
+    my $new_sql = join "\n",
+                  map {format_row_data('insert', $_, $dbh)} @$new_rs;
 
-    # updated rows
-    my $cols_set = join ',',
-                   map {$dbh->quote_identifier($_) . " = v." . $dbh->quote_identifier($_)} @$cols;
+    # updated
+    my $update_ids_str = join ' OR ',
+                      map {"listing_id = " . $dbh->quote($_)} @{$self->{id_lists}{updated}};
+    my $update_rs = $dbh->selectall_arrayref("SELECT * from $MLS::Property::Config::MLS.view_listings where $update_ids_str", {Slice => {}});
+    my $update_sql = join "\n",
+                     map {format_row_data('update', $_, $dbh)} @$update_rs;
 
-    my $where_ids = join ' OR ',
-                    map {"l." . $dbh->quote_identifier('listing_id') . ' = ' . $dbh->quote($_)} @{$self->{id_lists}{updated}};
-    my $update_sql = qq|UPDATE $MLS::Property::Config::MLS.test_live as l
-                        SET $cols_set
-                        FROM $MLS::Property::Config::MLS.view_listings as v
-                        WHERE $where_ids;|;
+    return "$new_sql\n$update_sql";
 
-    # new rows
-    my $new_where_ids = join ' OR ',
-                        map {$dbh->quote_identifier('listing_id') . ' = ' . $dbh->quote($_)} @{$self->{id_lists}{new}};
-
-    my $new_sql = qq|INSERT INTO $MLS::Property::Config::MLS.test_live
-                     SELECT * FROM $MLS::Property::Config::MLS.view_listings
-                     WHERE $new_where_ids;|;
-
-    return "$update_sql\n$new_sql";
 }
 
+# Formats a row in hash form for the diff
+sub format_row_data {
+    my ($action, $row_data, $dbh) = @_;
+
+    my $cols_str = join ',',
+                   map {qq|"$_"|} keys %$row_data;
+
+    my $vals_str = join ',',
+                   map {$dbh->quote($_)} values %$row_data;
+
+    if (lc $action eq 'update') {
+        my $where_sql = 'l.listing_id = ' . $dbh->quote($row_data->{listing_id});
+        return qq|UPDATE $MLS::Property::Config::MLS.test_live as l SET ($cols_str) = ($vals_str) WHERE $where_sql;|;
+    }
+    elsif (lc $action eq 'insert') {
+        return qq|INSERT INTO $MLS::Property::Config::MLS.test_live ($cols_str) VALUES ($vals_str);|;
+    }
+};
 
 1;
