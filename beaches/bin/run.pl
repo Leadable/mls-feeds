@@ -27,6 +27,8 @@ my $ua = Mojo::UserAgent->new();
 my $monitor = MLS::Monitor->new({ dbh => $dbh, log_dir => $MLS::Config::LOG_DIR });
 
 eval {
+    $| = 1;
+
     $monitor->start();
 
     # Property

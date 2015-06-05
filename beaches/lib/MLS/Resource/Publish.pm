@@ -3,8 +3,6 @@ package MLS::Resource::Publish;
 use strict;
 use warnings;
 
-$| = 1;
-
 use Data::Dumper qw(Dumper);
 use Digest::MD5 qw(md5_hex);
 use Mojo::JSON qw(j);

@@ -1,8 +1,6 @@
 package MLS::Resource::Photo;
 use strict;
 
-$| = 1;
-
 use Data::Dumper qw(Dumper);
 
 my %extentions = (

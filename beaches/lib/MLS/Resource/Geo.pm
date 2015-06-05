@@ -1,8 +1,6 @@
 package MLS::Resource::Geo;
 use strict;
 
-$| = 1;
-
 use Mojo::Util qw(url_escape);
 use Data::Dumper qw(Dumper);
 use Text::LevenshteinXS qw(distance);

@@ -1,8 +1,6 @@
 package MLS::Resource::Purge;
 use strict;
 
-$| = 1;
-
 use Data::Dumper qw(Dumper);
 
 sub new {
