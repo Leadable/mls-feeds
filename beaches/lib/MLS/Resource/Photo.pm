@@ -97,7 +97,7 @@ sub fetch_remote {
   my $objectDescriptor = $response->NextObject();
       
   while ($objectDescriptor) {
-    my $location = $objectDescriptor->GetLocationUrl();
+    my $location = $objectDescriptor->GetLocationUrl() . '?v=' . time;
 
     push(@urls, $location);
     $self->{totals}{photo_urls_fetched}++;
