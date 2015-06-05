@@ -1,4 +1,4 @@
-package MLS::Property::Row;
+package MLS::Resource::Row;
 use strict;
 
 $| = 1;
@@ -22,8 +22,8 @@ sub go {
   $self->{totals} = { new => 0, updated => 0 };
   $self->fetch_pg_col_info();
 
-  foreach my $class_id (sort keys %MLS::Property::Config::CLASSES) {
-    my $class = $MLS::Property::Config::CLASSES{ $class_id };
+  foreach my $class_id (sort keys %MLS::Config::CLASSES) {
+    my $class = $MLS::Config::CLASSES{ $class_id };
     next if $class->{ignore};
 
     $self->fetch_rets_table_info($class_id);
@@ -70,7 +70,7 @@ sub fetch_pg_col_info {
 
   my $sql = 'SELECT attrelid::regclass, attnum, attname, atttypid, format_type(atttypid, atttypmod) as type
     FROM   pg_attribute
-    WHERE  attrelid = \'' . $MLS::Property::Config::MLS . '."' . $MLS::Property::Config::RESOURCE . '"\'::regclass
+    WHERE  attrelid = \'' . $MLS::Config::MLS . '."' . $MLS::Config::RESOURCE . '"\'::regclass
     AND    attnum > 0
     AND    NOT attisdropped
     ORDER  BY attnum';
@@ -88,7 +88,7 @@ sub fetch_rets_table_info {
   my $rets = $self->{rets};
 
   my $metadata = $rets->GetMetadata;
-  my $class = $metadata->GetClass($MLS::Property::Config::RESOURCE, $class_id);
+  my $class = $metadata->GetClass($MLS::Config::RESOURCE, $class_id);
  
   my %rets_table_info;
   
@@ -114,13 +114,13 @@ sub mutated {
   my $dbh = $self->{dbh};
 
   my @conditions = (
-    'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+    'resource = ' . $dbh->quote($MLS::Config::RESOURCE),
     'class = ' . $dbh->quote($class),
     "remote_row_mod_ts <> COALESCE(local_row_mod_ts, '')",
     "remote_removed_at IS NULL"
   );
 
-  my $sql = "SELECT remote_id, remote_row_mod_ts, local_row_mod_ts FROM $MLS::Property::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id";
+  my $sql = "SELECT remote_id, remote_row_mod_ts, local_row_mod_ts FROM $MLS::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id";
   $self->{temp_error} = "$sql\n";
 
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
@@ -133,15 +133,21 @@ sub fetch_local {
 
   my $dbh = $self->{dbh};
 
-  my $pkey = $MLS::Property::Config::PRIMARY_KEY{SystemName};
+  my $pkey = $MLS::Config::PRIMARY_KEY{SystemName};
 
   my @select = (
     $dbh->quote_identifier($pkey),
-    $dbh->quote_identifier($MLS::Property::Config::PRICE_COLUMN{SystemName}),
-    $dbh->quote_identifier($MLS::Property::Config::STATUS_COLUMN{SystemName})
   );
 
-  my $sql = "SELECT " . join(', ', @select) . " FROM $MLS::Property::Config::MLS.\"$MLS::Property::Config::RESOURCE\" WHERE " . $dbh->quote_identifier($pkey) . " IN('" . join("','", map($_->{remote_id}, @$mutated)) . "')";
+  if (%MLS::Config::STATUS_COLUMN) {
+    push @select, $dbh->quote_identifier($MLS::Config::STATUS_COLUMN{SystemName});
+  }
+
+  if (%MLS::Config::PRICE_COLUMN) {
+    push @select, $dbh->quote_identifier($MLS::Config::PRICE_COLUMN{SystemName});
+  }
+
+  my $sql = "SELECT " . join(', ', @select) . " FROM $MLS::Config::MLS.\"$MLS::Config::RESOURCE\" WHERE " . $dbh->quote_identifier($pkey) . " IN('" . join("','", map($_->{remote_id}, @$mutated)) . "')";
   $self->{temp_error} = "$sql\n";
   my %local = map { $_->{$pkey}, $_ } @{ $dbh->selectall_arrayref($sql, { Slice => {} }) };
 
@@ -157,20 +163,20 @@ sub fetch_remote {
   my $pg_col_info = $self->{pg_col_info};
 
   my $local_rows = $self->fetch_local($remote_ids);
-  my $pkey = $MLS::Property::Config::PRIMARY_KEY{SystemName};
+  my $pkey = $MLS::Config::PRIMARY_KEY{SystemName};
 
   my $search = '(' . join('|', map("($pkey=$_->{remote_id})", @$remote_ids)) . ')';
   $self->{temp_error} = "$search\n";
 
   eval {
-    my $request = $rets->CreateSearchRequest($MLS::Property::Config::RESOURCE, $class_id, $search);
+    my $request = $rets->CreateSearchRequest($MLS::Config::RESOURCE, $class_id, $search);
     $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
     $request->SetOffset($librets::SearchRequest::OFFSET_NONE);
     $request->SetStandardNames(0);
     $request->SetCountType($librets::SearchRequest::RECORD_COUNT_AND_RESULTS);
     $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
 
-    print "Fetching remote rows for [$MLS::Property::Config::RESOURCE]/[" . $class->{StandardName} . "] ($class_id)\n";
+    print "Fetching remote rows for [$MLS::Config::RESOURCE]/[" . $class->{StandardName} . "] ($class_id)\n";
     my $results = $rets->Search($request);
 
     print "Record count: [" . $results->GetCount() . "]\n";
@@ -201,14 +207,14 @@ sub fetch_remote {
         }
       }
 
-      my $pkey_val = $results->GetString($MLS::Property::Config::PRIMARY_KEY{SystemName});
+      my $pkey_val = $results->GetString($MLS::Config::PRIMARY_KEY{SystemName});
       my $local_row = $local_rows->{ $pkey_val };
 
       $local_row ? $self->update($results, \%data, $local_row) : $self->insert($results, \%data);
 
       $self->update_mutation_table($pkey_val, $results);
       print '.';
-      print "\n" if (++$i % 100 == 0);
+      print "[$i]\n" if (++$i % 100 == 0);
     }
     print "\n";
   };
@@ -232,29 +238,31 @@ sub update {
     push(@vals, $dbh->quote_identifier($_) . ' = ' . $data->{$_});
   }
 
-  my $price_val = $local_row->{ $MLS::Property::Config::PRICE_COLUMN{SystemName} };
-  my $price_newval = $results->GetString($MLS::Property::Config::PRICE_COLUMN{SystemName});
+  if (%MLS::Config::PRICE_COLUMN) {
+    my $price_val = $local_row->{ $MLS::Config::PRICE_COLUMN{SystemName} };
+    my $price_newval = $results->GetString($MLS::Config::PRICE_COLUMN{SystemName});
 
-  if ($price_val != $price_newval) {
-    # __percent_reduced
-    my $amount_reduced = $price_val - $price_newval;
-    my $percent_reduced = $amount_reduced / $price_val * 100;
+    if ($price_val != $price_newval) {
+      # __percent_reduced
+      my $amount_reduced = $price_val - $price_newval;
+      my $percent_reduced = $amount_reduced / $price_val * 100;
 
-    push(@vals, '__percent_reduced = ' . $percent_reduced);
+      push(@vals, '__percent_reduced = ' . $percent_reduced);
 
 
-    # __price_updated_at
-    push(@vals, '__price_updated_at = NOW()');
+      # __price_updated_at
+      push(@vals, '__price_updated_at = NOW()');
 
-    # __price_history_times
-    push(@vals, '__price_history_times = array_append(__price_history_times, LOCALTIMESTAMP)');
+      # __price_history_times
+      push(@vals, '__price_history_times = array_append(__price_history_times, LOCALTIMESTAMP)');
 
-    # __price_history_vals
-    push(@vals, '__price_history_vals = array_append(__price_history_vals, ' . $price_newval . '::numeric)');
+      # __price_history_vals
+      push(@vals, '__price_history_vals = array_append(__price_history_vals, ' . $price_newval . '::numeric)');
+    }
   }
 
-  my $status_val = $local_row->{ $MLS::Property::Config::STATUS_COLUMN{SystemName} };
-  my $status_newval = $results->GetString($MLS::Property::Config::STATUS_COLUMN{SystemName});
+  my $status_val = $local_row->{ $MLS::Config::STATUS_COLUMN{SystemName} };
+  my $status_newval = $results->GetString($MLS::Config::STATUS_COLUMN{SystemName});
   if ($status_val ne $status_newval) {
     # __status_updated_at
     push(@vals, '__status_updated_at = NOW()');
@@ -266,10 +274,10 @@ sub update {
     push(@vals, '__status_history_vals = array_append(__status_history_vals, ' . $dbh->quote($status_newval) . ')');
   }
 
-  my $pkey_ident = $MLS::Property::Config::PRIMARY_KEY{SystemName};
+  my $pkey_ident = $MLS::Config::PRIMARY_KEY{SystemName};
   my $pkey_val = $results->GetString($pkey_ident);
 
-  my $sql = 'UPDATE ' . $MLS::Property::Config::MLS . '."' . $MLS::Property::Config::RESOURCE . '" SET ' . join(',', @vals) . " WHERE " . $dbh->quote_identifier($pkey_ident) . " = " . $dbh->quote($pkey_val);
+  my $sql = 'UPDATE ' . $MLS::Config::MLS . '."' . $MLS::Config::RESOURCE . '" SET ' . join(',', @vals) . " WHERE " . $dbh->quote_identifier($pkey_ident) . " = " . $dbh->quote($pkey_val);
   $self->{temp_error} = "$sql\n";
   $dbh->do($sql);
 
@@ -287,31 +295,35 @@ sub insert {
     push(@vals, $data->{$_});
   }
 
+  if (%MLS::Config::PRICE_COLUMN) {
+    # __percent_reduced
+    push(@cols, '__percent_reduced');
+    push(@vals, 0);
+
+    # __price_history_times
+    push(@cols, '__price_history_times');
+    push(@vals, 'ARRAY[NOW()]');
+
+    # __price_history_vals
+    push(@cols, '__price_history_vals');
+    push(@vals, 'ARRAY[' . $data->{ $MLS::Config::PRICE_COLUMN{SystemName} } . '::numeric]');
+  }
+
+  if (%MLS::Config::STATUS_COLUMN) {
+    # __status_history_times
+    push(@cols, '__status_history_times');
+    push(@vals, 'ARRAY[NOW()]');
+
+    # __status_history_vals
+    push(@cols, '__status_history_vals');
+    push(@vals, 'ARRAY[' . $data->{ $MLS::Config::STATUS_COLUMN{SystemName} } . ']');
+  }
+
   # __inserted_at
   push(@cols, '__inserted_at');
   push(@vals, 'NOW()');
 
-  # __percent_reduced
-  push(@cols, '__percent_reduced');
-  push(@vals, 0);
-
-  # __price_history_times
-  push(@cols, '__price_history_times');
-  push(@vals, 'ARRAY[NOW()]');
-
-  # __price_history_vals
-  push(@cols, '__price_history_vals');
-  push(@vals, 'ARRAY[' . $data->{ $MLS::Property::Config::PRICE_COLUMN{SystemName} } . '::numeric]');
-
-  # __status_history_times
-  push(@cols, '__status_history_times');
-  push(@vals, 'ARRAY[NOW()]');
-
-  # __status_history_vals
-  push(@cols, '__status_history_vals');
-  push(@vals, 'ARRAY[' . $data->{ $MLS::Property::Config::STATUS_COLUMN{SystemName} } . ']');
-
-  my $sql = 'INSERT INTO ' . $MLS::Property::Config::MLS . '."' . $MLS::Property::Config::RESOURCE . '"(' . join(',', @cols) . ') VALUES(' . join(',', @vals) . ')';
+  my $sql = 'INSERT INTO ' . $MLS::Config::MLS . '."' . $MLS::Config::RESOURCE . '"(' . join(',', @cols) . ') VALUES(' . join(',', @vals) . ')';
   $self->{temp_error} = "$sql\n";
   $dbh->do($sql);
 
@@ -326,19 +338,23 @@ sub update_mutation_table {
   $dbh->{AutoCommit} = 0;
 
   eval {
-    my $address = $MLS::Property::Config::ADDRESS->($remote_row);
+    my $address_sql;
+    if ($MLS::Config::ADDRESS) {
+      my $address = $MLS::Config::ADDRESS->($remote_row);
+      $address_sql = ', remote_address = ' . $dbh->quote($address);
+    }
 
     # update local_row_mod_ts and remote_address in mutation row
     # if remote_address does not equal local_address in mutation row the row will need to be geocoded before being published
     my @conditions = (
-      'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+      'resource = ' . $dbh->quote($MLS::Config::RESOURCE),
       'remote_id = ' . $dbh->quote($remote_id)
     );
-    my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET local_row_mod_ts = remote_row_mod_ts, remote_address = " . $dbh->quote($address) . " WHERE " . join(' AND ', @conditions);
+    my $sql = "UPDATE $MLS::Config::MLS.mutation SET local_row_mod_ts = remote_row_mod_ts" . $address_sql . " WHERE " . join(' AND ', @conditions);
     $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
 
-    my $sql = "SELECT * FROM $MLS::Property::Config::MLS.mutation WHERE " . join(' AND ', @conditions);
+    my $sql = "SELECT * FROM $MLS::Config::MLS.mutation WHERE " . join(' AND ', @conditions);
     $self->{temp_error} = "$sql\n";
     my $row = $dbh->selectrow_hashref($sql);
 
@@ -353,7 +369,7 @@ sub update_mutation_table {
     # if there are no more differences between remote and local in the mutation table then set the last_transaction_completed at = NOW() so that the row can be published
     # The publisher job will detect the change and publish the row to the materialized (live) tables
     if ($transaction_complete) {
-      my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET last_transaction_completed_at = NOW() WHERE " . join(' AND ', @conditions);
+      my $sql = "UPDATE $MLS::Config::MLS.mutation SET last_transaction_completed_at = NOW() WHERE " . join(' AND ', @conditions);
       $self->{temp_error} = "$sql\n";
       $dbh->do($sql);
     }

@@ -1,4 +1,4 @@
-package MLS::Property::Purge;
+package MLS::Resource::Purge;
 use strict;
 
 $| = 1;
@@ -24,7 +24,7 @@ sub go {
   foreach my $remote_row (@$mutated) {
     $self->mark_as_removed($remote_row);
     print '.';
-    print "\n" if (++$i % 100 == 0);
+    print "[$i]\n" if (++$i % 100 == 0);
   }
 
   $self->finish();
@@ -58,12 +58,12 @@ sub mutated {
   my $dbh = $self->{dbh};
 
   my @conditions = (
-    'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+    'resource = ' . $dbh->quote($MLS::Config::RESOURCE),
     "remote_removed_at IS NOT NULL",
     "remote_removed_at > COALESCE(local_removed_at, '1900-01-01'::timestamp without time zone)"
   );
 
-  my $sql = "SELECT remote_id, remote_removed_at, local_removed_at FROM $MLS::Property::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id";
+  my $sql = "SELECT remote_id, remote_removed_at, local_removed_at FROM $MLS::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id";
   $self->{temp_error} = "$sql\n";
 
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
@@ -77,21 +77,21 @@ sub mark_as_removed {
 
   my $dbh = $self->{dbh};
 
-  my $pkey_ident = $MLS::Property::Config::PRIMARY_KEY{SystemName};
+  my $pkey_ident = $MLS::Config::PRIMARY_KEY{SystemName};
   my $pkey_val = $remote_row->{remote_id};
 
   $dbh->{AutoCommit} = 0;
 
   eval {
-    my $sql = "UPDATE $MLS::Property::Config::MLS." . $dbh->quote_identifier($MLS::Property::Config::RESOURCE) . " SET __removed_at = NOW() WHERE " . $dbh->quote_identifier($pkey_ident) . " = " . $dbh->quote($pkey_val);
+    my $sql = "UPDATE $MLS::Config::MLS." . $dbh->quote_identifier($MLS::Config::RESOURCE) . " SET __removed_at = NOW() WHERE " . $dbh->quote_identifier($pkey_ident) . " = " . $dbh->quote($pkey_val);
     $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
 
     my @conditions = (
-      'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+      'resource = ' . $dbh->quote($MLS::Config::RESOURCE),
       'remote_id = ' . $dbh->quote($pkey_val)
     );
-    $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET local_removed_at = remote_removed_at, last_transaction_completed_at = NOW() WHERE " . join(' AND ', @conditions);
+    $sql = "UPDATE $MLS::Config::MLS.mutation SET local_removed_at = remote_removed_at, last_transaction_completed_at = NOW() WHERE " . join(' AND ', @conditions);
     $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
   };

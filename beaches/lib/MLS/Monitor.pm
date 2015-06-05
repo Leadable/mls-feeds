@@ -35,7 +35,7 @@ sub start {
   my $dbh = $self->{dbh};
 
   # Get row from monitor table
-  my $sql = "SELECT id from public.monitor where mls = \'$MLS::Property::Config::MLS\'";
+  my $sql = "SELECT id from public.monitor where mls = \'$MLS::Config::MLS\'";
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
 
   if (scalar(@$rs)) {
@@ -62,7 +62,7 @@ sub start {
     $sql = "INSERT INTO public.monitor(" . join(',', keys %$row_data) . ") VALUES (" . join(',', values %$row_data) . ")";
     $dbh->do($sql);
 
-    $sql = "SELECT id from public.monitor where mls = \'$MLS::Property::Config::MLS\'";
+    $sql = "SELECT id from public.monitor where mls = \'$MLS::Config::MLS\'";
     $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
 
     if (scalar(@$rs)) {
@@ -80,7 +80,7 @@ sub get_blank_row {
   my $dbh = $self->{dbh};
 
   return {
-    mls               => $dbh->quote($MLS::Property::Config::MLS),
+    mls               => $dbh->quote($MLS::Config::MLS),
     created_at        => 'DEFAULT',
     status            => $dbh->quote('RUNNING'),
     container_id      => $dbh->quote(`cat /proc/self/cgroup | grep "docker" | sed s/\\\\//\\\\n/g | tail -1`),
@@ -128,7 +128,7 @@ sub finish {
   # Store logs here, update log_monitor_url
   my $s3_client = $MLS::Util::S3_CLIENT->();
   my $bucket = $s3_client->bucket(name => $self->{s3_bucket});
-  my $filename_root = "$MLS::Property::Config::MLS/" . strftime("%F %T", localtime);
+  my $filename_root = "$MLS::Config::MLS/" . strftime("%F %T", localtime);
 
   # Store monitor log
   my $s3_monitor_object = $bucket->object(

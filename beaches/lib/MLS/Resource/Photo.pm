@@ -1,4 +1,4 @@
-package MLS::Property::Photo;
+package MLS::Resource::Photo;
 use strict;
 
 $| = 1;
@@ -30,7 +30,7 @@ sub go {
   foreach my $remote_row (@$mutated) {
     $self->fetch_remote($remote_row);
     print '.';
-    print "\n" if (++$i % 100 == 0);
+    print "[$i]\n" if (++$i % 100 == 0);
   }
 
   $self->finish();
@@ -64,12 +64,12 @@ sub mutated {
   my $dbh = $self->{dbh};
 
   my @conditions = (
-    'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+    'resource = ' . $dbh->quote($MLS::Config::RESOURCE),
     "remote_img_mod_ts <> COALESCE(local_img_mod_ts, '')",
     "remote_removed_at IS NULL"
   );
 
-  my $sql = "SELECT remote_id, remote_img_mod_ts, local_img_mod_ts FROM $MLS::Property::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id";
+  my $sql = "SELECT remote_id, remote_img_mod_ts, local_img_mod_ts FROM $MLS::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id";
   $self->{temp_error} = "$sql\n";
 
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
@@ -85,7 +85,7 @@ sub fetch_remote {
 
   my $objectKey = $row->{remote_id} . '';
 
-  my $request = new librets::GetObjectRequest($MLS::Property::Config::RESOURCE, "HiRes");
+  my $request = new librets::GetObjectRequest($MLS::Config::RESOURCE, $MLS::Config::OBJECT);
 
   $request->SetLocation(1);
   $request->AddAllObjects($objectKey);
@@ -113,7 +113,7 @@ sub update {
 
   my $dbh = $self->{dbh};
 
-  my $sql = "UPDATE $MLS::Property::Config::MLS." . $dbh->quote_identifier($MLS::Property::Config::RESOURCE) . " SET __photo_urls = ARRAY[" . join(',', map($dbh->quote($_), @$urls)) . "] WHERE " . $dbh->quote_identifier($MLS::Property::Config::PRIMARY_KEY{SystemName}) . " = " . $dbh->quote($row->{remote_id});
+  my $sql = "UPDATE $MLS::Config::MLS." . $dbh->quote_identifier($MLS::Config::RESOURCE) . " SET __photo_urls = ARRAY[" . join(',', map($dbh->quote($_), @$urls)) . "] WHERE " . $dbh->quote_identifier($MLS::Config::PRIMARY_KEY{SystemName}) . " = " . $dbh->quote($row->{remote_id});
 
   $self->{temp_error} = "$sql\n";
   $dbh->do($sql);
@@ -129,14 +129,14 @@ sub update_mutation_table {
   eval {
     # update local_img_mod_ts in mutation row
     my @conditions = (
-      'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+      'resource = ' . $dbh->quote($MLS::Config::RESOURCE),
       'remote_id = ' . $dbh->quote($remote_id)
     );
-    my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET local_img_mod_ts = remote_img_mod_ts WHERE " . join(' AND ', @conditions);
+    my $sql = "UPDATE $MLS::Config::MLS.mutation SET local_img_mod_ts = remote_img_mod_ts WHERE " . join(' AND ', @conditions);
     $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
 
-    my $sql = "SELECT * FROM $MLS::Property::Config::MLS.mutation WHERE " . join(' AND ', @conditions);
+    my $sql = "SELECT * FROM $MLS::Config::MLS.mutation WHERE " . join(' AND ', @conditions);
     $self->{temp_error} = "$sql\n";
     my $row = $dbh->selectrow_hashref($sql);
 
@@ -151,7 +151,7 @@ sub update_mutation_table {
     # if there are no more differences between remote and local in the mutation table then set the last_transaction_completed at = NOW() so that the row can be published
     # The publisher job will detect the change and publish the row to the materialized (live) tables
     if ($transaction_complete) {
-      my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET last_transaction_completed_at = NOW() WHERE " . join(' AND ', @conditions);
+      my $sql = "UPDATE $MLS::Config::MLS.mutation SET last_transaction_completed_at = NOW() WHERE " . join(' AND ', @conditions);
       $self->{temp_error} = "$sql\n";
       $dbh->do($sql);
     }

@@ -1,4 +1,4 @@
-package MLS::Property::Publish;
+package MLS::Resource::Publish;
 
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ use Mojo::JSON qw(j);
 sub new {
   my ($class, $opts) = @_;
 
-  $opts->{sql_file_out} = "/tmp/sql/$MLS::Property::Config::MLS-update.sql";
+  $opts->{sql_file_out} = "/tmp/sql/$MLS::Config::MLS-update.sql";
 
   return bless $opts, $class;
 }
@@ -43,12 +43,14 @@ sub go {
     open(my $fh, '>', $self->{sql_file_out}) or
        die "Could not open [$self->{sql_file_out}] for write: $!";
 
+    #TODO: Wrap sql file in transactions (begin...commit)
+
     my $md5_json = j({old => $self->{live_md5}, new => $self->{view_md5}});
     print $fh "--$md5_json\n";
     print $fh $sql_to_write;
 
     # write new version string to live table
-    print $fh qq|COMMENT ON table $MLS::Property::Config::MLS.test_live is '$self->{view_md5}';|;
+    print $fh qq|COMMENT ON table $MLS::Config::MLS.test_live is '$self->{view_md5}';|;
 
     # recreate materialized view from our new view
 
@@ -94,8 +96,8 @@ sub get_data {
         join ',',
         map {"extract(epoch from $_) as $_"} @key_cols;
 
-    my $view_rs = $self->{view_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $MLS::Property::Config::MLS.view_listings", 'listing_id');
-    my $live_rs = $self->{live_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $MLS::Property::Config::MLS.view_listings_materialized", 'listing_id');
+    my $view_rs = $self->{view_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $MLS::Config::MLS.view_listings", 'listing_id');
+    my $live_rs = $self->{live_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $MLS::Config::MLS.view_listings_materialized", 'listing_id');
 
     print scalar(keys %$view_rs) ." records in new view\n";
     print scalar(keys %$live_rs) ." records in live view\n";
@@ -156,14 +158,14 @@ sub generate_sql {
     # new
     my $new_ids_str = join ' OR ',
                       map {"listing_id = " . $dbh->quote($_)} @{$self->{id_lists}{new}};
-    my $new_rs = $dbh->selectall_arrayref("SELECT * from $MLS::Property::Config::MLS.view_listings where $new_ids_str", {Slice => {}});
+    my $new_rs = $dbh->selectall_arrayref("SELECT * from $MLS::Config::MLS.view_listings where $new_ids_str", {Slice => {}});
     my $new_sql = join "\n",
                   map {format_row_data('insert', $_, $dbh)} @$new_rs;
 
     # updated
     my $update_ids_str = join ' OR ',
                       map {"listing_id = " . $dbh->quote($_)} @{$self->{id_lists}{updated}};
-    my $update_rs = $dbh->selectall_arrayref("SELECT * from $MLS::Property::Config::MLS.view_listings where $update_ids_str", {Slice => {}});
+    my $update_rs = $dbh->selectall_arrayref("SELECT * from $MLS::Config::MLS.view_listings where $update_ids_str", {Slice => {}});
     my $update_sql = join "\n",
                      map {format_row_data('update', $_, $dbh)} @$update_rs;
 
@@ -183,10 +185,10 @@ sub format_row_data {
 
     if (lc $action eq 'update') {
         my $where_sql = 'l.listing_id = ' . $dbh->quote($row_data->{listing_id});
-        return qq|UPDATE $MLS::Property::Config::MLS.test_live as l SET ($cols_str) = ($vals_str) WHERE $where_sql;|;
+        return qq|UPDATE $MLS::Config::MLS.test_live as l SET ($cols_str) = ($vals_str) WHERE $where_sql;|;
     }
     elsif (lc $action eq 'insert') {
-        return qq|INSERT INTO $MLS::Property::Config::MLS.test_live ($cols_str) VALUES ($vals_str);|;
+        return qq|INSERT INTO $MLS::Config::MLS.test_live ($cols_str) VALUES ($vals_str);|;
     }
 };
 

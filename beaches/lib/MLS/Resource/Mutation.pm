@@ -1,4 +1,4 @@
-package MLS::Property::Mutation;
+package MLS::Resource::Mutation;
 use strict;
 
 $| = 1;
@@ -62,8 +62,8 @@ sub fetch_remote {
 
   print "Fetching remote rows.\n";
 
-  foreach my $class_id (sort keys %MLS::Property::Config::CLASSES) {
-    my $class = $MLS::Property::Config::CLASSES{ $class_id };
+  foreach my $class_id (sort keys %MLS::Config::CLASSES) {
+    my $class = $MLS::Config::CLASSES{ $class_id };
     print "Resource Class: $class_id\n";
     print "Ignoring this class\n\n" if ($class->{ignore});
 
@@ -72,8 +72,8 @@ sub fetch_remote {
     eval {
       print "Search request: " . $class->{SearchRequest} . "\n";
 
-      my $request = $rets->CreateSearchRequest($MLS::Property::Config::RESOURCE, $class_id, $class->{SearchRequest});
-      $request->SetSelect("$MLS::Property::Config::PRIMARY_KEY{SystemName},$MLS::Property::Config::ROW_MOD_TS_COLUMN{SystemName},$MLS::Property::Config::IMG_MOD_TS_COLUMN{SystemName}");
+      my $request = $rets->CreateSearchRequest($MLS::Config::RESOURCE, $class_id, $class->{SearchRequest});
+      $request->SetSelect("$MLS::Config::PRIMARY_KEY{SystemName},$MLS::Config::ROW_MOD_TS_COLUMN{SystemName},$MLS::Config::IMG_MOD_TS_COLUMN{SystemName}");
       $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
       $request->SetOffset($librets::SearchRequest::OFFSET_NONE);
       $request->SetStandardNames(0);
@@ -86,8 +86,8 @@ sub fetch_remote {
 
       my $x = 0;
       while ($results->HasNext()) {
-        my $row_mod_ts = $results->GetString( $MLS::Property::Config::ROW_MOD_TS_COLUMN{SystemName} );
-        my $img_mod_ts = $results->GetString( $MLS::Property::Config::IMG_MOD_TS_COLUMN{SystemName} );
+        my $row_mod_ts = $results->GetString( $MLS::Config::ROW_MOD_TS_COLUMN{SystemName} );
+        my $img_mod_ts = %MLS::Config::IMG_MOD_TS_COLUMN ? $results->GetString( $MLS::Config::IMG_MOD_TS_COLUMN{SystemName} ) : '';
 
         my %data = (
           remote_row_mod_ts => $row_mod_ts,
@@ -95,7 +95,7 @@ sub fetch_remote {
           class => $class_id
         );
 
-        $remote->{ $results->GetString( $MLS::Property::Config::PRIMARY_KEY{SystemName} ) } = \%data;
+        $remote->{ $results->GetString( $MLS::Config::PRIMARY_KEY{SystemName} ) } = \%data;
       }
     };
 
@@ -115,7 +115,9 @@ sub fetch_local {
 
   print "Fetching local rows\n\n";
 
-  my $sql = "SELECT remote_id, remote_row_mod_ts, remote_img_mod_ts, remote_removed_at FROM $MLS::Property::Config::MLS.mutation";
+  my $sql = "SELECT remote_id, remote_row_mod_ts, remote_img_mod_ts, remote_removed_at 
+             FROM $MLS::Config::MLS.mutation
+             WHERE resource = '$MLS::Config::RESOURCE'";
   
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
   foreach (@$rs) {
@@ -149,20 +151,20 @@ sub new_remote_rows {
 
     my @cols = qw(resource class remote_id remote_row_mod_ts remote_img_mod_ts); 
     my @vals = (
-      $dbh->quote($MLS::Property::Config::RESOURCE),
+      $dbh->quote($MLS::Config::RESOURCE),
       $dbh->quote($remote_row->{class}),
       $dbh->quote($remote_id),
       $dbh->quote($remote_row->{remote_row_mod_ts}),
       $dbh->quote($remote_row->{remote_img_mod_ts})
     );
 
-    my $sql = "INSERT INTO $MLS::Property::Config::MLS.mutation(" . join(', ', @cols) . ") VALUES (" . join(', ', @vals) . ")";
+    my $sql = "INSERT INTO $MLS::Config::MLS.mutation(" . join(', ', @cols) . ") VALUES (" . join(', ', @vals) . ")";
     $self->{temp_log} = "$sql\n";
     $dbh->do($sql);
 
     $self->{totals}->{new}++;
     print ".";
-    print "\n" if (++$i % 100 == 0);
+    print "[$i]\n" if (++$i % 100 == 0);
   }
 
   print "\n";
@@ -200,17 +202,17 @@ sub updated_remote_rows {
       );
 
       my @conditions = (
-        'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+        'resource = ' . $dbh->quote($MLS::Config::RESOURCE),
         'remote_id = ' . $dbh->quote($remote_id)
       );
 
-      my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET " . join(', ', @data) . " WHERE " . join(' AND ', @conditions);
+      my $sql = "UPDATE $MLS::Config::MLS.mutation SET " . join(', ', @data) . " WHERE " . join(' AND ', @conditions);
       $self->{temp_log} = "$sql\n";
       $dbh->do($sql);
 
       $self->{totals}->{updated}++;
       print ".";
-      print "\n" if (++$i % 100 == 0);
+      print "[$i]\n" if (++$i % 100 == 0);
     }
   }
  
@@ -239,17 +241,17 @@ sub deleted_remote_rows {
     next if ($local->{ $remote_id }->{remote_removed_at});
 
     my @conditions = (
-      'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+      'resource = ' . $dbh->quote($MLS::Config::RESOURCE),
       'remote_id = ' . $dbh->quote($remote_id)
     );
 
-    my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET remote_removed_at = NOW() WHERE " . join(' AND ', @conditions);
+    my $sql = "UPDATE $MLS::Config::MLS.mutation SET remote_removed_at = NOW() WHERE " . join(' AND ', @conditions);
     $self->{temp_log} = "$sql\n";
     $dbh->do($sql);
 
     $self->{totals}->{removed}++;
     print ".";
-    print "\n" if (++$i % 100 == 0);
+    print "[$i]\n" if (++$i % 100 == 0);
   }
 
   print "\n";
@@ -275,23 +277,23 @@ sub resurrect_remote_rows {
     next unless ($local_row && $local_row->{remote_removed_at});
 
     my @conditions = (
-      'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+      'resource = ' . $dbh->quote($MLS::Config::RESOURCE),
       'remote_id = ' . $dbh->quote($remote_id)
     );
 
-    my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET remote_removed_at = NULL WHERE " . join(' AND ', @conditions);
+    my $sql = "UPDATE $MLS::Config::MLS.mutation SET remote_removed_at = NULL WHERE " . join(' AND ', @conditions);
     $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
 
-    my $pkey_ident = $MLS::Property::Config::PRIMARY_KEY{SystemName};
+    my $pkey_ident = $MLS::Config::PRIMARY_KEY{SystemName};
 
-    $sql = 'UPDATE ' . $MLS::Property::Config::MLS . '."' . $MLS::Property::Config::RESOURCE . '" SET __removed_at = NULL WHERE ' . $dbh->quote_identifier($pkey_ident) .' = ' . $dbh->quote($remote_id);
+    $sql = 'UPDATE ' . $MLS::Config::MLS . '."' . $MLS::Config::RESOURCE . '" SET __removed_at = NULL WHERE ' . $dbh->quote_identifier($pkey_ident) .' = ' . $dbh->quote($remote_id);
     $self->{temp_log} = "$sql\n";
     $dbh->do($sql);
 
     $self->{totals}->{resurrected}++;
     print ".";
-    print "\n" if (++$i % 100 == 0);
+    print "[$i]\n" if (++$i % 100 == 0);
   }
 
   print "\n";

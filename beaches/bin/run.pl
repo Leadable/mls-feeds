@@ -9,32 +9,33 @@ use MLS::Monitor;
 
 use MLS::Util;
 
-# Property
-use MLS::Property::Config;
-use MLS::Property::Mutation;
-use MLS::Property::Row;
-use MLS::Property::Purge;
-use MLS::Property::Photo;
-use MLS::Property::Geo;
-use MLS::Property::Publish;
+use MLS::Resource::Mutation;
+use MLS::Resource::Row;
+use MLS::Resource::Purge;
+use MLS::Resource::Photo;
+use MLS::Resource::Geo;
+use MLS::Resource::Publish;
 
-my $dbh = $MLS::Util::DBH->($MLS::Property::Config::MLS_DB_SHARD, $MLS::Property::Config::MLS) or die $DBI::errstr;
-my $rets = $MLS::Property::Config::RETS->();
-$rets->SetHttpLogName("$MLS::Property::Config::LOG_DIR/rets.log");
+my $resource = $ARGV[0] || 'Property';
+eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
+
+my $dbh = $MLS::Util::DBH->() or die $DBI::errstr;
+my $rets = $MLS::Config::RETS->();
+$rets->SetHttpLogName("$MLS::Config::LOG_DIR/rets.log");
 my $s3_client = $MLS::Util::S3_CLIENT->();
 my $ua = Mojo::UserAgent->new();
-my $monitor = MLS::Monitor->new({ dbh => $dbh, log_dir => $MLS::Property::Config::LOG_DIR });
+my $monitor = MLS::Monitor->new({ dbh => $dbh, log_dir => $MLS::Config::LOG_DIR });
 
 eval {
     $monitor->start();
 
     # Property
-    MLS::Property::Mutation->new({ dbh => $dbh, rets => $rets, monitor => $monitor, })->go();
-    MLS::Property::Row->new({ dbh => $dbh, rets => $rets, monitor => $monitor, rets_search_limit => 100 })->go();
-    MLS::Property::Purge->new({ dbh => $dbh, monitor => $monitor, })->go();
-    MLS::Property::Photo->new({ dbh => $dbh, rets => $rets, monitor => $monitor, s3_client => $s3_client })->go();
-    MLS::Property::Geo->new({ dbh => $dbh, monitor => $monitor, ua => $ua })->go();
-    MLS::Property::Publish->new({ dbh => $dbh, monitor => $monitor, })->go();
+    MLS::Resource::Mutation->new({ dbh => $dbh, rets => $rets, monitor => $monitor, })->go();
+    MLS::Resource::Row->new({ dbh => $dbh, rets => $rets, monitor => $monitor, rets_search_limit => 1000 })->go();
+    MLS::Resource::Purge->new({ dbh => $dbh, monitor => $monitor, })->go();
+    MLS::Resource::Photo->new({ dbh => $dbh, rets => $rets, monitor => $monitor, s3_client => $s3_client })->go();
+    MLS::Resource::Geo->new({ dbh => $dbh, monitor => $monitor, ua => $ua })->go();
+    MLS::Resource::Publish->new({ dbh => $dbh, monitor => $monitor, })->go();
 };
 
 if ($@) {

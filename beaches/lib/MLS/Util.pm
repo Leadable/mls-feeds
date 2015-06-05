@@ -2,8 +2,6 @@ package MLS::Util;
 use strict;
 
 $MLS::Util::DBH = sub {
-  my ($shard, $mls) = @_;
-
   my $dbname = 'mls';
   my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};
   my $port = $ENV{POSTGRES_PORT_5432_TCP_PORT};

@@ -1,4 +1,4 @@
-package MLS::Property::Geo;
+package MLS::Resource::Geo;
 use strict;
 
 $| = 1;
@@ -51,7 +51,7 @@ sub go {
   foreach my $remote_row (@$mutated) {
     $self->{totals}{total}++;
     print '.';
-    print "\n" if (++$i % 100 == 0);
+    print "[$i]\n" if (++$i % 100 == 0);
 
     if ($remote_row->{remote_address} eq 'INVALID') {
       $self->{totals}{invalid}++;
@@ -104,15 +104,13 @@ sub mutated {
   my $dbh = $self->{dbh};
 
   my @conditions = (
-    'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+    'resource = ' . $dbh->quote($MLS::Config::RESOURCE),
     "remote_address IS NOT NULL",
     "remote_address <> COALESCE(local_address, '')",
     "remote_removed_at IS NULL"
   );
 
-  @conditions = ('remote_id = ' . $dbh->quote($ARGV[0])) if ($ARGV[0]);
-
-  my $sql = "SELECT remote_id, remote_address, local_address FROM $MLS::Property::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id DESC";
+  my $sql = "SELECT remote_id, remote_address, local_address FROM $MLS::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id DESC";
   $self->{temp_error} = "$sql\n";
 
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
@@ -230,7 +228,7 @@ sub geocode_mapbox {
 
   my $url = sprintf('http://api.tiles.mapbox.com/v4/geocode/mapbox.places/%s.json?access_token=%s'
     , url_escape($remote_row->{remote_address})
-    , $MLS::Property::Config::MAPBOX_ACCESS_TOKEN
+    , $MLS::Config::MAPBOX_ACCESS_TOKEN
   );
 
   $self->{temp_error} = "$url\n";
@@ -274,7 +272,7 @@ sub geocode_bing {
 
   my $url = sprintf('http://dev.virtualearth.net/REST/v1/Locations?query=%s&key=%s'
     , url_escape($remote_row->{remote_address})
-    , $MLS::Property::Config::BING_ACCESS_TOKEN
+    , $MLS::Config::BING_ACCESS_TOKEN
   );
 
   $self->{temp_error} = "$url\n";
@@ -328,7 +326,7 @@ sub geocode_google {
 
   my $url = sprintf('https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s'
     , url_escape($remote_row->{remote_address})
-    , $MLS::Property::Config::GOOGLE_ACCESS_TOKEN
+    , $MLS::Config::GOOGLE_ACCESS_TOKEN
   );
 
   $self->{temp_error} = "$url\n";
@@ -416,7 +414,7 @@ sub update_local_row {
     );
   }
 
-  my $sql = "UPDATE $MLS::Property::Config::MLS.\"$MLS::Property::Config::RESOURCE\" SET " . join(', ', @vals) . " WHERE " . $dbh->quote_identifier($MLS::Property::Config::PRIMARY_KEY{SystemName}) . " = " . $dbh->quote($remote_row->{remote_id});
+  my $sql = "UPDATE $MLS::Config::MLS.\"$MLS::Config::RESOURCE\" SET " . join(', ', @vals) . " WHERE " . $dbh->quote_identifier($MLS::Config::PRIMARY_KEY{SystemName}) . " = " . $dbh->quote($remote_row->{remote_id});
   $self->{temp_error} = "$sql\n";
   $dbh->do($sql);
 }
@@ -431,14 +429,14 @@ sub update_mutation_row {
   eval {
     # update local_img_mod_ts in mutation row
     my @conditions = (
-      'resource = ' . $dbh->quote($MLS::Property::Config::RESOURCE),
+      'resource = ' . $dbh->quote($MLS::Config::RESOURCE),
       'remote_id = ' . $dbh->quote($remote_id)
     );
-    my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET local_address = remote_address WHERE " . join(' AND ', @conditions);
+    my $sql = "UPDATE $MLS::Config::MLS.mutation SET local_address = remote_address WHERE " . join(' AND ', @conditions);
     $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
 
-    my $sql = "SELECT * FROM $MLS::Property::Config::MLS.mutation WHERE " . join(' AND ', @conditions);
+    my $sql = "SELECT * FROM $MLS::Config::MLS.mutation WHERE " . join(' AND ', @conditions);
     $self->{temp_error} = "$sql\n";
     my $row = $dbh->selectrow_hashref($sql);
 
@@ -453,7 +451,7 @@ sub update_mutation_row {
     # if there are no more differences between remote and local in the mutation table then set the last_transaction_completed at = NOW() so that the row can be published
     # The publisher job will detect the change and publish the row to the materialized (live) tables
     if ($transaction_complete) {
-      my $sql = "UPDATE $MLS::Property::Config::MLS.mutation SET last_transaction_completed_at = NOW() WHERE " . join(' AND ', @conditions);
+      my $sql = "UPDATE $MLS::Config::MLS.mutation SET last_transaction_completed_at = NOW() WHERE " . join(' AND ', @conditions);
       $self->{temp_error} = "$sql\n";
       $dbh->do($sql);
     }
