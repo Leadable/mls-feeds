@@ -5,10 +5,10 @@ $MLS::Util::DBH = sub {
   my ($shard, $mls) = @_;
 
   my $dbname = 'mls';
-  my $host = $shard . '.c9ny87bfc9il.us-west-2.rds.amazonaws.com';
+  my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};
   my $port = '5432';
-  my $user = $mls . '_login';
-  my $pass = 'al2istic';
+  my $user = 'postgres';
+  my $pass = 'password';
 
   my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
 
