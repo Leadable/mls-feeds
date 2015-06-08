@@ -1,7 +1,7 @@
  -- View: beaches.view_listings
 -- DROP VIEW beaches.view_listings;
-DROP VIEW IF EXISTS beaches.view_listings CASCADE;
-CREATE VIEW beaches.view_listings AS 
+DROP VIEW IF EXISTS beaches.view_property CASCADE;
+CREATE VIEW beaches.view_property AS 
  SELECT 'beaches'::text AS mls,
     "Property".__removed_at,
     "Property".__removed_at IS NULL AS __active,
@@ -201,7 +201,7 @@ CREATE VIEW beaches.view_listings AS
     END as "feature_restrictions[]"
 
 
-FROM beaches."Property"
+FROM beaches."Property" JOIN beaches.mutation m ON beaches."Property"."LIST_1"::text = beaches.mutation.remote_id::text AND beaches.mutation.last_transaction_completed_at is not null
 
 UNION
 
@@ -330,5 +330,5 @@ UNION
     "HOA_111"[0] as "feature_governing_body",
     "PETS_A_181" as "feature_pets_allowed",
     null::text[] as "feature_restrictions[]"
-FROM ragfl."Property"
+FROM ragfl."Property" JOIN ragfl.mutation m ON ragfl."Property".sysid::text = ragfl.mutation.remote_id::text AND ragfl.mutation.last_transaction_completed_at is not null
 ;  
