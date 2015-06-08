@@ -52,9 +52,9 @@ Each board has a table call mutation wich keeps track of the remote changes
 - A materialized view of each normalized view exists to represent the live data of that view, and is used to generate the diff detailed in the publish steps
 
 Example
-beaches."Property" (table)
-beaches.view_property (normalized view of "Property" table)
-beaches.view_kanga_realty (area specific view of view_property)
+- beaches."Property" (table)
+- beaches.view_property (normalized view of "Property" table)
+- beaches.view_kanga_realty (area specific view of view_property)
 
 
 # Code Organization
