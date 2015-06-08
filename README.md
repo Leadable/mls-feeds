@@ -51,6 +51,12 @@ Each board has a table call mutation wich keeps track of the remote changes
 - Since clients can have different places table, there might be multiple views for a resource type per board
 - A materialized view of each normalized view exists to represent the live data of that view, and is used to generate the diff detailed in the publish steps
 
+Example
+beaches."Property" (table)
+beaches.view_property (normalized view of "Property" table)
+beaches.view_kanga_realty (area specific view of view_property)
+
+
 # Code Organization
 Each board has it's own directory with all the code needed to sync. Isolating each board is necessary
 for long term maintenance. Shared libraries would be dangerous to modify with hundreds of boards as
