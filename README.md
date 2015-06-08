@@ -44,6 +44,13 @@ Each board has a table call mutation wich keeps track of the remote changes
 4. Last Transaction Completed At. Set to NOW when 1, 2, 3 are in sync.
 5. Last Published At. Set to NOW when the row is published.
 
+# Feeds Database Design
+
+- Each feed must have its own schema with tables for each resource type containing all data from the feed 
+- There will be a normalized view of these tables that include a join with a places table for those resource types where location data is important
+- Since clients can have different places table, there might be multiple views for a resource type per board
+- A materialized view of each normalized view exists to represent the live data of that view, and is used to generate the diff detailed in the publish steps
+
 # Code Organization
 Each board has it's own directory with all the code needed to sync. Isolating each board is necessary
 for long term maintenance. Shared libraries would be dangerous to modify with hundreds of boards as
