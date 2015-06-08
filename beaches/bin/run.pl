@@ -20,11 +20,13 @@ my $resource = $ARGV[0] || 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
 my $dbh = $MLS::Util::DBH->() or die $DBI::errstr;
+my $live_dbh = $MLS::Util::LIVE_DBH->() or die $DBI::errstr;
+
 my $rets = $MLS::Config::RETS->();
 $rets->SetHttpLogName("$MLS::Config::LOG_DIR/rets.log");
 my $s3_client = $MLS::Util::S3_CLIENT->();
 my $ua = Mojo::UserAgent->new();
-my $monitor = MLS::Monitor->new({ dbh => $dbh, log_dir => $MLS::Config::LOG_DIR });
+my $monitor = MLS::Monitor->new({ dbh => $live_dbh, log_dir => $MLS::Config::LOG_DIR });
 
 eval {
     $| = 1;
@@ -37,7 +39,7 @@ eval {
     MLS::Resource::Purge->new({ dbh => $dbh, monitor => $monitor, })->go();
     MLS::Resource::Photo->new({ dbh => $dbh, rets => $rets, monitor => $monitor, s3_client => $s3_client })->go();
     MLS::Resource::Geo->new({ dbh => $dbh, monitor => $monitor, ua => $ua })->go();
-    MLS::Resource::Publish->new({ dbh => $dbh, monitor => $monitor, s3_client => $s3_client })->go();
+    MLS::Resource::Publish->new({ dbh => $dbh, live_dbh => $live_dbh, monitor => $monitor, s3_client => $s3_client })->go();
 };
 
 if ($@) {

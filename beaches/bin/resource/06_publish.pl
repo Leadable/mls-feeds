@@ -11,9 +11,11 @@ my $resource = $ARGV[0] || 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
 my $dbh = $MLS::Util::DBH->() or die $DBI::errstr;
+my $live_dbh = $MLS::Util::LIVE_DBH->() or die $DBI::errstr;
 
 MLS::Resource::Publish->new({
   dbh => $dbh,
+  live_dbh => $live_dbh,
   s3_client => $MLS::Util::S3_CLIENT->()
 })->go();
 

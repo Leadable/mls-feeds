@@ -46,24 +46,10 @@ sub go {
     my $sql_to_write = $self->generate_sql;
 
     # dump .sql file to somewhere
+    $self->store_diff($sql_to_write);
 
-    #TODO: Wrap sql file in transactions (begin...commit)
-    my $fh = $self->{out_fh};
-
-    my $md5_json = j({old => $self->{live_md5}, new => $self->{view_md5}});
-    print $fh "--$md5_json\n";
-    print $fh $sql_to_write;
-
-    # write new version string to live table
-    print $fh qq|COMMENT ON table $MLS::Config::MLS.test_live is '$self->{view_md5}';|;
-
-    my $bucket = $self->{s3_client}->bucket(name => $self->{s3_bucket});
-    my $s3_bucket = $bucket->object(
-        key          => "$MLS::Config::MLS/" . basename($self->{out_filename}),
-        acl_short    => 'public-read',
-        content_type => 'application/octet-stream',
-    );
-    $s3_bucket->put_filename($self->{out_filename});
+    # add a row to the live publish table
+    $self->insert_publish_table;
 
     # recreate materialized view from our new view
 
@@ -202,6 +188,53 @@ sub format_row_data {
     elsif (lc $action eq 'insert') {
         return qq|INSERT INTO $MLS::Config::MLS.test_live ($cols_str) VALUES ($vals_str);|;
     }
-};
+}
+
+sub store_diff {
+    my ($self, $sql) = @_;
+
+    #TODO: Wrap sql file in transactions (begin...commit)
+    my $fh = $self->{out_fh};
+
+    my $md5_json = j({old => $self->{live_md5}, new => $self->{view_md5}});
+    print $fh "--$md5_json\n";
+    print $fh $sql;
+
+    # write new version string to live table
+    print $fh qq|COMMENT ON table $MLS::Config::MLS.test_live is '$self->{view_md5}';|;
+
+    my $bucket = $self->{s3_client}->bucket(name => $self->{s3_bucket});
+    my $s3_bucket = $bucket->object(
+        key          => "$MLS::Config::MLS/" . basename($self->{out_filename}),
+        acl_short    => 'public-read',
+        content_type => 'application/octet-stream',
+    );
+    $s3_bucket->put_filename($self->{out_filename});
+
+    $self->{data_file_url} = $s3_bucket->uri;
+}
+
+sub insert_publish_table {
+    my $self = shift;
+
+    my $dbh = $self->{live_dbh};
+
+    my %row_data = (
+        mls               => $MLS::Config::MLS,
+        resource          => $MLS::Config::RESOURCE,
+        area              => 'NULL',
+        full              => $self->{set_rebuild} || '0',
+        data_file_url     => $self->{data_file_url},
+        schema_md5        => $self->{schema_md5},
+        data_md5          => $self->{view_md5},
+        previous_data_md5 => $self->{live_md5},
+    );
+
+    my @cols = map {$dbh->quote_identifier($_)} keys %row_data;
+    my @vals = map {$dbh->quote($_)} values %row_data;
+
+    my $sql = "INSERT INTO public.publish(" . join(',', @cols) . ") VALUES (" . join(',', @vals) . ")";
+    $dbh->do($sql);
+}
 
 1;
