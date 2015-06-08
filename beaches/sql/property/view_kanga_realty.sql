@@ -5,7 +5,7 @@ CREATE OR REPLACE VIEW beaches.view_kanga_realty AS
    vl.*,
    neigh_places.label as __geo_neigh
   FROM
-    (select * from beaches.view_listings) vl
+    (select * from beaches.view_property) vl
     LEFT OUTER JOIN
       (
         SELECT * FROM
@@ -15,7 +15,7 @@ CREATE OR REPLACE VIEW beaches.view_kanga_realty AS
               places.category as category,
               array_agg(places.label) AS label
             FROM
-              (select * from beaches.view_listings) vl
+              (select * from beaches.view_property) vl
               JOIN (select * from beaches.places where area_id = 83 AND category = 'Neighborhood') as places ON ST_Contains(ST_SETSRID(places.way, 4326), vl.__geo_geom)
             GROUP BY mlsnum, category
           ) mls_places
