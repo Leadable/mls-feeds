@@ -6,11 +6,19 @@ use warnings;
 use Data::Dumper qw(Dumper);
 use Digest::MD5 qw(md5_hex);
 use Mojo::JSON qw(j);
+use File::Temp qw(tempfile);
+use File::Basename;
 
 sub new {
   my ($class, $opts) = @_;
 
-  $opts->{sql_file_out} = "/tmp/sql/$MLS::Config::MLS-update.sql";
+  ($opts->{out_fh}, $opts->{out_filename}) = tempfile(
+    TEMPLATE => "$MLS::Config::MLS-update-XXXXXXXX",
+    DIR      => '/tmp',
+    SUFFIX   => '.sql',
+    UNLINK   => 1,
+  );
+  $opts->{s3_bucket} = 'dfo-publish';
 
   return bless $opts, $class;
 }
@@ -38,10 +46,9 @@ sub go {
     my $sql_to_write = $self->generate_sql;
 
     # dump .sql file to somewhere
-    open(my $fh, '>', $self->{sql_file_out}) or
-       die "Could not open [$self->{sql_file_out}] for write: $!";
 
     #TODO: Wrap sql file in transactions (begin...commit)
+    my $fh = $self->{out_fh};
 
     my $md5_json = j({old => $self->{live_md5}, new => $self->{view_md5}});
     print $fh "--$md5_json\n";
@@ -49,6 +56,14 @@ sub go {
 
     # write new version string to live table
     print $fh qq|COMMENT ON table $MLS::Config::MLS.test_live is '$self->{view_md5}';|;
+
+    my $bucket = $self->{s3_client}->bucket(name => $self->{s3_bucket});
+    my $s3_bucket = $bucket->object(
+        key          => "$MLS::Config::MLS/" . basename($self->{out_filename}),
+        acl_short    => 'public-read',
+        content_type => 'application/octet-stream',
+    );
+    $s3_bucket->put_filename($self->{out_filename});
 
     # recreate materialized view from our new view
 
@@ -68,7 +83,6 @@ sub finish {
 
     print "\nReport:\n";
     print Dumper $totals;
-    print "Wrote SQL diff to [$self->{sql_file_out}]\n";
     print "\n[DONE]\n\n";
 }
 

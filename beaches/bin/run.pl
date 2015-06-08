@@ -37,7 +37,7 @@ eval {
     MLS::Resource::Purge->new({ dbh => $dbh, monitor => $monitor, })->go();
     MLS::Resource::Photo->new({ dbh => $dbh, rets => $rets, monitor => $monitor, s3_client => $s3_client })->go();
     MLS::Resource::Geo->new({ dbh => $dbh, monitor => $monitor, ua => $ua })->go();
-    MLS::Resource::Publish->new({ dbh => $dbh, monitor => $monitor, })->go();
+    MLS::Resource::Publish->new({ dbh => $dbh, monitor => $monitor, s3_client => $s3_client })->go();
 };
 
 if ($@) {
