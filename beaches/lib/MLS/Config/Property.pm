@@ -6,6 +6,8 @@ use MLS::Config;
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
 
+@MLS::Config::AREAS = qw(kanga_realty);
+
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'HiRes';
 

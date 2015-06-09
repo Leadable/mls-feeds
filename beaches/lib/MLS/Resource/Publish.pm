@@ -12,12 +12,6 @@ use File::Basename;
 sub new {
   my ($class, $opts) = @_;
 
-  ($opts->{out_fh}, $opts->{out_filename}) = tempfile(
-    TEMPLATE => "$MLS::Config::MLS-update-XXXXXXXX",
-    DIR      => '/tmp',
-    SUFFIX   => '.sql',
-    UNLINK   => 1,
-  );
   $opts->{s3_bucket} = 'dfo-publish';
 
   return bless $opts, $class;
@@ -26,19 +20,38 @@ sub new {
 sub go {
     my ($self) = @_;
 
-    print "----Generate Publish Data---\n\n";
+    print "----Generate Publish Data [$self->{id}]---\n\n";
     $self->{id_lists} = {new => [], updated => []};
 
-    # get data from view and materialized view
-    $self->get_data;
+    $self->{view} = "$MLS::Config::MLS.view_$self->{id}";
+    $self->{materialized} = $self->{view} . '_materialized';
 
-    # compare md5 from both tables to see if this should proceed
-    if ($self->{view_md5} eq $self->{live_md5}) {
+    # determine if there is a schema change
+    # if so, must rebuild the entire table on live
+    if ($self->is_schema_change) {
+        print "Schema change detected\n";
+
+        $self->{rebuild} = 1;
+        $self->{live_table} = $self->{view} . '_new';
+
+        # format schema for publish later
+        $self->{view_schema} = [
+            map {
+                { col_name => $_->[0], col_type => $_->[1] }
+            } @{$self->{view_schema}}
+        ];
+    }
+    else {
+        $self->{live_table} = $self->{view};
+    }
+
+    # compare md5 of data from both tables to see if this should proceed
+    if (!$self->is_data_change) {
         print "Tables are equivalent, no need to continue\n";
         $self->finish();
         return;
     }
-  
+
     # Compare key columns of view with materialized view data
     $self->build_id_lists;
 
@@ -47,6 +60,10 @@ sub go {
 
     # dump .sql file to somewhere
     $self->store_diff($sql_to_write);
+
+    if ($self->{rebuild}) {
+        $self->store_schema;
+    }
 
     # add a row to the live publish table
     $self->insert_publish_table;
@@ -84,7 +101,35 @@ sub monitor {
     $monitor->status({ namespace => \@class, key => $key, value => $value });
 }
 
-sub get_data {
+sub is_schema_change {
+    my $self = shift;
+
+    my $dbh = $self->{dbh};
+
+    my $view_schema = $dbh->selectall_arrayref(qq|
+        SELECT attname, format_type(atttypid, atttypmod)
+        FROM   pg_attribute
+        WHERE  attrelid = '$self->{view}'::regclass
+        AND    attnum > 0
+        AND    NOT attisdropped;|
+    );
+
+    my $live_schema = $dbh->selectall_arrayref(qq|
+        SELECT attname, format_type(atttypid, atttypmod)
+        FROM   pg_attribute
+        WHERE  attrelid = '$self->{materialized}'::regclass
+        AND    attnum > 0
+        AND    NOT attisdropped;|
+    );
+
+    $self->{view_schema} = $view_schema;
+    $self->{view_schema_md5} = do_md5sum_schema($view_schema);
+    $self->{live_schema_md5} = do_md5sum_schema($live_schema);
+
+    return $self->{view_schema_md5} ne $self->{live_schema_md5};
+}
+
+sub is_data_change {
     my $self = shift;
 
     my $dbh = $self->{dbh};
@@ -94,8 +139,12 @@ sub get_data {
         join ',',
         map {"extract(epoch from $_) as $_"} @key_cols;
 
-    my $view_rs = $self->{view_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $MLS::Config::MLS.view_listings", 'listing_id');
-    my $live_rs = $self->{live_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $MLS::Config::MLS.view_listings_materialized", 'listing_id');
+    my $view_rs = $self->{view_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $self->{view}", 'listing_id');
+
+    my $live_rs = {};
+    if (!$self->{rebuild}) {
+        $live_rs = $self->{live_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $self->{materialized}", 'listing_id');
+    }
 
     print scalar(keys %$view_rs) ." records in new view\n";
     print scalar(keys %$live_rs) ." records in live view\n";
@@ -107,10 +156,10 @@ sub get_data {
         }
     }
 
-    $self->{view_md5} = do_md5sum_table($view_rs);
-    $self->{live_md5} = do_md5sum_table($live_rs);
-    print "view_md5: [$self->{view_md5}]\n";
-    print "live_md5: [$self->{live_md5}]\n";
+    $self->{view_data_md5} = do_md5sum_data($view_rs);
+    $self->{live_data_md5} = do_md5sum_data($live_rs);
+
+    return $self->{view_data_md5} ne $self->{live_data_md5};
 }
 
 sub build_id_lists {
@@ -134,7 +183,17 @@ sub build_id_lists {
     }
 }
 
-sub do_md5sum_table {
+sub do_md5sum_schema {
+    my $table_schema = shift;
+
+    return md5_hex(
+        map {
+            join '', @$_
+        } @$table_schema
+    );
+}
+
+sub do_md5sum_data {
     my $table_data = shift;
 
     # sort by keys (listing id) here so data is always in same order
@@ -153,27 +212,35 @@ sub generate_sql {
 
     my $dbh = $self->{dbh};
 
+    my $return_sql = '';
+
     # new
-    my $new_ids_str = join ' OR ',
-                      map {"listing_id = " . $dbh->quote($_)} @{$self->{id_lists}{new}};
-    my $new_rs = $dbh->selectall_arrayref("SELECT * from $MLS::Config::MLS.view_listings where $new_ids_str", {Slice => {}});
-    my $new_sql = join "\n",
-                  map {format_row_data('insert', $_, $dbh)} @$new_rs;
+    if (scalar @{$self->{id_lists}{new}}) {
+        my $new_ids_str = join ' OR ',
+                          map {"listing_id = " . $dbh->quote($_)} @{$self->{id_lists}{new}};
+        my $new_rs = $dbh->selectall_arrayref("SELECT * from $self->{view} where $new_ids_str", {Slice => {}});
+        $return_sql .= join "\n",
+                       map {$self->format_row_data('insert', $_, $dbh)} @$new_rs;
+        $return_sql .= "\n";
+    }
 
     # updated
-    my $update_ids_str = join ' OR ',
-                      map {"listing_id = " . $dbh->quote($_)} @{$self->{id_lists}{updated}};
-    my $update_rs = $dbh->selectall_arrayref("SELECT * from $MLS::Config::MLS.view_listings where $update_ids_str", {Slice => {}});
-    my $update_sql = join "\n",
-                     map {format_row_data('update', $_, $dbh)} @$update_rs;
+    if (scalar @{$self->{id_lists}{updated}}) {
+        my $update_ids_str = join ' OR ',
+                          map {"listing_id = " . $dbh->quote($_)} @{$self->{id_lists}{updated}};
+        my $update_rs = $dbh->selectall_arrayref("SELECT * from $self->{view} where $update_ids_str", {Slice => {}});
+        $return_sql .= join "\n",
+                       map {$self->format_row_data('update', $_, $dbh)} @$update_rs;
+        $return_sql .= "\n";
+    }
 
-    return "$new_sql\n$update_sql\n";
+    return $return_sql;
 
 }
 
 # Formats a row in hash form for the diff
 sub format_row_data {
-    my ($action, $row_data, $dbh) = @_;
+    my ($self, $action, $row_data, $dbh) = @_;
 
     my $cols_str = join ',',
                    map {qq|"$_"|} keys %$row_data;
@@ -183,35 +250,66 @@ sub format_row_data {
 
     if (lc $action eq 'update') {
         my $where_sql = 'l.listing_id = ' . $dbh->quote($row_data->{listing_id});
-        return qq|UPDATE $MLS::Config::MLS.test_live as l SET ($cols_str) = ($vals_str) WHERE $where_sql;|;
+        return qq|UPDATE $self->{live_table} as l SET ($cols_str) = ($vals_str) WHERE $where_sql;|;
     }
     elsif (lc $action eq 'insert') {
-        return qq|INSERT INTO $MLS::Config::MLS.test_live ($cols_str) VALUES ($vals_str);|;
+        return qq|INSERT INTO $self->{live_table} ($cols_str) VALUES ($vals_str);|;
     }
 }
 
 sub store_diff {
     my ($self, $sql) = @_;
 
-    #TODO: Wrap sql file in transactions (begin...commit)
-    my $fh = $self->{out_fh};
+    my ($fh, $filename) = tempfile(
+        TEMPLATE => "$MLS::Config::MLS-$self->{id}-data-XXXXXXXX",
+        DIR      => '/tmp',
+        SUFFIX   => '.sql',
+        UNLINK   => 1,
+    );
 
-    my $md5_json = j({old => $self->{live_md5}, new => $self->{view_md5}});
+    my $md5_json = j({old => $self->{live_data_md5}, new => $self->{view_data_md5}});
     print $fh "--$md5_json\n";
     print $fh $sql;
 
     # write new version string to live table
-    print $fh qq|COMMENT ON table $MLS::Config::MLS.test_live is '$self->{view_md5}';|;
+    print $fh qq|COMMENT ON table $self->{live_table} is '$self->{view_data_md5}';|;
+
+    close $fh;
 
     my $bucket = $self->{s3_client}->bucket(name => $self->{s3_bucket});
     my $s3_bucket = $bucket->object(
-        key          => "$MLS::Config::MLS/" . basename($self->{out_filename}),
+        key          => "$MLS::Config::MLS/" . basename($filename),
         acl_short    => 'public-read',
         content_type => 'application/octet-stream',
     );
-    $s3_bucket->put_filename($self->{out_filename});
+    $s3_bucket->put_filename($filename);
 
     $self->{data_file_url} = $s3_bucket->uri;
+}
+
+sub store_schema {
+    my $self = shift;
+
+    my ($fh, $filename) = tempfile(
+        TEMPLATE => "$MLS::Config::MLS-$self->{id}-schema-XXXXXXXX",
+        DIR      => '/tmp',
+        SUFFIX   => '.json',
+        UNLINK   => 1,
+    );
+
+    my $md5_json = j($self->{view_schema});
+    print $fh $md5_json;
+    close $fh;
+
+    my $bucket = $self->{s3_client}->bucket(name => $self->{s3_bucket});
+    my $s3_bucket = $bucket->object(
+        key          => "$MLS::Config::MLS/" . basename($filename),
+        acl_short    => 'public-read',
+        content_type => 'application/octet-stream',
+    );
+    $s3_bucket->put_filename($filename);
+
+    $self->{schema_file_url} = $s3_bucket->uri;
 }
 
 sub insert_publish_table {
@@ -222,12 +320,13 @@ sub insert_publish_table {
     my %row_data = (
         mls               => $MLS::Config::MLS,
         resource          => $MLS::Config::RESOURCE,
-        area              => 'NULL',
-        full              => $self->{set_rebuild} || '0',
+        area              => $self->{id},
+        full              => $self->{rebuild} || '0',
         data_file_url     => $self->{data_file_url},
-        schema_md5        => $self->{schema_md5},
-        data_md5          => $self->{view_md5},
-        previous_data_md5 => $self->{live_md5},
+        schema_file_url   => $self->{schema_file_url},
+        schema_md5        => $self->{view_schema_md5}, # TODO: is this column necessary?
+        data_md5          => $self->{view_data_md5},
+        previous_data_md5 => $self->{live_data_md5},
     );
 
     my @cols = map {$dbh->quote_identifier($_)} keys %row_data;

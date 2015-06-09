@@ -13,11 +13,19 @@ eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$res
 my $dbh = $MLS::Util::DBH->() or die $DBI::errstr;
 my $live_dbh = $MLS::Util::LIVE_DBH->() or die $DBI::errstr;
 
-MLS::Resource::Publish->new({
-  dbh => $dbh,
-  live_dbh => $live_dbh,
-  s3_client => $MLS::Util::S3_CLIENT->()
-})->go();
+# Use areas array when applicable (for Property resource), otherwise
+# pass the resource type instead
+my @areas = @MLS::Config::AREAS;
+push @areas, $resource if (! @areas);
+
+foreach my $id (@areas) {
+    MLS::Resource::Publish->new({
+      dbh => $dbh,
+      live_dbh => $live_dbh,
+      s3_client => $MLS::Util::S3_CLIENT->(),
+      id => $id
+    })->go();
+}
 
 $dbh->disconnect;
 
