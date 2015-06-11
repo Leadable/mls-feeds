@@ -7,6 +7,8 @@ use Mojo::JSON qw(j);
 use MLS::Util;
 use POSIX;
 
+$| = 1;
+
 sub new {
   my ($class, $opts) = @_;
 

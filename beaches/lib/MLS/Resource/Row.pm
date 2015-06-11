@@ -3,6 +3,8 @@ use strict;
 
 use Data::Dumper qw(Dumper);
 
+$| = 1;
+
 sub new {
   my ($class, $opts) = @_;
 

@@ -3,6 +3,8 @@ use strict;
 
 use Data::Dumper qw(Dumper);
 
+$| = 1;
+
 my %extentions = (
  'image/jpeg' => "jpg",
  'image/gif' => "gif",

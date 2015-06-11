@@ -15,8 +15,7 @@ my $live_dbh = $MLS::Util::LIVE_DBH->() or die $DBI::errstr;
 
 # Use areas array when applicable (for Property resource), otherwise
 # pass the resource type instead
-my @areas = @MLS::Config::AREAS;
-push @areas, $resource if (! @areas);
+my @areas = @MLS::Config::AREAS ? @MLS::Config::AREAS : ($resource);
 
 foreach my $id (@areas) {
     MLS::Resource::Publish->new({

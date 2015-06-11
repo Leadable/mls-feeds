@@ -67,6 +67,6 @@ my $s3_object = $bucket->object(
   content_type => 'application/octet-stream'
 );
 
-#$s3_object->put_filename("/tmp/$schema.tar");
+$s3_object->put_filename("/tmp/$schema.tar");
 
 exit(0);

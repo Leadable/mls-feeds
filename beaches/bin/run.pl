@@ -28,6 +28,9 @@ my $s3_client = $MLS::Util::S3_CLIENT->();
 my $ua = Mojo::UserAgent->new();
 my $monitor = MLS::Monitor->new({ dbh => $live_dbh, log_dir => $MLS::Config::LOG_DIR });
 
+my @areas = @MLS::Config::AREAS;
+push @areas, $resource if (! @areas);
+
 eval {
     $| = 1;
 
@@ -39,7 +42,17 @@ eval {
     MLS::Resource::Purge->new({ dbh => $dbh, monitor => $monitor, })->go();
     MLS::Resource::Photo->new({ dbh => $dbh, rets => $rets, monitor => $monitor, s3_client => $s3_client })->go();
     MLS::Resource::Geo->new({ dbh => $dbh, monitor => $monitor, ua => $ua })->go();
-    MLS::Resource::Publish->new({ dbh => $dbh, live_dbh => $live_dbh, monitor => $monitor, s3_client => $s3_client })->go();
+
+    my @areas = @MLS::Config::AREAS ? @MLS::Config::AREAS : ($resource);
+    foreach my $id (@areas) {
+        MLS::Resource::Publish->new({
+            dbh => $dbh,
+            live_dbh => $live_dbh,
+            monitor => $monitor,
+            s3_client => $s3_client,
+            id => $id,
+        })->go();
+    }
 };
 
 if ($@) {

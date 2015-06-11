@@ -9,6 +9,8 @@ use Mojo::JSON qw(j);
 use File::Temp qw(tempfile);
 use File::Basename;
 
+$| = 1;
+
 sub new {
   my ($class, $opts) = @_;
 
@@ -69,6 +71,7 @@ sub go {
     $self->insert_publish_table;
 
     # recreate materialized view from our new view
+    $self->{dbh}->do("REFRESH MATERIALIZED VIEW $self->{materialized}");
 
     $self->finish();
 }
@@ -213,25 +216,39 @@ sub generate_sql {
     my $dbh = $self->{dbh};
 
     my $return_sql = '';
+    my @new_ids     = @{$self->{id_lists}{new}};
+    my @updated_ids = @{$self->{id_lists}{updated}};
 
     # new
-    if (scalar @{$self->{id_lists}{new}}) {
-        my $new_ids_str = join ' OR ',
-                          map {"listing_id = " . $dbh->quote($_)} @{$self->{id_lists}{new}};
-        my $new_rs = $dbh->selectall_arrayref("SELECT * from $self->{view} where $new_ids_str", {Slice => {}});
-        $return_sql .= join "\n",
-                       map {$self->format_row_data('insert', $_, $dbh)} @$new_rs;
-        $return_sql .= "\n";
+    if (scalar @new_ids) {
+        while (@new_ids) {
+            # chunk requests
+            my @ids = splice @new_ids, 0, 5000;
+            print 'Getting [' . scalar(@ids) . "] new records\n";
+
+            my $new_ids_str = join ' OR ',
+                              map {"listing_id = " . $dbh->quote($_)} @ids;
+            my $new_rs = $dbh->selectall_arrayref("SELECT * from $self->{view} where $new_ids_str", {Slice => {}});
+            $return_sql .= join "\n",
+                           map {$self->format_row_data('insert', $_, $dbh)} @$new_rs;
+            $return_sql .= "\n";
+        }
     }
 
     # updated
-    if (scalar @{$self->{id_lists}{updated}}) {
-        my $update_ids_str = join ' OR ',
-                          map {"listing_id = " . $dbh->quote($_)} @{$self->{id_lists}{updated}};
-        my $update_rs = $dbh->selectall_arrayref("SELECT * from $self->{view} where $update_ids_str", {Slice => {}});
-        $return_sql .= join "\n",
-                       map {$self->format_row_data('update', $_, $dbh)} @$update_rs;
-        $return_sql .= "\n";
+    if (scalar @updated_ids) {
+        while (@updated_ids) {
+            # chunk requests
+            my @ids = splice @updated_ids, 0, 5000;
+            print 'Getting [' . scalar(@ids) . "] updated records\n";
+
+            my $update_ids_str = join ' OR ',
+                              map {"listing_id = " . $dbh->quote($_)} @ids;
+            my $update_rs = $dbh->selectall_arrayref("SELECT * from $self->{view} where $update_ids_str", {Slice => {}});
+            $return_sql .= join "\n",
+                           map {$self->format_row_data('update', $_, $dbh)} @$update_rs;
+            $return_sql .= "\n";
+        }
     }
 
     return $return_sql;
@@ -259,6 +276,8 @@ sub format_row_data {
 
 sub store_diff {
     my ($self, $sql) = @_;
+
+    print "Storing sql diff\n";
 
     my ($fh, $filename) = tempfile(
         TEMPLATE => "$MLS::Config::MLS-$self->{id}-data-XXXXXXXX",

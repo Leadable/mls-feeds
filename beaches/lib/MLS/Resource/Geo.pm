@@ -7,6 +7,8 @@ use Text::LevenshteinXS qw(distance);
 use Geo::StreetAddress::US;
 use Mojo::JSON qw(j);
 
+$| = 1;
+
 sub new {
   my ($class, $opts) = @_;
 
