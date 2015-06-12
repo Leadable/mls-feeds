@@ -4,6 +4,26 @@ use strict;
 use Data::Dumper qw(Dumper);
 use DBI;
 
+die "Missing argument [MLS]" unless $ARGV[0];
+my $mls = $ARGV[0];
+
+###########################
+# Create the MLS database #
+###########################
+print "Creating the MLS database\n";
+
+my $cmd = q|psql -h $POSTGRES_PORT_5432_TCP_ADDR -U postgres < /opt/mls-feeds/mls.sql|;
+print "$cmd\n";
+system($cmd) == 0 or
+  die "There was a problem with the command: [" . ($? >> 8) . "]";
+
+print "[DONE]\n\n";
+
+###########################
+# Initialize the schema   #
+###########################
+print "Creating the schema [$mls]\n";
+
 sub dbh {
   my $dbname = 'mls';
   my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};
@@ -16,10 +36,8 @@ sub dbh {
   return DBI->connect($connstr, $user, $pass, { AutoCommit => 0, RaiseError => 1, pg_server_prepare => 0 });
 }
 
-die "Missing argument [MLS]" unless $ARGV[0];
-my $mls = $ARGV[0];
-
 my $dbh = dbh();
+
 
 my @sql = (
   # schema
@@ -54,17 +72,6 @@ my @sql = (
   "CREATE INDEX idx_mutation_local_removed_at ON $mls.mutation USING btree (local_removed_at)",
   "CREATE INDEX idx_mutation_last_transaction_completed_at ON $mls.mutation USING btree (last_transaction_completed_at)",
   "CREATE INDEX idx_mutation_last_published_at ON $mls.mutation USING btree (last_published_at)",
-
-  # geocoder_cache
-  "CREATE TABLE $mls.geocoder_cache
-  (
-    service text NOT NULL,
-    query text NOT NULL,
-    ts timestamp without time zone NOT NULL DEFAULT now(),
-    expires text NOT NULL DEFAULT '30 days'::text,
-    response jsonb,
-    CONSTRAINT pkey_geocoder_cache PRIMARY KEY (service, query)
-  ) WITH (OIDS=FALSE)",
 );
 
 for my $sql (@sql) {
@@ -79,5 +86,64 @@ for my $sql (@sql) {
 }
 
 $dbh->do('COMMIT');
-
 $dbh->disconnect;
+print "[DONE]\n\n";
+
+my $sql_dir = "./$mls/sql";
+my $psql_cmd = q|psql -q -h $POSTGRES_PORT_5432_TCP_ADDR -U postgres mls|;
+
+##############################
+# Create the resource tables #
+##############################
+print "Creating the resource tables\n";
+
+die "Could not find [$sql_dir/resources.sql]" if (! -e "$sql_dir/resources.sql");
+
+$cmd = qq|$psql_cmd < $sql_dir/resources.sql|;
+print "$cmd\n";
+system($cmd) == 0 or
+  die "There was a problem with the command: [" . ($? >> 8) . "]";
+
+print "[DONE]\n\n";
+
+##############################################################################
+# Create the places table, populate it with data, and make the property view #
+# TODO: this may need to change if multiple places tables are possible       #
+##############################################################################
+print "Creating places table and property view\n";
+my @files = (
+  "$sql_dir/property/places_schema.sql",
+  "$sql_dir/property/places_data.sql",
+  "$sql_dir/property/view_property.sql"
+);
+
+foreach (@files) {
+  die "Could not find: [$_]" if (! -e $_);
+}
+
+my $file_str = join ' ', @files;
+
+# Execute multiple SQL files at once with cat
+$cmd = qq{cat $file_str | } . qq{$psql_cmd -f -};
+print "$cmd\n";
+system($cmd) == 0 or
+  die "There was a problem with the command: [" . ($? >> 8) . "]";
+
+print "[DONE]\n\n";
+
+######################################################
+# create the views for all places and resource types #
+######################################################
+print "Creating all views\n";
+
+# Execute multiple SQL files at once with cat
+$cmd = qq{cat $sql_dir/views/* | } . qq{$psql_cmd -f -};
+print "$cmd\n";
+system($cmd) == 0 or
+  die "There was a problem with the command: [" . ($? >> 8) . "]";
+
+print "[DONE]\n\n";
+
+print "---Done intializing DB for [$mls]--\n";
+
+1;

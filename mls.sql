@@ -1,6 +1,6 @@
 -- Database: mls
 
-DROP DATABASE mls;
+DROP DATABASE IF EXISTS mls;
 
 CREATE DATABASE mls;
 
@@ -73,6 +73,7 @@ CREATE TABLE property
   __status_updated_at timestamp without time zone,
   __status_history_times timestamp without time zone[],
   __status_history_vals text[],
+  __photo_urls text[],
   __geo_confidence text,
   __geo_admin_dist2 text,
   __geo_admin_dist text,
@@ -86,3 +87,13 @@ CREATE TABLE property
 WITH (
   OIDS=FALSE
 );
+
+CREATE TABLE geocoder_cache
+(
+  service text NOT NULL,
+  query text NOT NULL,
+  ts timestamp without time zone NOT NULL DEFAULT now(),
+  expires text NOT NULL DEFAULT '30 days'::text,
+  response jsonb,
+  CONSTRAINT pkey_geocoder_cache PRIMARY KEY (service, query)
+) WITH (OIDS=FALSE);

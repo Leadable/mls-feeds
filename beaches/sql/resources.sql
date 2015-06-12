@@ -1,6 +1,6 @@
 BEGIN;
 
-  CREATE TABLE beaches."ActiveAgent"() ;
+  CREATE TABLE beaches."ActiveAgent"() INHERITS (property);
     ALTER TABLE beaches."ActiveAgent" ADD COLUMN "MEMBER_1" text;
     COMMENT ON COLUMN beaches."ActiveAgent"."MEMBER_1" IS 'Office ID';
      
@@ -46,8 +46,7 @@ BEGIN;
     ALTER TABLE beaches."ActiveAgent" ADD COLUMN "MEMBER_0" text PRIMARY KEY;
     COMMENT ON COLUMN beaches."ActiveAgent"."MEMBER_0" IS 'Agent ID';
      
-  GRANT SELECT, UPDATE, INSERT ON TABLE beaches."ActiveAgent" TO GROUP beaches;
-  CREATE TABLE beaches."Office"() ;
+  CREATE TABLE beaches."Office"() INHERITS (property);
     ALTER TABLE beaches."Office" ADD COLUMN "OFFICE_16" text;
     COMMENT ON COLUMN beaches."Office"."OFFICE_16" IS 'Board Code';
      
@@ -96,8 +95,7 @@ BEGIN;
     ALTER TABLE beaches."Office" ADD COLUMN "OFFICE_17" text;
     COMMENT ON COLUMN beaches."Office"."OFFICE_17" IS 'Company ID';
      
-  GRANT SELECT, UPDATE, INSERT ON TABLE beaches."Office" TO GROUP beaches;
-  CREATE TABLE beaches."OpenHouse"() ;
+  CREATE TABLE beaches."OpenHouse"() INHERITS (property);
     ALTER TABLE beaches."OpenHouse" ADD COLUMN "PHONE0" text;
     COMMENT ON COLUMN beaches."OpenHouse"."PHONE0" IS 'Agent Primary Phone';
      
@@ -164,7 +162,6 @@ BEGIN;
     ALTER TABLE beaches."OpenHouse" ADD COLUMN "OPEN_HOUSE_COMMENT" text;
     COMMENT ON COLUMN beaches."OpenHouse"."OPEN_HOUSE_COMMENT" IS 'Open House Comments';
      
-  GRANT SELECT, UPDATE, INSERT ON TABLE beaches."OpenHouse" TO GROUP beaches;
   CREATE TABLE beaches."Property"() INHERITS (property);
     ALTER TABLE beaches."Property" ADD COLUMN "ROOM_OR1_room_length" text;
     COMMENT ON COLUMN beaches."Property"."ROOM_OR1_room_length" IS 'Other Room Length';
@@ -2038,6 +2035,5 @@ BEGIN;
     ALTER TABLE beaches."Property" ADD COLUMN "GF20121210032048203667000000" text[];
     COMMENT ON COLUMN beaches."Property"."GF20121210032048203667000000" IS 'Avail Docs';
      
-  GRANT SELECT, UPDATE, INSERT ON TABLE beaches."Property" TO GROUP beaches;
 
 COMMIT;

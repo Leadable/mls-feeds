@@ -28,4 +28,8 @@ CREATE VIEW beaches.view_openhouse AS
     "OpenHouse"."OPEN_HOUSE_COMMENT" as comments
 
 
-    FROM beaches."OpenHouse" JOIN beaches.mutation ON beaches."OpenHouse"."EVENT0"::text = beaches.mutation.remote_id::text AND beaches.mutation.last_transaction_completed_at is not null
+    FROM beaches."OpenHouse" JOIN beaches.mutation ON
+    beaches."OpenHouse"."EVENT0"::text = beaches.mutation.remote_id::text AND
+    beaches.mutation.last_transaction_completed_at is not null;
+
+CREATE MATERIALIZED VIEW beaches.view_openhouse_materialized as SELECT * from beaches.view_openhouse;

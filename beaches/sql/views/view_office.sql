@@ -19,4 +19,8 @@ CREATE VIEW beaches.view_office AS
     "Office"."OFFICE_17" as company_id,
     "Office"."STATUS" as status
 
-    FROM beaches."Office" JOIN beaches.mutation ON beaches."Office"."OFFICE_0"::text = beaches.mutation.remote_id::text AND beaches.mutation.last_transaction_completed_at is not null
+    FROM beaches."Office" JOIN beaches.mutation ON
+    beaches."Office"."OFFICE_0"::text = beaches.mutation.remote_id::text AND
+    beaches.mutation.last_transaction_completed_at is not null;
+
+CREATE MATERIALIZED VIEW beaches.view_office_materialized as SELECT * from beaches.view_office;
