@@ -61,8 +61,10 @@ my $tar = join(' ', @tar);
 print "$tar\n";
 system($tar);
 
+my $time = time;
+
 my $s3_object = $bucket->object(
-  key => "mls-feeds/dumps/$schema/$schema.tar",
+  key => "mls-feeds/dumps/$schema/$schema-$time.tar",
   acl_short => 'public-read',
   content_type => 'application/octet-stream'
 );
