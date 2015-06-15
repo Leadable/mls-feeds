@@ -88,12 +88,3 @@ WITH (
   OIDS=FALSE
 );
 
-CREATE TABLE geocoder_cache
-(
-  service text NOT NULL,
-  query text NOT NULL,
-  ts timestamp without time zone NOT NULL DEFAULT now(),
-  expires text NOT NULL DEFAULT '30 days'::text,
-  response jsonb,
-  CONSTRAINT pkey_geocoder_cache PRIMARY KEY (service, query)
-) WITH (OIDS=FALSE);

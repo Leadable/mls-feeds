@@ -148,7 +148,7 @@ sub request {
     'query = ' . $dbh->quote($url)
   );
 
-  my $sql = 'SELECT *, ts + expires::interval <= NOW() as expired FROM geocoder_cache WHERE ' . join(' AND ', @conditions);
+  my $sql = "SELECT *, ts + expires::interval <= NOW() as expired FROM $MLS::Config::MLS.geocoder_cache WHERE " . join(' AND ', @conditions);
   my $row = $dbh->selectrow_hashref($sql);
 
   return j($row->{response}) if ($row && !($row->{expired}));
@@ -185,9 +185,9 @@ sub request {
   die "Response is not JSON!" unless $json;
 
   if ($row) {
-    $sql = 'UPDATE geocoder_cache SET ts = NOW(), response = ' . $dbh->quote(j($json)) . ' WHERE ' . join(' AND ', @conditions);
+    $sql = "UPDATE $MLS::Config::MLS.geocoder_cache SET ts = NOW(), response = " . $dbh->quote(j($json)) . ' WHERE ' . join(' AND ', @conditions);
   } else {
-    $sql = 'INSERT INTO geocoder_cache(service, query, response) VALUES(' . $dbh->quote($service) .', ' . $dbh->quote($url) . ', ' . $dbh->quote(j($json)) . ')';
+    $sql = "INSERT INTO $MLS::Config::MLS.geocoder_cache(service, query, response) VALUES(" . $dbh->quote($service) .', ' . $dbh->quote($url) . ', ' . $dbh->quote(j($json)) . ')';
   }
 
   $self->{temp_error} = "$sql\n";

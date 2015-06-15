@@ -8,18 +8,6 @@ die "Missing argument [MLS]" unless $ARGV[0];
 my $mls = $ARGV[0];
 
 ###########################
-# Create the MLS database #
-###########################
-print "Creating the MLS database\n";
-
-my $cmd = q|psql -h $POSTGRES_PORT_5432_TCP_ADDR -U postgres < /opt/mls-feeds/mls.sql|;
-print "$cmd\n";
-system($cmd) == 0 or
-  die "There was a problem with the command: [" . ($? >> 8) . "]";
-
-print "[DONE]\n\n";
-
-###########################
 # Initialize the schema   #
 ###########################
 print "Creating the schema [$mls]\n";
@@ -72,6 +60,16 @@ my @sql = (
   "CREATE INDEX idx_mutation_local_removed_at ON $mls.mutation USING btree (local_removed_at)",
   "CREATE INDEX idx_mutation_last_transaction_completed_at ON $mls.mutation USING btree (last_transaction_completed_at)",
   "CREATE INDEX idx_mutation_last_published_at ON $mls.mutation USING btree (last_published_at)",
+
+  "CREATE TABLE $mls.geocoder_cache
+  (
+    service text NOT NULL,
+    query text NOT NULL,
+    ts timestamp without time zone NOT NULL DEFAULT now(),
+    expires text NOT NULL DEFAULT '30 days'::text,
+    response jsonb,
+    CONSTRAINT pkey_geocoder_cache PRIMARY KEY (service, query)
+  ) WITH (OIDS=FALSE);",
 );
 
 for my $sql (@sql) {
