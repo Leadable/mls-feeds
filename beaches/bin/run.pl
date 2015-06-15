@@ -26,7 +26,7 @@ my $rets = $MLS::Config::RETS->();
 $rets->SetHttpLogName("$MLS::Config::LOG_DIR/rets.log");
 my $s3_client = $MLS::Util::S3_CLIENT->();
 my $ua = Mojo::UserAgent->new();
-my $monitor = MLS::Monitor->new({ dbh => $live_dbh, log_dir => $MLS::Config::LOG_DIR });
+my $monitor = MLS::Monitor->new({ dbh => $live_dbh, log_dir => $MLS::Config::LOG_DIR, s3_client => $s3_client });
 
 my @areas = @MLS::Config::AREAS;
 push @areas, $resource if (! @areas);

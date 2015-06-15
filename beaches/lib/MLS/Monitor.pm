@@ -24,16 +24,6 @@ sub new {
 sub start {
   my ($self, $opts) = @_;
 
-  if (! -d $self->{log_dir}) {
-    mkpath($self->{log_dir});
-  }
-
-  # capture STDOUT, STDIN to log file
-  open(STDOUT, '>', $self->{log_file}) or
-    die "Cannot redirect STDOUT to [$self->{log_file}]: $!";
-  open(STDERR, ">&STDOUT") or
-    die "Cannot redirect STDERR to STDOUT: $!";
-
   my $dbh = $self->{dbh};
 
   # Get row from monitor table
@@ -74,6 +64,16 @@ sub start {
       die "Could not get ID for monitor row";
     }
   }
+
+  if (! -d $self->{log_dir}) {
+    mkpath($self->{log_dir});
+  }
+
+  # capture STDOUT, STDIN to log file
+  open(STDOUT, '>', $self->{log_file}) or
+    die "Cannot redirect STDOUT to [$self->{log_file}]: $!";
+  open(STDERR, ">&STDOUT") or
+    die "Cannot redirect STDERR to STDOUT: $!";
 }
 
 sub get_blank_row {
@@ -127,8 +127,22 @@ sub status {
 sub finish {
   my ($self, $error) = @_;
 
+  # bail if start dies before the id is found (rare but possible)
+  return if (!$self->{id});
+
+  my $dbh = $self->{dbh};
+
+  # Firstly, update monitor row so if there is a problem storing the
+  # log files, we can still see the error
+  my %new_data;
+  $new_data{status} = $error ? $dbh->quote('ERROR') : $dbh->quote('IDLE');
+  $new_data{$error ? 'failed_at' : 'completed_at'} = 'NOW()';
+
+  my $sql = "UPDATE monitor SET (" . join(',', keys %new_data) . ") = (" . join(',', values %new_data) .") where id = $self->{id}";
+  $dbh->do($sql);
+
   # Store logs here, update log_monitor_url
-  my $s3_client = $MLS::Util::S3_CLIENT->();
+  my $s3_client = $self->{s3_client};
   my $bucket = $s3_client->bucket(name => $self->{s3_bucket});
   my $filename_root = "$MLS::Config::MLS/" . strftime("%F %T", localtime);
 
@@ -148,20 +162,13 @@ sub finish {
   );
   $s3_rets_object->put_filename("$self->{log_dir}/rets.log");
 
-  # If start() dies before the id is found (rare but possible)
-  # do not attempt to update the monitor table
-  if ($self->{id}) {
-    my $dbh = $self->{dbh};
-    my %new_data = (
-      status          => $error ? $dbh->quote('ERROR') : $dbh->quote('IDLE'),
-      log_monitor_url => $dbh->quote($s3_monitor_object->uri),
-      log_librets_url => $dbh->quote($s3_rets_object->uri),
-    );
-    $new_data{$error ? 'failed_at' : 'completed_at'} = 'NOW()';
+  %new_data = (
+    log_monitor_url => $dbh->quote($s3_monitor_object->uri),
+    log_librets_url => $dbh->quote($s3_rets_object->uri),
+  );
 
-    my $sql = "UPDATE monitor SET (" . join(',', keys %new_data) . ") = (" . join(',', values %new_data) .") where id = $self->{id}";
-    $dbh->do($sql);
-  }
+  $sql = "UPDATE monitor SET (" . join(',', keys %new_data) . ") = (" . join(',', values %new_data) .") where id = $self->{id}";
+  $dbh->do($sql);
 }
 
 1;
