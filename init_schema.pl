@@ -97,7 +97,7 @@ print "Creating the resource tables\n";
 
 die "Could not find [$sql_dir/resources.sql]" if (! -e "$sql_dir/resources.sql");
 
-$cmd = qq|$psql_cmd < $sql_dir/resources.sql|;
+my $cmd = qq|$psql_cmd < $sql_dir/resources.sql|;
 print "$cmd\n";
 system($cmd) == 0 or
   die "There was a problem with the command: [" . ($? >> 8) . "]";
