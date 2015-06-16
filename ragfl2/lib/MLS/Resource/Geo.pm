@@ -62,9 +62,12 @@ sub go {
       next; 
     }
 
-    next if $self->geocode_mapbox($remote_row);
-    next if $self->geocode_bing($remote_row);
-    next if $self->geocode_google($remote_row);
+    eval {
+      next if $self->geocode_mapbox($remote_row);
+      next if $self->geocode_bing($remote_row);
+      next if $self->geocode_google($remote_row);
+    };
+    next if ($@);
 
     # if we got here none of the geocoders found an address
     $self->update_local_row($remote_row);
