@@ -334,7 +334,7 @@ sub store_schema {
 sub insert_publish_table {
     my $self = shift;
 
-    my $dbh = $self->{live_dbh};
+    my $dbh = $self->{tools_dbh};
 
     my %row_data = (
         mls               => $MLS::Config::MLS,

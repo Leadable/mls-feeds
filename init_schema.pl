@@ -7,18 +7,26 @@ use DBI;
 die "Missing argument [MLS]" unless $ARGV[0];
 my $mls = $ARGV[0];
 
+my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};
+my $port = $ENV{POSTGRES_PORT_5432_TCP_PORT};
+my $user = $ENV{POSTGRES_FEEDS_USER};
+my $pass = $ENV{POSTGRES_FEEDS_PASS};
+my $dbname = 'mls';
+
+if (!$host || !$port || !$user || !$pass) {
+  print "The following environment variables must be set:
+    POSTGRES_PORT_5432_TCP_ADDR
+    POSTGRES_PORT_5432_TCP_PORT
+    POSTGRES_FEEDS_USER
+    POSTGRES_FEEDS_PASS
+  ";
+  exit;
+}
+
 ###########################
 # Initialize the schema   #
 ###########################
 print "Creating the schema [$mls]\n";
-
-my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};
-my $port = $ENV{POSTGRES_PORT_5432_TCP_PORT};
-my $user = $ENV{POSTGRES_FEEDS_USER};
-my $pass = $ENV{PGPASSWORD};
-my $dbname = 'mls';
-
-die "env var PGPASSWORD must be set for this to work" if (!$pass);
 
 sub dbh {
   my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";

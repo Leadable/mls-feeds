@@ -20,13 +20,13 @@ my $resource = $ARGV[0] || 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
 my $dbh = $MLS::Util::DBH->() or die $DBI::errstr;
-my $live_dbh = $MLS::Util::LIVE_DBH->() or die $DBI::errstr;
+my $tools_dbh = $MLS::Util::TOOLS_DBH->() or die $DBI::errstr;
 
 my $rets = $MLS::Config::RETS->();
 $rets->SetHttpLogName("$MLS::Config::LOG_DIR/rets.log");
 my $s3_client = $MLS::Util::S3_CLIENT->();
 my $ua = Mojo::UserAgent->new();
-my $monitor = MLS::Monitor->new({ dbh => $live_dbh, log_dir => $MLS::Config::LOG_DIR, s3_client => $s3_client });
+my $monitor = MLS::Monitor->new({ dbh => $tools_dbh, log_dir => $MLS::Config::LOG_DIR, s3_client => $s3_client });
 
 my @areas = @MLS::Config::AREAS;
 push @areas, $resource if (! @areas);
@@ -47,7 +47,7 @@ eval {
     foreach my $id (@areas) {
         MLS::Resource::Publish->new({
             dbh => $dbh,
-            live_dbh => $live_dbh,
+            tools_dbh => $tools_dbh,
             monitor => $monitor,
             s3_client => $s3_client,
             id => $id,
