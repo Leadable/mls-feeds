@@ -12,13 +12,15 @@ my $mls = $ARGV[0];
 ###########################
 print "Creating the schema [$mls]\n";
 
-sub dbh {
-  my $dbname = 'mls';
-  my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};
-  my $port = '5432';
-  my $user = 'postgres';
-  my $pass = 'password';
+my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};
+my $port = $ENV{POSTGRES_PORT_5432_TCP_PORT};
+my $user = $ENV{POSTGRES_FEEDS_USER};
+my $pass = $ENV{PGPASSWORD};
+my $dbname = 'mls';
 
+die "env var PGPASSWORD must be set for this to work" if (!$pass);
+
+sub dbh {
   my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
 
   return DBI->connect($connstr, $user, $pass, { AutoCommit => 0, RaiseError => 1, pg_server_prepare => 0 });
@@ -88,7 +90,7 @@ $dbh->disconnect;
 print "[DONE]\n\n";
 
 my $sql_dir = "./$mls/sql";
-my $psql_cmd = q|psql -q -h $POSTGRES_PORT_5432_TCP_ADDR -U postgres mls|;
+my $psql_cmd = qq|psql -q -h $host -p $port -U $user $dbname|;
 
 ##############################
 # Create the resource tables #

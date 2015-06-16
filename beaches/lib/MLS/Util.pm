@@ -5,8 +5,8 @@ $MLS::Util::DBH = sub {
   my $dbname = 'mls';
   my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};
   my $port = $ENV{POSTGRES_PORT_5432_TCP_PORT};
-  my $user = 'postgres';
-  my $pass = 'password';
+  my $user = $ENV{POSTGRES_FEEDS_USER};
+  my $pass = $ENV{PGPASSWORD};
 
   my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
 
