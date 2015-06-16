@@ -78,15 +78,25 @@ dependants.
 8. You should now be in the shell on the new container.
 9. Create the mls database: `psql -h $POSTGRES_PORT_5432_TCP_ADDR -U postgres < /opt/mls-feeds/mls.sql`
 
+# Environment Variables
+
+* POSTGRES_PORT_5432_TCP_ADDR
+* POSTGRES_PORT_5432_TCP_PORT
+* POSTGRES_FEEDS_USER
+* POSTGRES_FEEDS_PASS
+* POSTGRES_TOOLS_TCP_ADDR
+* POSTGRES_TOOLS_TCP_PORT
+* POSTGRES_TOOLS_USER
+* POSTGRES_TOOLS_PASS
+
 # Starting a new board
 
-1. create the database schema and roles `cd /opt/mls-feeds; ./init_role_and_schema.pl [board system name]`
-2. copy an existing board directory `cp -R ragfl/ [board system name]`
+1. create the database schema and roles `cd /opt/mls-feeds; ./init_schema.pl [board system name]`
+2. copy an existing board directory `cp -R beaches/ [board system name]`
 3. `vi bin/metadata.pl`
 4. on the docker image `cd [board system name]/bin`, then `./metadata.pl daemon`
 5. open your browser to http://[your name]-dev.leadable.com:49154
 6. Scroll to the bottom and copy the SQL for creating the tables.
 7. Copy into [board system name]/sql/schema.sql
 8. Switch to psql and run `\i ~/mls-feeds/[board system name]/sql/schema.sql`
-9. Update [board system name]/lib/MLS/Property/Config.pm
-10. Update [board system name]/lib/MLS/Property/Mutation.pm, change the search string for $rets->CreateSearchRequest and change the string for SetSelect
+9. Update [board system name]/lib/MLS/Config.pm and the config files for resources in MLS/Config/*
