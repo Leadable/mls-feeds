@@ -33,12 +33,9 @@ $MLS::Config::GOOGLE_ACCESS_TOKEN = 'AIzaSyBlCGd2SaHPDnG8A5nPjGsEKt4WZ8vXbic';
 
 # Format the listing address from the raw RETS row
 $MLS::Config::ADDRESS_PROTO = sub {
-  my ($remote_row, $address_cols) = @_;
+  my $address = shift;
 
-  my %address;
-  while (my ($col_name, $col_mapping) = each %$address_cols) {
-    $address{$col_name} = $remote_row->GetString($col_mapping);
-  }
+  my %address = %$address;
 
   my (@line1, @full);
 

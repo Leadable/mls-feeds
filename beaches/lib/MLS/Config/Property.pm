@@ -36,22 +36,27 @@ $MLS::Config::OBJECT = 'HiRes';
 # RETS Resource price column
 %MLS::Config::PRICE_COLUMN = ( SystemName => 'LIST_22', DBName => 'listprice' );
 
+%MLS::Config::ADDR_COLUMNS = (
+  street   => 'LIST_34',
+  number   => 'LIST_31',
+  suffix   => 'LIST_37',
+  post_dir => 'LIST_36',
+  prefix   => 'LIST_33',
+  city     => 'LIST_39',
+  state    => 'LIST_40',
+  zip      => 'LIST_43',
+);
+
 # Make a closure with resource specific addr cols
 $MLS::Config::ADDRESS = sub {
     my $remote_row = shift;
 
-    my $address_cols = {
-      street   => 'LIST_34',
-      number   => 'LIST_31',
-      suffix   => 'LIST_37',
-      post_dir => 'LIST_36',
-      prefix   => 'LIST_33',
-      city     => 'LIST_39',
-      state    => 'LIST_40',
-      zip      => 'LIST_43',
-    };
+    my %address;
+    while (my ($col_name, $col_mapping) = each %MLS::Config::ADDR_COLUMNS) {
+      $address{$col_name} = $remote_row->GetString($col_mapping);
+    }
 
-    return $MLS::Config::ADDRESS_PROTO->($remote_row, $address_cols);
+    return $MLS::Config::ADDRESS_PROTO->(\%address);
 };
 
 1;
