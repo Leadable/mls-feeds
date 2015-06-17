@@ -1,5 +1,5 @@
 use strict; 
-use lib "../lib", "blib/lib", "blib/arch"; 
+use lib "../lib", "blib/lib", "blib/arch", "/opt/mls-feeds/lib"; 
 
 use DBI;
 use librets;
