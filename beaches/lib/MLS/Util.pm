@@ -14,7 +14,7 @@ $MLS::Util::DBH = sub {
 };
 
 $MLS::Util::TOOLS_DBH = sub {
-  my $dbname = 'mls';
+  my $dbname = 'tools-db';
   my $host = $ENV{POSTGRES_TOOLS_TCP_ADDR};
   my $port = $ENV{POSTGRES_TOOLS_TCP_PORT};
   my $user = $ENV{POSTGRES_TOOLS_USER};

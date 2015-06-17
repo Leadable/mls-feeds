@@ -11,7 +11,7 @@ my $resource = $ARGV[0] || 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
 my $dbh = $MLS::Util::DBH->() or die $DBI::errstr;
-my $live_dbh = $MLS::Util::LIVE_DBH->() or die $DBI::errstr;
+my $tools_dbh = $MLS::Util::TOOLS_DBH->() or die $DBI::errstr;
 
 # Use areas array when applicable (for Property resource), otherwise
 # pass the resource type instead
@@ -20,7 +20,7 @@ my @areas = @MLS::Config::AREAS ? @MLS::Config::AREAS : ($resource);
 foreach my $id (@areas) {
     MLS::Resource::Publish->new({
       dbh => $dbh,
-      live_dbh => $live_dbh,
+      tools_dbh => $tools_dbh,
       s3_client => $MLS::Util::S3_CLIENT->(),
       id => $id
     })->go();

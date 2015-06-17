@@ -113,6 +113,8 @@ sub fetch_remote {
     syswrite(OUT, $resultdata);
     close(OUT);
 
+    # TODO: Add eval around S3 store, recreate object if dies
+
     my $bucket = $s3_client->bucket(name => $MLS::Config::S3_BUCKET);
     my $s3_key = "$MLS::Config::MLS/$MLS::Config::RESOURCE/" . $path . '/' . $objectId . '.' . $ext . '?v=' . time;
 

@@ -17,6 +17,8 @@ sub new {
   $opts->{stats} = {};
   $opts->{log_file} = "$opts->{log_dir}/monitor.log";
   $opts->{s3_bucket} = 'dfo-log';
+  $opts->{live_table} = 'public.monitor_feeds';
+  $opts->{journal_table} = 'public.monitor_feeds_journal';
 
   bless $opts, $class; 
 }
@@ -27,7 +29,7 @@ sub start {
   my $dbh = $self->{dbh};
 
   # Get row from monitor table
-  my $sql = "SELECT id from public.monitor where mls = \'$MLS::Config::MLS\'";
+  my $sql = "SELECT id from $self->{live_table} where mls = \'$MLS::Config::MLS\'";
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
 
   if (scalar(@$rs)) {
@@ -38,23 +40,23 @@ sub start {
   # TODO: potentially move this logic to it's own method
   if (defined $self->{id}) {
     # copy existing monitor row to journal
-    my $cols_text = 'ec2_id, container_id, pid, started_at, failed_at, completed_at, stats, log_monitor_url, log_librets_url, mls';
-    $sql =  "INSERT into monitor_journal (monitor_id, $cols_text)" .
-            "SELECT id, $cols_text from monitor where id = $self->{id}";
+    my $cols_text = 'container_id, started_at, failed_at, completed_at, stats, log_monitor_url, log_librets_url, mls';
+    $sql =  "INSERT into $self->{journal_table} (monitor_id, $cols_text)" .
+            "SELECT id, $cols_text from $self->{live_table} where id = $self->{id}";
     $dbh->do($sql);
 
-    # reset existing monitor row (deleting cascades to monitor_journal)
+    # reset existing monitor row (deleting cascades to journal)
     my $row_data = $self->get_blank_row();
-    $sql = "UPDATE monitor SET (" . join(',', keys %$row_data) . ") = (" . join(',', values %$row_data) . ") where id = $self->{id}";
+    $sql = "UPDATE $self->{live_table} SET (" . join(',', keys %$row_data) . ") = (" . join(',', values %$row_data) . ") where id = $self->{id}";
     $dbh->do($sql);
   }
   else {
     # create the row for this board for monitor
     my $row_data = $self->get_blank_row();
-    $sql = "INSERT INTO public.monitor(" . join(',', keys %$row_data) . ") VALUES (" . join(',', values %$row_data) . ")";
+    $sql = "INSERT INTO $self->{live_table} (" . join(',', keys %$row_data) . ") VALUES (" . join(',', values %$row_data) . ")";
     $dbh->do($sql);
 
-    $sql = "SELECT id from public.monitor where mls = \'$MLS::Config::MLS\'";
+    $sql = "SELECT id from $self->{live_table} where mls = \'$MLS::Config::MLS\'";
     $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
 
     if (scalar(@$rs)) {
@@ -86,7 +88,6 @@ sub get_blank_row {
     created_at        => 'DEFAULT',
     status            => $dbh->quote('RUNNING'),
     container_id      => $dbh->quote(`cat /proc/self/cgroup | grep "docker" | sed s/\\\\//\\\\n/g | tail -1`),
-    pid               => $$,
     started_at        => 'NOW()',
     failed_at         => 'NULL',
     completed_at      => 'NULL',
@@ -120,7 +121,7 @@ sub status {
 
   # update monitor row with new stats
   my $json = $dbh->quote(j($self->{stats}));
-  my $sql = "UPDATE monitor SET stats = $json where id = $self->{id}";
+  my $sql = "UPDATE $self->{live_table} SET stats = $json where id = $self->{id}";
   $dbh->do($sql);
 }
 
@@ -138,7 +139,7 @@ sub finish {
   $new_data{status} = $error ? $dbh->quote('ERROR') : $dbh->quote('IDLE');
   $new_data{$error ? 'failed_at' : 'completed_at'} = 'NOW()';
 
-  my $sql = "UPDATE monitor SET (" . join(',', keys %new_data) . ") = (" . join(',', values %new_data) .") where id = $self->{id}";
+  my $sql = "UPDATE $self->{live_table} SET (" . join(',', keys %new_data) . ") = (" . join(',', values %new_data) .") where id = $self->{id}";
   $dbh->do($sql);
 
   # Store logs here, update log_monitor_url
@@ -167,7 +168,7 @@ sub finish {
     log_librets_url => $dbh->quote($s3_rets_object->uri),
   );
 
-  $sql = "UPDATE monitor SET (" . join(',', keys %new_data) . ") = (" . join(',', values %new_data) .") where id = $self->{id}";
+  $sql = "UPDATE $self->{live_table} SET (" . join(',', keys %new_data) . ") = (" . join(',', values %new_data) .") where id = $self->{id}";
   $dbh->do($sql);
 }
 
