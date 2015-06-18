@@ -95,6 +95,8 @@ sub fetch_remote {
   my $response = $rets->GetObject($request);
 
   my $objectDescriptor = $response->NextObject();
+
+  my @urls;
       
   while ($objectDescriptor) {
     my $objectKey = $objectDescriptor->GetObjectKey();
@@ -113,16 +115,18 @@ sub fetch_remote {
     syswrite(OUT, $resultdata);
     close(OUT);
 
-    my $dest_filename = "$MLS::Config::MLS/$MLS::Config::RESOURCE/" . $path . '/' . $objectId . '.' . $ext . '?v=' . time;
+    my $dest_filename = "$MLS::Config::MLS/$MLS::Config::RESOURCE/$path/$objectId/" . time . ".$ext";
 
     my $url = $storage_client->store_file({
       source_filename   => $outputFilename,
       dest_filename => $dest_filename,
       content_type  => $contentType,
     });
+    push @urls, $url;
 
     unlink($outputFilename) or die "Could not unlink $outputFilename: $!";
 
+    $self->update($row, \@urls);
     $self->{totals}{photo_urls_fetched}++;
     $objectDescriptor = $response->NextObject();
   }
@@ -130,6 +134,17 @@ sub fetch_remote {
   rmdir $dir or die "Could not remove $dir: $!";
  
   $self->update_mutation_table($row->{remote_id}); 
+}
+
+sub update {
+  my ($self, $row, $urls) = @_;
+
+  my $dbh = $self->{dbh};
+
+  my $sql = "UPDATE $MLS::Config::MLS." . $dbh->quote_identifier($MLS::Config::RESOURCE) . " SET __photo_urls = ARRAY[" . join(',', map($dbh->quote($_), @$urls)) . "] WHERE " . $dbh->quote_identifier($MLS::Config::PRIMARY_KEY{SystemName}) . " = " . $dbh->quote($row->{remote_id});
+
+  $self->{temp_error} = "$sql\n";
+  $dbh->do($sql);
 }
 
 sub update_mutation_table {

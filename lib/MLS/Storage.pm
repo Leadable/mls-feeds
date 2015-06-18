@@ -39,7 +39,13 @@ sub store_file {
     return $obj->uri;
   }
   else {
-    $self->{azure_obj}->put_blob($opts->{dest_filename}, {filename => $opts->{source_filename}, 'content-type' => $opts->{content_type}});
+    my $params = {filename => $opts->{source_filename}, 'content-type' => $opts->{content_type}};
+    my $res = $self->{azure_obj}->put_blob($opts->{dest_filename}, $params);
+
+    if (!$res->is_success) {
+      # TODO: retry
+      die "Error uploading file: " . $res->status_line;
+    }
 
     return "https://$self->{account_name}.blob.core.windows.net/$self->{bucket}/$opts->{dest_filename}";
   }
