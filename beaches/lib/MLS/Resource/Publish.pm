@@ -297,7 +297,7 @@ sub store_diff {
     my $url = $storage_client->store_file({
       source_filename => $filename,
       dest_filename   => "$MLS::Config::MLS/" . basename($filename),
-      content_type    => $contentType,
+      content_type    => 'text/plain',
     });
 
     $self->{data_file_url} = $url;
@@ -321,7 +321,7 @@ sub store_schema {
     my $url = $storage_client->store_file({
       source_filename => $filename,
       dest_filename   => "$MLS::Config::MLS/" . basename($filename),
-      content_type    => $contentType,
+      content_type    => 'text/plain',
     });
 
     $self->{schema_file_url} = $url;

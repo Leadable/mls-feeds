@@ -1,334 +1,461 @@
- -- View: beaches.view_listings
--- DROP VIEW beaches.view_listings;
-DROP VIEW IF EXISTS beaches.view_property CASCADE;
-CREATE VIEW beaches.view_property AS 
- SELECT 'beaches'::text AS mls,
-    "Property".__removed_at,
-    "Property".__removed_at IS NULL AS __active,
-    "Property".__inserted_at AS age,
-    "Property".__inserted_at,
-    "Property".__modified_at,
-    "Property".__price_updated_at,
-    "Property"."UNBRANDEDIDXVIRTUALTOUR" AS virtual_tour,
-    "Property".__price_history_times,
-    "Property".__price_history_vals,
-    "Property".__percent_reduced,
-    "Property".__status_updated_at,
-    "Property".__status_history_times,
-    "Property".__status_history_vals,
-    "Property".__geo_geom,
-    "Property".__geo_outlier,
-    __photo_urls,
-    "Property"."LIST_1" AS listing_id,
-    "Property"."LIST_105" AS mlsnum,
-    "Property"."LIST_15" AS status,
-    "Property"."LIST_15" = 'Active Contingent'::text OR "Property"."LIST_15" = 'Pending'::text OR "Property"."LIST_15" = 'Closed'::text OR "Property"."LIST_15" = 'Contingent'::text AS under_contract,
-    CASE "Property"."LIST_15"
-        WHEN 'Pending'::text THEN 'Pending'::text
-        WHEN 'Active Contingent'::text THEN 'Active Contingent'::text
-        WHEN 'Contingent'::text THEN 'Contingent'::text
-        WHEN 'Closed'::text THEN 'Closed'::text
-        ELSE NULL::text
-    END AS under_contract_description,
-    COALESCE("Property".__image_count, "Property"."LIST_133", 0) AS image_count,
-    "Property"."LIST_22" AS price,
-    CASE __class_name
-      WHEN 'A' THEN "LIST_125"
-      WHEN 'F' THEN "LIST_125"
-      WHEN 'B' THEN "LIST_125"
-      WHEN 'C' THEN 0
-    END as price_per_sqft,
-    "Property"."LIST_66" AS beds,
-        CASE "Property".__class_name
-            WHEN 'A'::text THEN
-            CASE "Property"."LIST_9"
-                WHEN 'Condo Hotel'::text THEN 'Condo'::text
-                WHEN 'Condo/Coop'::text THEN 'Condo'::text
-                WHEN 'Mobile/Manufactured'::text THEN 'Single Family'::text
-                WHEN 'Single Family Detached'::text THEN 'Single Family'::text
-                WHEN 'Townhouse'::text THEN 'Townhouse'::text
-                WHEN 'Villa'::text THEN 'Villa'::text
-                ELSE 'Single Family'::text
-            END
-            WHEN 'F'::text THEN
-            CASE "Property"."LIST_9"
-                WHEN 'Apartment'::text THEN 'Rental Condo/Townhouse'::text
-                WHEN 'Condo/Coop'::text THEN 'Rental Condo/Townhouse'::text
-                WHEN 'Duplex/Triplex/Quadplex'::text THEN 'Rental Condo/Townhouse'::text
-                WHEN 'Efficiency'::text THEN 'Rental Condo/Townhouse'::text
-                WHEN 'Townhouse'::text THEN 'Rental Condo/Townhouse'::text
-                WHEN 'Villa'::text THEN 'Rental Condo/Townhouse'::text
-                WHEN 'Single Family Detached'::text THEN 'Rental Single Family'::text
-                ELSE 'Rental Single Family'::text
-            END
-            WHEN 'C'::text THEN 'Lots & Land'::text
-            WHEN 'B'::text THEN 'Multi-Family'::text
-            ELSE 'Single Family'::text
-        END AS type,
-    "Property"."LIST_68" AS baths_total,
-    "Property"."LIST_78" AS remarks,
-    ((("Property"."LIST_31" || ' '::text) ||
-        CASE
-            WHEN "Property"."LIST_33" IS NULL THEN ''::text
-            ELSE "Property"."LIST_33" || ' '::text
-        END) || "Property"."LIST_34") ||
-        CASE
-            WHEN "Property"."LIST_37" IS NULL THEN ''::text
-            ELSE ' '::text || "Property"."LIST_37"
-        END AS address_line1,
-    'FL'::text AS state,
-    ((initcap("Property"."LIST_39") || ', FL'::text) || ' '::text) || "substring"("Property"."LIST_43", 1, 5) AS address_line2,
-    initcap("Property"."LIST_39") AS city,
-    initcap("Property"."LIST_39") || ', FL'::text AS city_st,
-    "substring"("Property"."LIST_43", 1, 5) AS zip,
-    "Property"."LIST_41" AS county,
-    "Property".__geo_modified_at,
-    "Property".__geo_latitude AS latitude,
-    "Property".__geo_longitude AS longitude,
-    "Property"."LIST_48" AS square_feet,
-    "Property"."LIST_53" AS year_built,
-    "Property"."LIST_57" AS acres,
-        CASE "Property".__class_name
-            WHEN 'A'::text THEN "Property"."GF20121128203155695117000000" && ARRAY['Garage - Attached'::text, 'Garage - Building'::text, 'Garage - Detached'::text, 'Assigned'::text]
-            WHEN 'F'::text THEN "Property"."GF20121206203003854226000000" && ARRAY['Garage - Attached'::text, 'Garage - Building'::text, 'Garage - Detached'::text, 'Assigned'::text] OR "Property"."GF20121207034326840518000000" && ARRAY['Garage - 1 Car'::text, 'Garage - 2 Car'::text]
-            ELSE NULL::boolean
-        END AS garage,
-    NULL::boolean AS basement,
-        CASE "Property".__class_name
-            WHEN 'A'::text THEN "Property"."GF20121126194243819854000000" && ARRAY['Fireplace(s)'::text]
-            WHEN 'F'::text THEN "Property"."GF20121206203003177597000000" && ARRAY['Fireplace(s)'::text]
-            ELSE NULL::boolean
-        END AS fireplace,
-        CASE "Property".__class_name
-            WHEN 'A'::text THEN "Property"."GF20121126194243919925000000" && ARRAY['Fence'::text]
-            WHEN 'F'::text THEN "Property"."GF20121206203002756811000000" && ARRAY['Fence'::text, 'Fenced Yard'::text]
-            ELSE NULL::boolean
-        END AS fenced_yard,
-    "Property"."LIST_108" = 'Yes'::text AS waterfront,
-    "Property"."LIST_51" = 1::numeric OR "Property"."LIST_64" = 1.0 AS one_story,
-    ("Property"."GF20121128194138408449000000" && ARRAY['None'::text]) IS NOT TRUE AND "Property"."GF20121128194138408449000000" IS NOT NULL OR ("Property"."GF20121206202431279127000000" && ARRAY['None'::text]) IS NOT TRUE AND "Property"."GF20121206202431279127000000" IS NOT NULL OR "Property"."LIST_109" = 'Yes'::text OR "Property"."GF20121207034326840518000000" && ARRAY['Community Pool'::text, 'Private Pool'::text] OR "Property"."GF20121128203214100844000000" && ARRAY['Pool'::text] OR "Property"."GF20121206202841357230000000" && ARRAY['Pool'::text] OR "Property"."GF20121206202431812853000000" && ARRAY['Pool'::text] OR "Property"."GF20121206203004466211000000" && ARRAY['Pool'::text] AS pool,
-    "Property"."GF20121126194243919925000000" && ARRAY['Deck'::text, 'Open Patio'::text, 'Open Porch'::text, 'Screen Porch'::text, 'Screened Balcony'::text, 'Covered Balcony'::text, 'Screened Patio'::text, 'Wrap Porch'::text] OR "Property"."GF20121206202429990607000000" && ARRAY['Deck'::text, 'Open Patio'::text, 'Open Porch'::text, 'Screen Porch'::text, 'Screened Balcony'::text, 'Covered Balcony'::text, 'Screened Patio'::text, 'Wrap Porch'::text] OR "Property"."GF20121206203002756811000000" && ARRAY['Deck'::text, 'Open Patio'::text, 'Open Porch'::text, 'Screen Porch'::text, 'Screened Balcony'::text, 'Covered Balcony'::text, 'Screened Patio'::text, 'Wrap Porch'::text] AS patio_deck_porch,
-    "Property"."GF20121211024909824726000000" && ARRAY['Walk-in Closets'::text] OR "Property"."GF20121211025107658704000000" && ARRAY['Walk-in Closets'::text] OR "Property"."GF20121126194243819854000000" && ARRAY['Walk-in Closet'::text] OR "Property"."GF20121206203003177597000000" && ARRAY['Walk-in Closet'::text] OR "Property"."GF20121211025107658704000000" && ARRAY['Walk-in Closets'::text] OR "Property"."GF20121211025151415154000000" && ARRAY['Walk-in Closets'::text] AS walk_in_closets,
-    NULL::boolean AS double_vanity,
-    "Property"."LIST_86" AS __minor_area,
-    NULL::text AS __major_area,
-    "Property"."LIST_77" AS subdivision,
-    "Property"."LIST_87" AS modification_timestamp,
-    "Property"."VOWAddr" AS display_address,
-    --"" as school_district,
-    "Property"."LIST_85" AS elementary_school,
-    "Property"."LIST_32" AS middle_school,
-    "Property"."LIST_73" AS high_school,
-    "Property".selling_office_name AS office_name,
-    CASE __class_name
-      WHEN 'A' THEN "GF20121128190237228652000000"
-      WHEN 'B' THEN "GF20121206202432253492000000"
-      WHEN 'C' THEN "GF20121206202841857761000000"
-      WHEN 'F' THEN "GF20121206203004843709000000"
-      ELSE null::text[]
-    END as "feature_view[]",
-    CASE __class_name
-      WHEN 'A' THEN "GF20121126194243720208000000"
-      WHEN 'B' THEN "GF20121206202432319685000000"
-      WHEN 'C' THEN "GF20121206202841938447000000"
-      WHEN 'F' THEN "GF20121206203004910529000000"
-    END as "feature_waterfront[]",
-    CASE __class_name
-      WHEN 'A' THEN "GF20121126194243751321000000"
-      ELSE null::text[]
-    END as "feature_design[]",
-    CASE __class_name
-      WHEN 'A' THEN "GF20121126194243781619000000"
-      WHEN 'F' THEN "GF20121206203003026714000000"
-      ELSE null::text[]
-    END as "feature_furnished[]",
-    CASE __class_name
-      WHEN 'A' THEN "GF20121126194243786373000000"
-      WHEN 'B' THEN "GF20121206202430480207000000"
-      WHEN 'F' THEN "GF20121206203003104396000000"
-      ELSE null::text[]
-    END AS "feature_heating[]",
-    CASE __class_name
-      WHEN 'A' THEN "GF20121126194243819854000000"
-      WHEN 'F' THEN "GF20121206203003177597000000"
-      ELSE null::text[]
-    END as "feature_interior_features[]",
-    CASE __class_name
-      WHEN 'A' THEN "GF20121126194243835004000000"
-      WHEN 'B' THEN "GF20121206202429699010000000"
-      WHEN 'C' THEN null::text[]
-      WHEN 'F' THEN null::text[]
-    END as "feature_construction[]",
-    CASE __class_name
-      WHEN 'A' THEN "GF20121126194243841543000000"
-      WHEN 'B' THEN "GF20121206202430370061000000"
-      WHEN 'C' THEN null::text[]
-      WHEN 'F' THEN "GF20121206203002977441000000"
-    END as "feature_flooring[]",
-    CASE __class_name
-      WHEN 'A' THEN "GF20121126194243845568000000"
-      WHEN 'B' THEN "GF20121206202431346706000000"
-      WHEN 'C' THEN null::text[]
-      WHEN 'F' THEN null::text[]
-    END as "feature_roof[]",
-    CASE __class_name
-      WHEN 'A' THEN "GF20121126194243879313000000"
-      WHEN 'B' THEN null::text[]
-      WHEN 'C' THEN null::text[]
-      WHEN 'F' THEN "GF20121206203004310572000000"
-    END as "feature_security[]",
-    CASE __class_name
-      WHEN 'A' THEN "GF20121128194138408449000000"
-      WHEN 'B' THEN "GF20121206202431279127000000"
-      WHEN 'C' THEN null::text[]
-      WHEN 'F' THEN null::text[]
-    END as "feature_private_pool[]",
-    CASE __class_name
-      WHEN 'A' THEN "GF20121128194227449710000000"
-      WHEN 'B' THEN null::text[]
-      WHEN 'C' THEN null::text[]
-      WHEN 'F' THEN "GF20130917171925858182000000"
-    END as "feature_master_bedroom_bath[]",
+-- View: ragfl.view_property
 
-    "LIST_120" as "feature_association_fee",
-    "LIST_59" as "feature_governing_body",
-    "LIST_112" as "feature_pets_allowed",
-    CASE __class_name
-      WHEN 'A' THEN "GF20121128203307544548000000"
-      WHEN 'B' THEN "GF20121206202431535736000000"
-      WHEN 'F' THEN "GF20121206203004209266000000"
-      ELSE null::text[]
-    END as "feature_restrictions[]"
+-- DROP VIEW ragfl.view_property;
 
-
-FROM beaches."Property" JOIN beaches.mutation ON beaches."Property"."LIST_1"::text = beaches.mutation.remote_id::text AND beaches.mutation.last_transaction_completed_at is not null
-
-UNION
-
- SELECT 'beaches'::text AS mls,
-    __removed_at,
-    __removed_at IS NULL AS __active,
-    __inserted_at AS age,
-    __inserted_at,
-    __modified_at,
-    __price_updated_at,
-    "Virtu_1223" AS virtual_tour,
-    __price_history_times,
-    __price_history_vals,
-    __percent_reduced,
-    __status_updated_at,
-    __status_history_times,
-    __status_history_vals,
-    __geo_geom,
-    __geo_outlier,
-    __photo_urls,
-
-    sysid::text as listing_id,
-    "MLNumb_157" as mlsnum,
-    "Status_246" as status,
-    "Status_246" <> 'Active-Available' as under_contract,
-    CASE "Status_246"
-      WHEN 'Backup Contract-Call LA' THEN 'Backup Contract-Call LA'
-      ELSE NULL::text
-    END as under_contract_description,
-    COALESCE("ImageC_113"::integer, 0) as __image_count,
-    "ListPr_137" as price,
-    CASE
-      WHEN "TA_261" IS NOT NULL AND "TA_261" > 0 THEN "ListPr_137" / "TA_261"
-      ELSE NULL
-    END as price_per_sqft,
-    "Bedroom_25" as beds,
-    CASE "Property_1"
-      WHEN 'Single Family' THEN 'Single Family'
-      WHEN 'Condo/Co-Op/Villa/Townhouse' THEN
-        CASE "TYPE_370"
-          WHEN 'Townhouse' THEN 'Townhouse'
-          WHEN 'Villa' THEN 'Villa'
-          ELSE 'Condo'
-        END
-      WHEN 'Residential Land/Boat Docks' THEN 'Lots & Land'
-      WHEN 'Residential Rental' THEN
-        CASE "TYPE_588"
-          WHEN 'Single' THEN 'Rental Single Family'
-          ELSE 'Rental Condo/Townhouse'
-        END
-    END as type,
-    "FBTH_92" as baths_total,
-    "REM_214" as remarks,
-    "Addres_881" as address_line1,
-    'FL'::text AS state,
-    "City_N_922" || ', FL ' || "ZipCode_10" as address_line2,
-    "City_N_922" as city,
-    "City_N_922" || ', FL' as city_st,
-    "ZipCode_10" as zip,
-    "CountyI_61" as county,
-    __geo_modified_at,            
-    __geo_latitude AS latitude,
-    __geo_longitude AS longitude,
-    "TA_261" as square_feet,
-    "Age_314" as year_built,
-    "ACRES_455" as acres,
-    CASE
-      WHEN "GARAG_102" IS NOT NULL OR "GARAG2_103" IS NOT NULL THEN true
-      ELSE NULL::boolean
-    END as garage,
-    null::boolean as basement,
-    "INTER_116" && ARRAY['Fireplace'] as fireplace,
-    "EXTER_87" && ARRAY['Fence'] as fenced_yard,
-    "WTRFR_295" = 'Yes' as waterfront,
-    "DESGN2_68" && ARRAY['One Story'] as one_story,
-    COALESCE("POOL_191", 'No') = 'Yes' as pool,
-    "EXTER_87" && ARRAY['Patio','Screened Patio/Porch','Open Porch','Wood Decking','Wraparound Porch'] as patio_deck_porch,
-    "INTER_116" && ARRAY['Walk-In Closets'] as walk_in_closets,
-    "MSBTH_162" && ARRAY['Dual Sinks'] as double_vanity,
-    "Area_19"::text AS __minor_area,
-    NULL::text AS __major_area,
-    "SN_235" as subdivision,
-    "LastTr_131"::text as modification_timestamp,
-    "Addre_1488" = 'Yes' display_address,
-    "ELEM_S_886" as elementary_school,
-    "MIDD_S_891" as middle_school,
-    "SR_SCH_893" as high_school,
-    "OFFICE_165" as office_name,
-    "VIEW_285" as "feature_view[]",
-    "WTRFR2_296" as "feature_waterfront[]",
-    "DESGN2_68" as "feature_design[]",
-    CASE WHEN "FURN_99" IS NOT NULL THEN ARRAY["FURN_99"] ELSE NULL END as "feature_furnished[]",
-    "HEAT_110" as "feature_heating[]",
-    CASE __class_name
-      WHEN '1' THEN "INTER_116"
-      WHEN '6' THEN "INTER_116"
-      WHEN '2' THEN "INTER_341"
-      ELSE NULL::text[]
-    END as "feature_interior_features[]",
-    "CONST_53" as "feature_construction[]",
-    CASE __class_name
-      WHEN '1' THEN "FLOOR_96"
-      WHEN '6' THEN "FLOOR_96"
-      WHEN '2' THEN "FLOOR_336"
-      WHEN '3' THEN "FLOOR_400"
-      ELSE NULL::text[]
-    END as "feature_flooring[]",
-    "ROOF_219" as "feature_roof[]",
-    CASE __class_name
-      WHEN '2' THEN "SECUR_364"
-      WHEN '6' THEN "SECUR_584"
-      ELSE NULL::text[]
-    END as "feature_security[]",
-    CASE __class_name
-      WHEN '1' THEN "POOL2_192"
-      WHEN '3' THEN "POOL2_424"
-      WHEN '6' THEN "POOL2_576"
-      ELSE NULL::text[]
-    END as "feature_private_pool[]",
-    CASE __class_name
-      WHEN '1' THEN "MSBTH_162"
-      WHEN '2' THEN "MSBTH_353"
-      ELSE NULL::text[]
-    END as "feature_master_bedroom_bath[]",
-    "FEE_93" as "feature_association_fee",
-    "HOA_111"[0] as "feature_governing_body",
-    "PETS_A_181" as "feature_pets_allowed",
-    null::text[] as "feature_restrictions[]"
-FROM ragfl."Property" JOIN ragfl.mutation ON ragfl."Property".sysid::text = ragfl.mutation.remote_id::text AND ragfl.mutation.last_transaction_completed_at is not null
-;  
+CREATE OR REPLACE VIEW ragfl.view_property AS 
+ SELECT p.__geo_url,
+    p."__geo_Error",
+    p."__geo_ErrorMessage",
+    p.__geo_quality,
+    p."__geo_Found",
+    p.__geo_latitude,
+    p.__geo_longitude,
+    p.__geo_offsetlat,
+    p.__geo_offsetlon,
+    p.__geo_radius,
+    p.__geo_name,
+    p.__geo_line1,
+    p.__geo_line2,
+    p.__geo_line3,
+    p.__geo_line4,
+    p.__geo_cross,
+    p.__geo_house,
+    p.__geo_stfull,
+    p.__geo_stbody,
+    p.__geo_stpredir,
+    p.__geo_stsufdir,
+    p.__geo_stprefix,
+    p.__geo_stsuffix,
+    p.__geo_xstreet,
+    p.__geo_unittype,
+    p.__geo_postal,
+    p.__geo_city,
+    p.__geo_county,
+    p.__geo_state,
+    p.__geo_country,
+    p.__geo_countrycode,
+    p.__geo_statecode,
+    p.__geo_countycode,
+    p.__geo_uzip,
+    p.__geo_hash,
+    p.__geo_woeid,
+    p.__geo_woetype,
+    p.__geo_geom,
+    p.__geo_modified_at,
+    p.__geo_neighborhood,
+    p.__systemid,
+    p.__images_processed_at,
+    p.__removed_at,
+    p.__image_dimensions,
+    p.__inserted_at,
+    p.__percent_reduced,
+    p.__price_updated_at,
+    p.__price_history_times,
+    p.__price_history_vals,
+    p.__alert_watched_at,
+    p.__class_name,
+    p.__modified_at,
+    p.__status_updated_at,
+    p.__status_history_times,
+    p.__status_history_vals,
+    p.__photo_urls,
+    p.__geo_confidence,
+    p.__geo_admin_dist2,
+    p.__geo_admin_dist,
+    p.__geo_formatted_address,
+    p.__geo_locality,
+    p.__geo_entity_type,
+    p.__geo_raw,
+    p.__image_count,
+    p.__geo_outlier,
+    p.sysid as listing_id,
+    p."Property_1",
+    p."5B_2",
+    p."ZipCode_10",
+    p."ZipPlus_11",
+    p."AG_14",
+    p."APARTME_17",
+    p."APH_18",
+    p."Area_19",
+    p."ASSOC_F_21",
+    p."ASSUME_22",
+    p."Bedroom_25",
+    p."BED2ND_28",
+    p."BED3RD_29",
+    p."BED4TH_30",
+    p."BEDRM_31",
+    p."Regiona_39",
+    p."CABLEAV_44",
+    p."CF_45",
+    p."COAGT_N_47",
+    p."COMPASS_50",
+    p."CONST_53",
+    p."CONV_56",
+    p."COOL_57",
+    p."COSA_58",
+    p."CPT_59",
+    p."CPT2_60",
+    p."CountyI_61",
+    p."CloseDa_62",
+    p."DEN_DIM_66",
+    p."DESGN_67",
+    p."DESGN2_68",
+    p."DEVELOP_69",
+    p."DINE_70",
+    p."DINE_DI_71",
+    p."StreetD_73",
+    p."DaysOnM_74",
+    p."DR_76",
+    p."EMAILA_77",
+    p."EQUIP_81",
+    p."EXTER_87",
+    p."FACE_90",
+    p."FAX_NUM_91",
+    p."FBTH_92",
+    p."FEE_93",
+    p."FEEINCL_94",
+    p."FLOOR_96",
+    p."FLORIDA_97",
+    p."FR_98",
+    p."FURN_99",
+    p."FURN2_100",
+    p."FURNIS_101",
+    p."GARAG_102",
+    p."GARAG2_103",
+    p."GEOARE_106",
+    p."GH_107",
+    p."GUEST_108",
+    p."HBTH_109",
+    p."HEAT_110",
+    p."HOA_111",
+    p."ImageC_113",
+    p."INET_114",
+    p."INET2_115",
+    p."INTER_116",
+    p."IRRIG_123",
+    p."IRRIG2_124",
+    p."KT_126",
+    p."L1_127",
+    p."LA_129",
+    p."LastTr_130",
+    p."LastTr_131",
+    p."Listin_134",
+    p."Listin_136",
+    p."ListPr_137",
+    p."LOT_140",
+    p."LOTDS_141",
+    p."LOW_LI_142",
+    p."LR_143",
+    p."AgentN_144",
+    p."LT_145",
+    p."LTY_146",
+    p."MAINT_147",
+    p."MB_149",
+    p."MC_150",
+    p."MISC_152",
+    p."MLNumb_157",
+    p."MODEL_158",
+    p."MPR_160",
+    p."MPRFEE_161",
+    p."MSBTH_162",
+    p."NUM_ST_163",
+    p."OCCUP_164",
+    p."OFFICE_165",
+    p."OPH_167",
+    p."PARK_177",
+    p."PARKRE_178",
+    p."PB_179",
+    p."PET_RE_180",
+    p."PETS_A_181",
+    p."ALTPHO_183",
+    p."COPID_188",
+    p."PL_189",
+    p."PN_190",
+    p."POOL_191",
+    p."POOL2_192",
+    p."PORCH__193",
+    p."POSS_194",
+    p."POST_D_195",
+    p."RANGE__211",
+    p."Record_213",
+    p."REM_214",
+    p."RESTR_216",
+    p."ROOF_219",
+    p."ROOMS_220",
+    p."SE_227",
+    p."SF_232",
+    p."SHOW2_234",
+    p."SN_235",
+    p."SPA_238",
+    p."SPEC_239",
+    p."SPRINK_241",
+    p."Status_246",
+    p."Street_247",
+    p."Street_248",
+    p."STREET_249",
+    p."MapCoo_250",
+    p."STYLE_251",
+    p."SUBDV_254",
+    p."SWR_258",
+    p."SZ_260",
+    p."TA_261",
+    p."TAX_263",
+    p."TaxID_264",
+    p."TM_266",
+    p."TN_267",
+    p."TRMSCO_273",
+    p."TX_274",
+    p."TXYR_275",
+    p."TYPE_276",
+    p."UN_277",
+    p."UR_283",
+    p."VIEW_285",
+    p."WF_289",
+    p."WNDW_290",
+    p."WTR_291",
+    p."WTRAC_294",
+    p."WTRFR_295",
+    p."WTRFR2_296",
+    p."Age_314",
+    p."YRDESC_315",
+    p."ZN_318",
+    p."AMENS_319",
+    p."APPFEE_320",
+    p."APPRV_321",
+    p."BAL_P_322",
+    p."BN_325",
+    p."CN_326",
+    p."CPT2_327",
+    p."DET_328",
+    p."DINE_329",
+    p."EFF_331",
+    p."EQUIP_332",
+    p."EXTER_333",
+    p."FACE_334",
+    p."FL_335",
+    p."FLOOR_336",
+    p."GARAG2_337",
+    p."GOVRN_338",
+    p."INTER_341",
+    p."LANDLS_342",
+    p."MIN_LS_351",
+    p."MNLIV_352",
+    p."MSBTH_353",
+    p."NUM_LS_354",
+    p."PARK_355",
+    p."PARK_N_356",
+    p."PS_360",
+    p."RECLSE_361",
+    p."RESTR_362",
+    p."SECUR_364",
+    p."SHOW2_365",
+    p."SPEC_366",
+    p."STYLE_367",
+    p."TOTFL_368",
+    p."TRMSCO_369",
+    p."TYPE_370",
+    p."UNIT_372",
+    p."UNITBL_373",
+    p."UNITCO_374",
+    p."UNTVW_375",
+    p."WNDW_376",
+    p."ACCT_L_384",
+    p."ADV_LI_385",
+    p."CLD_387",
+    p."ELECTR_389",
+    p."EQUIP1_390",
+    p."EQUIP2_391",
+    p."EQUIP3_392",
+    p."EXTER_394",
+    p."EXTERM_395",
+    p."FB1_396",
+    p."FB2_397",
+    p."FB3_398",
+    p."FB4_399",
+    p."FLOOR_400",
+    p."GAS_402",
+    p."GAS_OI_403",
+    p."GRI_404",
+    p."INFO_407",
+    p."INSURA_408",
+    p."JANITO_409",
+    p."LAWNMN_410",
+    p."MAINT__412",
+    p."MGMT_413",
+    p."MISCEL_414",
+    p."NOI_416",
+    p."NUM_PA_417",
+    p."PARKIN_419",
+    p."PARKIN_420",
+    p."PARKIN_421",
+    p."PARKIN_422",
+    p."POOL2_424",
+    p."POOLSV_425",
+    p."PPTAX_426",
+    p."REPLAC_427",
+    p."RETAX_428",
+    p."RNTINC_429",
+    p."ROOMS1_430",
+    p."ROOMS2_431",
+    p."ROOMS3_432",
+    p."ROOMS4_433",
+    p."SEPMTR_434",
+    p."SPEC_435",
+    p."STYLE_437",
+    p."STYLE2_438",
+    p."SUPPLI_439",
+    p."SWR_440",
+    p."TAX_441",
+    p."TOTEXP_442",
+    p."TRASH_443",
+    p."TRMSCO_444",
+    p."TU_445",
+    p."TYPE_446",
+    p."WATER__448",
+    p."WNDW_449",
+    p."WTRAC_450",
+    p."ACRES_455",
+    p."ASSOC__456",
+    p."BLDIN_460",
+    p."DEED_461",
+    p."DEVEL_462",
+    p."DOCK_463",
+    p."DOCKAC_464",
+    p."DOCUMT_465",
+    p."DV_466",
+    p."ELV_467",
+    p."FILL_469",
+    p."FORLEA_470",
+    p."GRND_471",
+    p."IMPRV_472",
+    p."LOCAT_474",
+    p."MNSF_475",
+    p."NUM_PA_477",
+    p."ONSITE_478",
+    p."PA_479",
+    p."PN2_481",
+    p."PS_483",
+    p."RAIL_484",
+    p."SHOW_486",
+    p."SOIL_487",
+    p."SPEC_489",
+    p."STYLE_491",
+    p."SUBDV_492",
+    p."SURFC_493",
+    p."SWR_494",
+    p."TREES_495",
+    p."TRMAV_496",
+    p."TRMSCO_497",
+    p."TYPE_498",
+    p."USAGE_499",
+    p."UTAVL_500",
+    p."WTR_501",
+    p."WTRVW_502",
+    p."ADDL_D_551",
+    p."AMENS_552",
+    p."APP_FE_554",
+    p."APPRV_555",
+    p."COMM_561",
+    p."DATEAV_562",
+    p."DESGN_563",
+    p."LSETER_564",
+    p."LTY_565",
+    p."MIN_LS_567",
+    p."MISC_568",
+    p."MN_569",
+    p."MOVEIN_570",
+    p."NUM_LS_572",
+    p."NUM_ST_573",
+    p."OCCUP_574",
+    p."PARK_575",
+    p."POOL2_576",
+    p."RENEWA_577",
+    p."RENT_P_578",
+    p."RENTAL_579",
+    p."RENTAL_580",
+    p."RESTR_581",
+    p."ROOMS_582",
+    p."SALE_583",
+    p."SECUR_584",
+    p."SHOW2_585",
+    p."STYLE_586",
+    p."SWR_587",
+    p."TYPE_588",
+    p."VIEW_589",
+    p."Addres_881",
+    p."ELEM_S_886",
+    p."MIDD_S_891",
+    p."SR_SCH_893",
+    p."INT_LE_894",
+    p."APRIL_895",
+    p."AUGUST_896",
+    p."DECEMB_897",
+    p."FEBRUA_898",
+    p."FURN_A_899",
+    p."FURN_O_900",
+    p."FURN_S_901",
+    p."JANUAR_902",
+    p."JULY_903",
+    p."JUNE_904",
+    p."MARCH_905",
+    p."MAY_906",
+    p."NOVEMB_907",
+    p."OCTOBE_908",
+    p."SEPTEM_909",
+    p."UNFURN_910",
+    p."UNFURN_911",
+    p."UNFURN_912",
+    p."City_N_922",
+    p."State_924",
+    p."Unit__1016",
+    p."Unit__1018",
+    p."Unit__1020",
+    p."Unit__1022",
+    p."Unit__1024",
+    p."Unit__1026",
+    p."Unit__1028",
+    p."Unit__1030",
+    p."Unit__1032",
+    p."Unit__1034",
+    p."Unit__1036",
+    p."Unit__1038",
+    p."Unit__1040",
+    p."Unit__1042",
+    p."Unit__1044",
+    p."Unit__1046",
+    p."Unit__1048",
+    p."Unit__1050",
+    p."Unit__1052",
+    p."Unit__1054",
+    p."Unit__1056",
+    p."Unit__1058",
+    p."Unit__1060",
+    p."Unit__1062",
+    p."Unit__1064",
+    p."Unit__1066",
+    p."Unit__1068",
+    p."Unit__1070",
+    p."Unit__1072",
+    p."Unit__1074",
+    p."Unit__1076",
+    p."Unit__1078",
+    p."Unit__1080",
+    p."Unit__1082",
+    p."Unit__1084",
+    p."Unit__1086",
+    p."Direc_1088",
+    p."Virtu_1223",
+    p."LastI_1329",
+    p."Legal_1339",
+    p."HOPA_1410",
+    p."XPFBT_1424",
+    p."XPHBT_1426",
+    p."XPSUB_1430",
+    p."SHRTS_1465",
+    p."REO_1473",
+    p."Blogg_1485",
+    p."AVM_1486",
+    p."Addre_1487",
+    p."Addre_1488"
+   FROM ragfl."Property" p
+     JOIN ragfl.mutation m ON p.sysid::text = m.remote_id AND m.last_transaction_completed_at IS NOT NULL;
