@@ -16,7 +16,6 @@ sub new {
 
   $opts->{stats} = {};
   $opts->{log_file} = "$opts->{log_dir}/monitor.log";
-  $opts->{s3_bucket} = 'dfo-log';
   $opts->{live_table} = 'public.monitor_feeds';
   $opts->{journal_table} = 'public.monitor_feeds_journal';
 
@@ -143,29 +142,27 @@ sub finish {
   $dbh->do($sql);
 
   # Store logs here, update log_monitor_url
-  my $s3_client = $self->{s3_client};
-  my $bucket = $s3_client->bucket(name => $self->{s3_bucket});
+  my $storage_client = $self->{storage_client};
+
   my $filename_root = "$MLS::Config::MLS/" . strftime("%F %T", localtime);
 
   # Store monitor log
-  my $s3_monitor_object = $bucket->object(
-    key          => "$filename_root-monitor.log",
-    acl_short    => 'public-read',
-    content_type => 'text/plain',
-  );
-  $s3_monitor_object->put_filename($self->{log_file});
+  my $monitor_log_url = $storage_client->store_file({
+    source_filename => $self->{log_file},
+    dest_filename   => "$filename_root-monitor.log",
+    content_type    => 'text/plain',
+  });
 
   # Store rets log
-  my $s3_rets_object = $bucket->object(
-    key          => "$filename_root-rets.log",
-    acl_short    => 'public-read',
-    content_type => 'text/plain',
-  );
-  $s3_rets_object->put_filename("$self->{log_dir}/rets.log");
+  my $rets_log_url = $storage_client->store_file({
+    source_filename => "$self->{log_dir}/rets.log",
+    dest_filename   => "$filename_root-rets.log",
+    content_type    => 'text/plain',
+  });
 
   %new_data = (
-    log_monitor_url => $dbh->quote($s3_monitor_object->uri),
-    log_librets_url => $dbh->quote($s3_rets_object->uri),
+    log_monitor_url => $dbh->quote($monitor_log_url),
+    log_librets_url => $dbh->quote($rets_log_url),
   );
 
   $sql = "UPDATE $self->{live_table} SET (" . join(',', keys %new_data) . ") = (" . join(',', values %new_data) .") where id = $self->{id}";

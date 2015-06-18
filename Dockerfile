@@ -11,7 +11,7 @@ RUN apt-get update \
   && aptitude safe-upgrade -y \
   && apt-get install -y --no-install-recommends postgresql-client-9.4 build-essential libboost-all-dev libcurl4-gnutls-dev autoconf antlr swig libmojolicious-perl libpq-dev libclass-dbi-pg-perl libnet-amazon-s3-perl cpanminus \
   && rm -rf /var/lib/apt/lists/*
-RUN cpanm install Geo::StreetAddress::US Text::LevenshteinXS
+RUN cpanm install Geo::StreetAddress::US Text::LevenshteinXS Net::Azure::StorageClient
 
 RUN wget https://github.com/NationalAssociationOfRealtors/libRETS/archive/1.6.1.tar.gz
 RUN tar xzf 1.6.1.tar.gz

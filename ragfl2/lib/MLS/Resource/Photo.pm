@@ -80,7 +80,7 @@ sub fetch_remote {
   my ($self, $row) = @_;
 
   my $rets = $self->{rets};
-  my $s3_client = $self->{s3_client};
+  my $storage_client = $self->{storage_client};
 
   my $objectKey = $row->{remote_id} . '';
   my $path = substr($objectKey, -3, 3) . '/' . $objectKey;
@@ -113,18 +113,13 @@ sub fetch_remote {
     syswrite(OUT, $resultdata);
     close(OUT);
 
-    # TODO: Add eval around S3 store, recreate object if dies
+    my $dest_filename = "$MLS::Config::MLS/$MLS::Config::RESOURCE/" . $path . '/' . $objectId . '.' . $ext . '?v=' . time;
 
-    my $bucket = $s3_client->bucket(name => $MLS::Config::S3_BUCKET);
-    my $s3_key = "$MLS::Config::MLS/$MLS::Config::RESOURCE/" . $path . '/' . $objectId . '.' . $ext . '?v=' . time;
-
-    my $s3_object = $bucket->object(
-      key => $s3_key,
-      acl_short => 'public-read',
-      content_type => $contentType
-    );
-
-    $s3_object->put_filename($outputFilename);
+    my $url = $storage_client->store_file({
+      source_filename   => $outputFilename,
+      dest_filename => $dest_filename,
+      content_type  => $contentType,
+    });
 
     unlink($outputFilename) or die "Could not unlink $outputFilename: $!";
 

@@ -21,8 +21,14 @@ $MLS::Config::RETS = sub {
   return $rets;
 };
 
-# AMAZON S3 bucket name for photos
-$MLS::Config::S3_BUCKET = 'dfo-photos';
+# bucket name for photos
+$MLS::Config::PHOTO_STORAGE_BUCKET = 'dfo-photos';
+
+# bucket name for SQL diffs
+$MLS::Config::PUBLISH_STORAGE_BUCKET = 'dfo-publish';
+
+# bucket name for monitor logging
+$MLS::Config::LOG_STORAGE_BUCKET = 'dfo-log';
 
 # mapbox.com api key
 $MLS::Config::MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoibGlzdGluZ3AiLCJhIjoiOFVKOENBTSJ9.fcoVMMQ5M0HQDSR0owQ8OQ';

@@ -14,8 +14,6 @@ $| = 1;
 sub new {
   my ($class, $opts) = @_;
 
-  $opts->{s3_bucket} = 'dfo-publish';
-
   return bless $opts, $class;
 }
 
@@ -295,15 +293,14 @@ sub store_diff {
 
     close $fh;
 
-    my $bucket = $self->{s3_client}->bucket(name => $self->{s3_bucket});
-    my $s3_bucket = $bucket->object(
-        key          => "$MLS::Config::MLS/" . basename($filename),
-        acl_short    => 'public-read',
-        content_type => 'application/octet-stream',
-    );
-    $s3_bucket->put_filename($filename);
+    my $storage_client = $self->{storage_client};
+    my $url = $storage_client->store_file({
+      source_filename => $filename,
+      dest_filename   => "$MLS::Config::MLS/" . basename($filename),
+      content_type    => $contentType,
+    });
 
-    $self->{data_file_url} = $s3_bucket->uri;
+    $self->{data_file_url} = $url;
 }
 
 sub store_schema {
@@ -320,15 +317,14 @@ sub store_schema {
     print $fh $md5_json;
     close $fh;
 
-    my $bucket = $self->{s3_client}->bucket(name => $self->{s3_bucket});
-    my $s3_bucket = $bucket->object(
-        key          => "$MLS::Config::MLS/" . basename($filename),
-        acl_short    => 'public-read',
-        content_type => 'application/octet-stream',
-    );
-    $s3_bucket->put_filename($filename);
+    my $storage_client = $self->{storage_client};
+    my $url = $storage_client->store_file({
+      source_filename => $filename,
+      dest_filename   => "$MLS::Config::MLS/" . basename($filename),
+      content_type    => $contentType,
+    });
 
-    $self->{schema_file_url} = $s3_bucket->uri;
+    $self->{schema_file_url} = $url;
 }
 
 sub insert_publish_table {
