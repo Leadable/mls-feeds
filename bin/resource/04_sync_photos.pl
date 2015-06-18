@@ -1,17 +1,20 @@
 use strict; 
-use lib "../../lib", "blib/lib", "blib/arch", "/opt/mls-feeds/lib";
+use lib "blib/lib", "blib/arch", "/opt/mls-feeds/lib";
 
-use DBI;
 use librets;
 
-use MLS::Util;
-use MLS::Resource::Photo;
 use MLS::Storage;
+use MLS::Util;
 
-my $resource = $ARGV[0] || 'Property';
+my $mls = $ARGV[0] or die "You must specify an MLS board";
+push @INC, "/opt/mls-feeds/$mls/lib";
+
+require MLS::Resource::Photo;
+
+my $resource = $ARGV[1] || 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
-my $dbh = $MLS::Util::DBH->() or die $DBI::errstr;
+my $dbh = $MLS::Util::DBH->();
 my $rets = $MLS::Config::RETS->();
 $rets->SetHttpLogName("$MLS::Config::LOG_DIR/sync_photos.log");
 my $storage = MLS::Storage->new({ use_s3 => 0, bucket => $MLS::Config::PHOTO_STORAGE_BUCKET });
@@ -23,6 +26,5 @@ MLS::Resource::Photo->new({
 })->go();
 
 $dbh->disconnect;
-#$rets->Logout();
 
 exit(0);

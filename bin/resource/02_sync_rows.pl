@@ -1,16 +1,19 @@
 use strict; 
-use lib "../../lib", "blib/lib", "blib/arch"; 
+use lib "blib/lib", "blib/arch", "/opt/mls-feeds/lib";
 
-use DBI;
 use librets;
 
 use MLS::Util;
-use MLS::Resource::Row;
 
-my $resource = $ARGV[0] || 'Property';
+my $mls = $ARGV[0] or die "You must specify an MLS board";
+push @INC, "/opt/mls-feeds/$mls/lib";
+
+require MLS::Resource::Row;
+
+my $resource = $ARGV[1] || 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
-my $dbh = $MLS::Util::DBH->() or die $DBI::errstr;
+my $dbh = $MLS::Util::DBH->();
 my $rets = $MLS::Config::RETS->();
 
 $rets->SetHttpLogName("$MLS::Config::LOG_DIR/sync_rows.log");

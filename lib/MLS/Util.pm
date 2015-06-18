@@ -1,7 +1,7 @@
 package MLS::Util;
 use strict;
 
-use Net::Amazon::S3;
+use DBI;
 
 $MLS::Util::DBH = sub {
   my $dbname = 'mls';
@@ -12,7 +12,7 @@ $MLS::Util::DBH = sub {
 
   my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
 
-  return DBI->connect($connstr, $user, $pass, { AutoCommit => 1, RaiseError => 1, pg_server_prepare => 0 });
+  return DBI->connect($connstr, $user, $pass, { AutoCommit => 1, RaiseError => 1, pg_server_prepare => 0 }) or die $DBI::errstr;
 };
 
 $MLS::Util::TOOLS_DBH = sub {
@@ -24,7 +24,7 @@ $MLS::Util::TOOLS_DBH = sub {
 
   my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
 
-  return DBI->connect($connstr, $user, $pass, { AutoCommit => 1, RaiseError => 1, pg_server_prepare => 0 });
+  return DBI->connect($connstr, $user, $pass, { AutoCommit => 1, RaiseError => 1, pg_server_prepare => 0 }) or die $DBI::errstr;
 };
 
 1;

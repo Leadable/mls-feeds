@@ -1,17 +1,20 @@
 use strict;
-use lib "../../lib", "blib/lib", "blib/arch";
-
-use DBI;
+use lib "blib/lib", "blib/arch", "/opt/mls-feeds/lib";
 
 use MLS::Util;
-use MLS::Resource::Publish;
-use Net::Amazon::S3;
+use MLS::Storage;
 
-my $resource = $ARGV[0] || 'Property';
+my $mls = $ARGV[0] or die "You must specify an MLS board";
+push @INC, "/opt/mls-feeds/$mls/lib";
+
+require MLS::Resource::Publish;
+
+my $resource = $ARGV[1] || 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
-my $dbh = $MLS::Util::DBH->() or die $DBI::errstr;
-my $tools_dbh = $MLS::Util::TOOLS_DBH->() or die $DBI::errstr;
+my $dbh = $MLS::Util::DBH->();
+my $tools_dbh = $MLS::Util::TOOLS_DBH->();
+my $storage = MLS::Storage->new({ use_s3 => 0, bucket => $MLS::Config::PUBLISH_STORAGE_BUCKET });
 
 # Use areas array when applicable (for Property resource), otherwise
 # pass the resource type instead
@@ -21,7 +24,7 @@ foreach my $id (@areas) {
     MLS::Resource::Publish->new({
       dbh => $dbh,
       tools_dbh => $tools_dbh,
-      s3_client => $MLS::Util::S3_CLIENT->(),
+      storage_client => $storage,
       id => $id
     })->go();
 }

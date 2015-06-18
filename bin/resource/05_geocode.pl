@@ -1,19 +1,22 @@
 use strict; 
-use lib "../../lib", "blib/lib", "blib/arch"; 
+use lib "blib/lib", "blib/arch", "/opt/mls-feeds/lib";
 
-use DBI;
 use librets;
 use Mojo::UserAgent;
 
 use MLS::Util;
 use MLS::Monitor;
-use MLS::Resource::Geo;
 
-my $resource = $ARGV[0] || 'Property';
+my $mls = $ARGV[0] or die "You must specify an MLS board";
+push @INC, "/opt/mls-feeds/$mls/lib";
+
+require MLS::Resource::Geo;
+
+my $resource = $ARGV[1] || 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
 my $ua = Mojo::UserAgent->new();
-my $dbh = $MLS::Util::DBH->() or die $DBI::errstr;
+my $dbh = $MLS::Util::DBH->();
 
 MLS::Resource::Geo->new({
   dbh => $dbh,

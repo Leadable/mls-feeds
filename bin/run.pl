@@ -1,22 +1,25 @@
 use strict; 
-use lib "../lib", "blib/lib", "blib/arch", "/opt/mls-feeds/lib"; 
+use lib "blib/lib", "blib/arch", "/opt/mls-feeds/lib";
 
 use DBI;
 use librets;
 use Mojo::UserAgent;
+
 use MLS::Storage;
 use MLS::Monitor;
-
 use MLS::Util;
 
-use MLS::Resource::Mutation;
-use MLS::Resource::Row;
-use MLS::Resource::Purge;
-use MLS::Resource::Photo;
-use MLS::Resource::Geo;
-use MLS::Resource::Publish;
+my $mls = $ARGV[0] or die "You must specify an MLS board";
+push @INC, "/opt/mls-feeds/$mls/lib";
 
-my $resource = $ARGV[0] || 'Property';
+require MLS::Resource::Mutation;
+require MLS::Resource::Row;
+require MLS::Resource::Purge;
+require MLS::Resource::Photo;
+require MLS::Resource::Geo;
+require MLS::Resource::Publish;
+
+my $resource = $ARGV[1] || 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
 my $dbh = $MLS::Util::DBH->() or die $DBI::errstr;
@@ -67,5 +70,6 @@ if ($@) {
 
 $monitor->finish();
 $dbh->disconnect;
+$tools_dbh->disconnect;
 
 exit(0);
