@@ -8,6 +8,7 @@ use Digest::MD5 qw(md5_hex);
 use Mojo::JSON qw(j);
 use File::Temp qw(tempfile);
 use File::Basename;
+use Compress::Zlib qw(gzopen Z_BEST_COMPRESSION);
 
 $| = 1;
 
@@ -28,7 +29,7 @@ sub go {
 
     # determine if there is a schema change
     # if so, must rebuild the entire table on live
-    if ($self->is_schema_change) {
+    if ($self->is_schema_change || $self->{force_rebuild}) {
         print "Schema change detected\n";
 
         $self->{rebuild} = 1;
@@ -217,19 +218,29 @@ sub generate_sql {
     my @new_ids     = @{$self->{id_lists}{new}};
     my @updated_ids = @{$self->{id_lists}{updated}};
 
+    my @col_names = map {$_->{col_name}} @{$self->{view_schema}};
+    my $col_str = join ',',
+                  map {$dbh->quote_identifier($_)} @col_names;
+
     # new
     if (scalar @new_ids) {
         while (@new_ids) {
             # chunk requests
-            my @ids = splice @new_ids, 0, 5000;
+            my @ids = splice @new_ids, 0, 1000;
             print 'Getting [' . scalar(@ids) . "] new records\n";
 
             my $new_ids_str = join ' OR ',
                               map {"listing_id = " . $dbh->quote($_)} @ids;
             my $new_rs = $dbh->selectall_arrayref("SELECT * from $self->{view} where $new_ids_str", {Slice => {}});
-            $return_sql .= join "\n",
-                           map {$self->format_row_data('insert', $_, $dbh)} @$new_rs;
-            $return_sql .= "\n";
+
+            foreach my $row (@$new_rs) {
+                my $vals = join ',',
+                           map {$dbh->quote($row->{$_})} @col_names;
+                $row = "($vals)";
+            }
+
+            my $vals = join ",\n", @$new_rs;
+            $return_sql .= qq|INSERT INTO $self->{live_table} ($col_str) VALUES $vals;\n|;
         }
     }
 
@@ -244,7 +255,7 @@ sub generate_sql {
                               map {"listing_id = " . $dbh->quote($_)} @ids;
             my $update_rs = $dbh->selectall_arrayref("SELECT * from $self->{view} where $update_ids_str", {Slice => {}});
             $return_sql .= join "\n",
-                           map {$self->format_row_data('update', $_, $dbh)} @$update_rs;
+                           map {$self->format_row_data($_, $dbh)} @$update_rs;
             $return_sql .= "\n";
         }
     }
@@ -255,21 +266,17 @@ sub generate_sql {
 
 # Formats a row in hash form for the diff
 sub format_row_data {
-    my ($self, $action, $row_data, $dbh) = @_;
+    my ($self, $row_data, $dbh) = @_;
 
     my $cols_str = join ',',
-                   map {qq|"$_"|} keys %$row_data;
+                   map {$dbh->quote_identifier($_)} keys %$row_data;
 
     my $vals_str = join ',',
                    map {$dbh->quote($_)} values %$row_data;
 
-    if (lc $action eq 'update') {
-        my $where_sql = 'l.listing_id = ' . $dbh->quote($row_data->{listing_id});
-        return qq|UPDATE $self->{live_table} as l SET ($cols_str) = ($vals_str) WHERE $where_sql;|;
-    }
-    elsif (lc $action eq 'insert') {
-        return qq|INSERT INTO $self->{live_table} ($cols_str) VALUES ($vals_str);|;
-    }
+    my $where_sql = 'l.listing_id = ' . $dbh->quote($row_data->{listing_id});
+
+    return qq|UPDATE $self->{live_table} as l SET ($cols_str) = ($vals_str) WHERE $where_sql;|;
 }
 
 sub store_diff {
@@ -280,18 +287,18 @@ sub store_diff {
     my ($fh, $filename) = tempfile(
         TEMPLATE => "$MLS::Config::MLS-$self->{id}-data-XXXXXXXX",
         DIR      => '/tmp',
-        SUFFIX   => '.sql',
+        SUFFIX   => '.sql.gz',
         UNLINK   => 1,
     );
+    # write file with max compression
+    my $gz = gzopen($fh, 'wb9') or
+        die "Could not open gzip file for write";
 
     my $md5_json = j({old => $self->{live_data_md5}, new => $self->{view_data_md5}});
-    print $fh "--$md5_json\n";
-    print $fh $sql;
-
-    # write new version string to live table
-    print $fh qq|COMMENT ON table $self->{live_table} is '$self->{view_data_md5}';|;
-
-    close $fh;
+    $gz->gzwrite("--$md5_json\n");
+    $gz->gzwrite($sql);
+    $gz->gzwrite(qq|COMMENT ON table $self->{live_table} is '$self->{view_data_md5}';|);
+    die "there was a problem flushing [$filename]" if ($gz->gzclose);
 
     my $storage_client = $self->{storage_client};
     my $url = $storage_client->store_file({
@@ -330,7 +337,7 @@ sub store_schema {
 sub insert_publish_table {
     my $self = shift;
 
-    my $dbh = $self->{tools_dbh};
+    my $dbh = $MLS::Util::TOOLS_DBH->();
 
     my %row_data = (
         mls               => $MLS::Config::MLS,
