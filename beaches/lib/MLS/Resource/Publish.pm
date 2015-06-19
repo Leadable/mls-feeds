@@ -226,7 +226,7 @@ sub generate_sql {
     if (scalar @new_ids) {
         while (@new_ids) {
             # chunk requests
-            my @ids = splice @new_ids, 0, 5000;
+            my @ids = splice @new_ids, 0, 1000;
             print 'Getting [' . scalar(@ids) . "] new records\n";
 
             my $new_ids_str = join ' OR ',
@@ -337,7 +337,7 @@ sub store_schema {
 sub insert_publish_table {
     my $self = shift;
 
-    my $dbh = $self->{tools_dbh};
+    my $dbh = $MLS::Util::TOOLS_DBH->();
 
     my %row_data = (
         mls               => $MLS::Config::MLS,
