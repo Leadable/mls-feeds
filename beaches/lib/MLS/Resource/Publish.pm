@@ -8,6 +8,7 @@ use Digest::MD5 qw(md5_hex);
 use Mojo::JSON qw(j);
 use File::Temp qw(tempfile);
 use File::Basename;
+use Compress::Zlib qw(gzopen Z_BEST_COMPRESSION);
 
 $| = 1;
 
@@ -280,18 +281,18 @@ sub store_diff {
     my ($fh, $filename) = tempfile(
         TEMPLATE => "$MLS::Config::MLS-$self->{id}-data-XXXXXXXX",
         DIR      => '/tmp',
-        SUFFIX   => '.sql',
+        SUFFIX   => '.sql.gz',
         UNLINK   => 1,
     );
+    # write file with max compression
+    my $gz = gzopen($fh, 'wb9') or
+        die "Could not open gzip file for write";
 
     my $md5_json = j({old => $self->{live_data_md5}, new => $self->{view_data_md5}});
-    print $fh "--$md5_json\n";
-    print $fh $sql;
-
-    # write new version string to live table
-    print $fh qq|COMMENT ON table $self->{live_table} is '$self->{view_data_md5}';|;
-
-    close $fh;
+    $gz->gzwrite("--$md5_json\n");
+    $gz->gzwrite($sql);
+    $gz->gzwrite(qq|COMMENT ON table $self->{live_table} is '$self->{view_data_md5}';|);
+    die "there was a problem flushing [$filename]" if ($gz->gzclose);
 
     my $storage_client = $self->{storage_client};
     my $url = $storage_client->store_file({
