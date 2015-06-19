@@ -241,8 +241,6 @@ sub generate_sql {
 
             my $vals = join ",\n", @$new_rs;
             $return_sql .= qq|INSERT INTO $self->{live_table} ($col_str) VALUES $vals;\n|;
-
-            print $return_sql;
         }
     }
 
