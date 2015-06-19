@@ -218,6 +218,10 @@ sub generate_sql {
     my @new_ids     = @{$self->{id_lists}{new}};
     my @updated_ids = @{$self->{id_lists}{updated}};
 
+    my @col_names = map {$_->{col_name}} @{$self->{view_schema}};
+    my $col_str = join ',',
+                  map {$dbh->quote_identifier($_)} @col_names;
+
     # new
     if (scalar @new_ids) {
         while (@new_ids) {
@@ -228,9 +232,17 @@ sub generate_sql {
             my $new_ids_str = join ' OR ',
                               map {"listing_id = " . $dbh->quote($_)} @ids;
             my $new_rs = $dbh->selectall_arrayref("SELECT * from $self->{view} where $new_ids_str", {Slice => {}});
-            $return_sql .= join "\n",
-                           map {$self->format_row_data('insert', $_, $dbh)} @$new_rs;
-            $return_sql .= "\n";
+
+            foreach my $row (@$new_rs) {
+                my $vals = join ',',
+                           map {$dbh->quote($row->{$_})} @col_names;
+                $row = "($vals)";
+            }
+
+            my $vals = join ",\n", @$new_rs;
+            $return_sql .= qq|INSERT INTO $self->{live_table} ($col_str) VALUES $vals;\n|;
+
+            print $return_sql;
         }
     }
 
@@ -245,7 +257,7 @@ sub generate_sql {
                               map {"listing_id = " . $dbh->quote($_)} @ids;
             my $update_rs = $dbh->selectall_arrayref("SELECT * from $self->{view} where $update_ids_str", {Slice => {}});
             $return_sql .= join "\n",
-                           map {$self->format_row_data('update', $_, $dbh)} @$update_rs;
+                           map {$self->format_row_data($_, $dbh)} @$update_rs;
             $return_sql .= "\n";
         }
     }
@@ -256,21 +268,17 @@ sub generate_sql {
 
 # Formats a row in hash form for the diff
 sub format_row_data {
-    my ($self, $action, $row_data, $dbh) = @_;
+    my ($self, $row_data, $dbh) = @_;
 
     my $cols_str = join ',',
-                   map {qq|"$_"|} keys %$row_data;
+                   map {$dbh->quote_identifier($_)} keys %$row_data;
 
     my $vals_str = join ',',
                    map {$dbh->quote($_)} values %$row_data;
 
-    if (lc $action eq 'update') {
-        my $where_sql = 'l.listing_id = ' . $dbh->quote($row_data->{listing_id});
-        return qq|UPDATE $self->{live_table} as l SET ($cols_str) = ($vals_str) WHERE $where_sql;|;
-    }
-    elsif (lc $action eq 'insert') {
-        return qq|INSERT INTO $self->{live_table} ($cols_str) VALUES ($vals_str);|;
-    }
+    my $where_sql = 'l.listing_id = ' . $dbh->quote($row_data->{listing_id});
+
+    return qq|UPDATE $self->{live_table} as l SET ($cols_str) = ($vals_str) WHERE $where_sql;|;
 }
 
 sub store_diff {
