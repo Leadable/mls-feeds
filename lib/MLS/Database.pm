@@ -46,7 +46,7 @@ sub AUTOLOAD {
       }
       elsif ($method eq 'quote') {
         # quote always requires at least one argument
-        $return = dbh->quote(undef);
+        $return = $dbh->quote(undef);
       }
       else {
         $return = $dbh->$method();
