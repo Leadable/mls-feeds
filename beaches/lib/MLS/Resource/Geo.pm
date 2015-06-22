@@ -427,7 +427,7 @@ sub update_mutation_row {
 
   my $dbh = $self->{dbh};
 
-  $dbh->{AutoCommit} = 0;
+  $dbh->set_autocommit(0);
 
   eval {
     # update local_img_mod_ts in mutation row
@@ -466,7 +466,7 @@ sub update_mutation_row {
   }
 
   $dbh->do('COMMIT');
-  $dbh->{AutoCommit} = 1;
+  $dbh->set_autocommit(1);
 }
 
 1;

@@ -80,7 +80,7 @@ sub mark_as_removed {
   my $pkey_ident = $MLS::Config::PRIMARY_KEY{SystemName};
   my $pkey_val = $remote_row->{remote_id};
 
-  $dbh->{AutoCommit} = 0;
+  $dbh->set_autocommit(0);
 
   eval {
     my $sql = "UPDATE $MLS::Config::MLS." . $dbh->quote_identifier($MLS::Config::RESOURCE) . " SET __removed_at = NOW() WHERE " . $dbh->quote_identifier($pkey_ident) . " = " . $dbh->quote($pkey_val);
@@ -102,7 +102,7 @@ sub mark_as_removed {
   }
 
   $dbh->do('COMMIT');
-  $dbh->{AutoCommit} = 1;
+  $dbh->set_autocommit(1);
 
   $self->{totals}{removed}++;
 }

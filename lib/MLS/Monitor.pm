@@ -4,7 +4,6 @@ use strict;
 use Data::Dumper qw(Dumper);
 use File::Path qw(mkpath);
 use Mojo::JSON qw(j);
-use MLS::Util;
 use POSIX;
 
 $| = 1;

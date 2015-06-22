@@ -1,7 +1,7 @@
 use strict;
 use lib "blib/lib", "blib/arch", "/opt/mls-feeds/lib";
 
-use MLS::Util;
+use MLS::Database;
 use MLS::Storage;
 
 my $mls = $ARGV[0] or die "You must specify an MLS board";
@@ -14,7 +14,8 @@ eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$res
 
 my $force_rebuild = $ARGV[2] eq '--force-rebuild';
 
-my $dbh = $MLS::Util::DBH->();
+my $feeds_dbh = MLS::Database->new({db => 'feeds'});
+my $tools_dbh = MLS::Database->new({db => 'tools'});
 
 my $storage = MLS::Storage->new({ use_s3 => 0, bucket => $MLS::Config::PUBLISH_STORAGE_BUCKET });
 
@@ -24,13 +25,12 @@ my @areas = @MLS::Config::AREAS ? @MLS::Config::AREAS : ($resource);
 
 foreach my $id (@areas) {
     MLS::Resource::Publish->new({
-      dbh => $dbh,
+      id             => $id,
+      dbh            => $feeds_dbh,
+      tools_dbh      => $tools_dbh,
       storage_client => $storage,
-      id => $id,
-      force_rebuild => $force_rebuild,
+      force_rebuild  => $force_rebuild,
     })->go();
 }
-
-$dbh->disconnect;
 
 exit(0);

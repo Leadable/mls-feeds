@@ -335,7 +335,7 @@ sub update_mutation_table {
 
   my $dbh = $self->{dbh};
 
-  $dbh->{AutoCommit} = 0;
+  $dbh->set_autocommit(0);
 
   eval {
     my $address_sql;
@@ -381,7 +381,7 @@ sub update_mutation_table {
   }
 
   $dbh->do('COMMIT');
-  $dbh->{AutoCommit} = 1;
+  $dbh->set_autocommit(1);
 }
 
 1;

@@ -7,7 +7,7 @@ use Mojo::UserAgent;
 
 use MLS::Storage;
 use MLS::Monitor;
-use MLS::Util;
+use MLS::Database;
 
 my $mls = $ARGV[0] or die "You must specify an MLS board";
 push @INC, "/opt/mls-feeds/$mls/lib";
@@ -22,8 +22,8 @@ require MLS::Resource::Publish;
 my $resource = $ARGV[1] || 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
-my $dbh = $MLS::Util::DBH->() or die $DBI::errstr;
-my $tools_dbh = $MLS::Util::TOOLS_DBH->() or die $DBI::errstr;
+my $dbh       = MLS::Database->new({db => 'feeds'});
+my $tools_dbh = MLS::Database->new({db => 'tools'});
 
 my $rets = $MLS::Config::RETS->();
 $rets->SetHttpLogName("$MLS::Config::LOG_DIR/rets.log");
@@ -69,7 +69,5 @@ if ($@) {
 }
 
 $monitor->finish();
-$dbh->disconnect;
-$tools_dbh->disconnect;
 
 exit(0);

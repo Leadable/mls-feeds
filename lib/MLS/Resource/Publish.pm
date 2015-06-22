@@ -34,13 +34,6 @@ sub go {
 
         $self->{rebuild} = 1;
         $self->{live_table} = $self->{view} . '_new';
-
-        # format schema for publish later
-        $self->{view_schema} = [
-            map {
-                { col_name => $_->[0], col_type => $_->[1] }
-            } @{$self->{view_schema}}
-        ];
     }
     else {
         $self->{live_table} = $self->{view};
@@ -124,9 +117,15 @@ sub is_schema_change {
         AND    NOT attisdropped;|
     );
 
-    $self->{view_schema} = $view_schema;
     $self->{view_schema_md5} = do_md5sum_schema($view_schema);
     $self->{live_schema_md5} = do_md5sum_schema($live_schema);
+
+    # format schema for publish later
+    $self->{view_schema} = [
+        map {
+            { col_name => $_->[0], col_type => $_->[1] }
+        } @$view_schema
+    ];
 
     return $self->{view_schema_md5} ne $self->{live_schema_md5};
 }
@@ -337,7 +336,7 @@ sub store_schema {
 sub insert_publish_table {
     my $self = shift;
 
-    my $dbh = $MLS::Util::TOOLS_DBH->();
+    my $dbh = $self->{tools_dbh};
 
     my %row_data = (
         mls               => $MLS::Config::MLS,
