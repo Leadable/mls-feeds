@@ -51,7 +51,10 @@ sub go {
   foreach my $remote_row (@$mutated) {
     $self->{totals}{total}++;
     print '.';
-    print "[$i]\n" if (++$i % 100 == 0);
+    if (++$i % 100 == 0) {
+      $self->monitor('totals', $self->{totals});
+      print "[$i]\n";
+    }
 
     if ($remote_row->{remote_address} eq 'INVALID') {
       $self->{totals}{invalid}++;

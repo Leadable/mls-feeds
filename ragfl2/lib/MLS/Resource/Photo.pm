@@ -28,7 +28,10 @@ sub go {
   foreach my $remote_row (@$mutated) {
     $self->fetch_remote($remote_row);
     print '.';
-    print "[$i]\n" if (++$i % 100 == 0);
+    if (++$i % 100 == 0) {
+      $self->monitor('photo_urls_fetched', $self->{totals}{photo_urls_fetched});
+      print "[$i]\n";
+    }
   }
 
   $self->finish();

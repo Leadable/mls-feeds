@@ -47,11 +47,17 @@ sub go {
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
 
+  open(my $fh, '>', "/tmp/$MLS::Config::MLS/bad_addresses.txt") or
+    die "Could not open [/tmp/$MLS::Config::MLS/bad_addresses.txt]: $!";
+
   my $i = 0;
   foreach my $remote_row (@$mutated) {
     $self->{totals}{total}++;
     print '.';
-    print "[$i]\n" if (++$i % 100 == 0);
+    if (++$i % 100 == 0) {
+      $self->monitor('totals', $self->{totals});
+      print "[$i]\n";
+    }
 
     if ($remote_row->{remote_address} eq 'INVALID') {
       $self->{totals}{invalid}++;
@@ -65,6 +71,10 @@ sub go {
     eval {
       next if $self->geocode_mapbox($remote_row);
       next if $self->geocode_bing($remote_row);
+
+      # write this address out to a file
+      print $fh $remote_row->{remote_address};
+
       next if $self->geocode_google($remote_row);
     };
     next if ($@);
@@ -74,6 +84,7 @@ sub go {
     $self->update_mutation_row($remote_row->{remote_id});
   }
 
+  close $fh;
   $self->finish();
 }
 

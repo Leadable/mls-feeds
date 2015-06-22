@@ -1,5 +1,5 @@
 use strict;
-use lib "blib/lib", "blib/arch", "/opt/mls-feeds/lib";
+use lib "blib/lib", "blib/arch", "../../lib";
 
 use MLS::Database;
 use MLS::Storage;

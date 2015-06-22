@@ -3,6 +3,7 @@ use strict;
 
 use Data::Dumper;
 use DBI;
+use Carp;
 use vars qw{$AUTOLOAD};
 
 sub new {
@@ -10,7 +11,7 @@ sub new {
 
   die "specify either feeds or tools in db argument" if ($opts->{db} ne 'feeds' && $opts->{db} ne 'tools');
 
-  $opts->{NumRetry} = 3;
+  $opts->{NumRetry} ||= 3;
   $opts->{AutoCommit} ||= 1;
 
   bless $opts, $class;
@@ -32,24 +33,34 @@ sub AUTOLOAD {
     my $dbh = $self->{dbh};
 
     my $res = eval {
+      local $SIG{ALRM} = sub { die "alarm\n" };
+      my $return;
+      alarm 120;
+
       # DBI is very strict about how many arguments are passed in
       if (defined $arg2) {
-        return $dbh->$method($arg1, $arg2);
+        $return = $dbh->$method($arg1, $arg2);
       }
       elsif (defined $arg1) {
-        return $dbh->$method($arg1);
+        $return = $dbh->$method($arg1);
       }
       elsif ($method eq 'quote') {
         # quote always requires at least one argument
-        $dbh->quote(undef);
+        $return = dbh->quote(undef);
       }
       else {
-        return $dbh->$method();
+        $return = $dbh->$method();
       }
+
+      alarm 0;
+      return $return;
     };
 
     if ($@) {
-      warn "Error in Database.pm: [$@]\n";
+      $@ eq "alarm\n" ?
+        warn "Connection to database timed out" :
+        warn "Error in Database.pm: [$@]\n";
+
       warn "Retries Left: [$retries_left]";
       undef $self->{dbh};
     }
@@ -57,6 +68,9 @@ sub AUTOLOAD {
       return $res;
     }
   }
+
+  # if here then this method ran out of retries
+  confess "Error running [$method] with ($arg1, $arg2)";
 }
 
 sub set_autocommit {
