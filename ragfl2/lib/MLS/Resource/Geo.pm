@@ -6,6 +6,7 @@ use Data::Dumper qw(Dumper);
 use Text::LevenshteinXS qw(distance);
 use Geo::StreetAddress::US;
 use Mojo::JSON qw(j);
+use File::Path qw(mkpath);
 
 $| = 1;
 
@@ -47,6 +48,13 @@ sub go {
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
 
+  if (! -d $MLS::Config::LOG_DIR) {
+    mkpath($MLS::Config::LOG_DIR);
+  }
+
+  open(my $fh, '>', "$MLS::Config::LOG_DIR/bad_addresses.txt") or
+    die "Could not open [$MLS::Config::LOG_DIR/bad_addresses.txt]: $!";
+
   my $i = 0;
   foreach my $remote_row (@$mutated) {
     $self->{totals}{total}++;
@@ -68,6 +76,10 @@ sub go {
     eval {
       next if $self->geocode_mapbox($remote_row);
       next if $self->geocode_bing($remote_row);
+
+      # write this address out to a file
+      print $fh $remote_row->{remote_address} . "\n";
+
       next if $self->geocode_google($remote_row);
     };
     next if ($@);
@@ -77,6 +89,7 @@ sub go {
     $self->update_mutation_row($remote_row->{remote_id});
   }
 
+  close $fh;
   $self->finish();
 }
 
