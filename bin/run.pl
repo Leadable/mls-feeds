@@ -1,5 +1,7 @@
 use strict; 
-use lib "blib/lib", "blib/arch", "/opt/mls-feeds/lib";
+
+use FindBin;
+use lib "blib/lib", "blib/arch", "$FindBin::Bin/../lib";
 
 use DBI;
 use librets;
