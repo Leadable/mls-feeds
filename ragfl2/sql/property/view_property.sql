@@ -68,7 +68,7 @@ CREATE OR REPLACE VIEW ragfl.view_property AS
     p.__geo_raw,
     p.__image_count,
     p.__geo_outlier,
-    p.sysid as listing_id,
+    p.sysid as id,
     p."Property_1",
     p."5B_2",
     p."ZipCode_10",
@@ -459,3 +459,5 @@ CREATE OR REPLACE VIEW ragfl.view_property AS
     p."Addre_1488"
    FROM ragfl."Property" p
      JOIN ragfl.mutation m ON p.sysid::text = m.remote_id AND m.last_transaction_completed_at IS NOT NULL;
+
+create materialized view ragfl.view_property_materialized as select * from ragfl.view_property;

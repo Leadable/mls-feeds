@@ -19,7 +19,7 @@ CREATE VIEW beaches.view_property AS
     "Property".__geo_geom,
     "Property".__geo_outlier,
     __photo_urls,
-    "Property"."LIST_1" AS listing_id,
+    "Property"."LIST_1" AS id,
     "Property"."LIST_105" AS mlsnum,
     "Property"."LIST_15" AS status,
     "Property"."LIST_15" = 'Active Contingent'::text OR "Property"."LIST_15" = 'Pending'::text OR "Property"."LIST_15" = 'Closed'::text OR "Property"."LIST_15" = 'Contingent'::text AS under_contract,

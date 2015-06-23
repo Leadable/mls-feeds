@@ -13,7 +13,7 @@ CREATE VIEW beaches.view_activeagent AS
     "ActiveAgent"."MEMBER_21" as phone,
     "ActiveAgent"."MEMBER_20" as board_code,
     "ActiveAgent"."MEMBER_1" as office_id,
-    "ActiveAgent"."MEMBER_0" as agent_id,
+    "ActiveAgent"."MEMBER_0" as id,
     "ActiveAgent"."STATUS" as status
 
     FROM beaches."ActiveAgent" JOIN beaches.mutation ON

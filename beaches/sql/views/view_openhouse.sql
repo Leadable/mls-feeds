@@ -9,7 +9,7 @@ CREATE VIEW beaches.view_openhouse AS
     "OpenHouse"."PHONE0" as agent_phone,
     "OpenHouse"."LIST22" as list_price,
     "OpenHouse"."EVENT8" as hosted_by,
-    "OpenHouse"."EVENT0" as event_id,
+    "OpenHouse"."EVENT0" as id,
     "OpenHouse"."EVENT9" as event_phone,
     "OpenHouse"."EVENT10" as event_area,
     "OpenHouse"."EVENT100" as event_start,

@@ -27,6 +27,11 @@ sub go {
     $self->{view} = "$MLS::Config::MLS.view_$self->{id}";
     $self->{materialized} = $self->{view} . '_materialized';
 
+    # is the materialized table empty?
+    if ($self->is_materialized_empty) {
+        $self->{force_rebuild} = 1;
+    }
+
     # determine if there is a schema change
     # if so, must rebuild the entire table on live
     if ($self->is_schema_change || $self->{force_rebuild}) {
@@ -96,6 +101,16 @@ sub monitor {
     $monitor->status({ namespace => \@class, key => $key, value => $value });
 }
 
+sub is_materialized_empty {
+    my $self = shift;
+
+    my $dbh = $self->{dbh};
+
+    my $count = $dbh->selectcol_arrayref("select count(*) from $self->{materialized}")->[0];
+
+    return $count == 0;
+}
+
 sub is_schema_change {
     my $self = shift;
 
@@ -140,11 +155,11 @@ sub is_data_change {
         join ',',
         map {"extract(epoch from $_) as $_"} @key_cols;
 
-    my $view_rs = $self->{view_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $self->{view}", 'listing_id');
+    my $view_rs = $self->{view_rs} = $dbh->selectall_hashref("SELECT $cols_str,id from $self->{view}", 'id');
 
     my $live_rs = {};
     if (!$self->{rebuild}) {
-        $live_rs = $self->{live_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $self->{materialized}", 'listing_id');
+        $live_rs = $self->{live_rs} = $dbh->selectall_hashref("SELECT $cols_str,id from $self->{materialized}", 'id');
     }
 
     print scalar(keys %$view_rs) ." records in new view\n";
@@ -200,7 +215,7 @@ sub do_md5sum_data {
     # sort by keys (listing id) here so data is always in same order
     return md5_hex(
         map {
-            $table_data->{$_}{listing_id} .
+            $table_data->{$_}{id} .
             $table_data->{$_}{__inserted_at} .
             $table_data->{$_}{__modified_at} .
             $table_data->{$_}{__removed_at}
@@ -229,7 +244,7 @@ sub generate_sql {
             print 'Getting [' . scalar(@ids) . "] new records\n";
 
             my $new_ids_str = join ' OR ',
-                              map {"listing_id = " . $dbh->quote($_)} @ids;
+                              map {"id = " . $dbh->quote($_)} @ids;
             my $new_rs = $dbh->selectall_arrayref("SELECT * from $self->{view} where $new_ids_str", {Slice => {}});
 
             foreach my $row (@$new_rs) {
@@ -251,7 +266,7 @@ sub generate_sql {
             print 'Getting [' . scalar(@ids) . "] updated records\n";
 
             my $update_ids_str = join ' OR ',
-                              map {"listing_id = " . $dbh->quote($_)} @ids;
+                              map {"id = " . $dbh->quote($_)} @ids;
             my $update_rs = $dbh->selectall_arrayref("SELECT * from $self->{view} where $update_ids_str", {Slice => {}});
             $return_sql .= join "\n",
                            map {$self->format_row_data($_, $dbh)} @$update_rs;
@@ -273,7 +288,7 @@ sub format_row_data {
     my $vals_str = join ',',
                    map {$dbh->quote($_)} values %$row_data;
 
-    my $where_sql = 'l.listing_id = ' . $dbh->quote($row_data->{listing_id});
+    my $where_sql = 'l.id = ' . $dbh->quote($row_data->{id});
 
     return qq|UPDATE $self->{live_table} as l SET ($cols_str) = ($vals_str) WHERE $where_sql;|;
 }
@@ -307,6 +322,7 @@ sub store_diff {
     });
 
     $self->{data_file_url} = $url;
+    print "File uploaded to: [$url]\n";
 }
 
 sub store_schema {
