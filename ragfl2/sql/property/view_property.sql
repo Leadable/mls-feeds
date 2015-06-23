@@ -69,6 +69,7 @@ CREATE OR REPLACE VIEW ragfl.view_property AS
     p.__image_count,
     p.__geo_outlier,
     p.sysid as id,
+    p.sysid as listing_id,
     p."Property_1",
     p."5B_2",
     p."ZipCode_10",
