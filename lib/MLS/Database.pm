@@ -3,7 +3,6 @@ use strict;
 
 use Data::Dumper;
 use DBI;
-use Carp;
 use vars qw{$AUTOLOAD};
 
 sub new {
@@ -26,16 +25,14 @@ sub AUTOLOAD {
 
   # call our dbh method, refreshing the connection if needed
   while ($retries_left--) {
-    if (!$self->{dbh}) {
-      $self->set_dbh;
-    }
-
-    my $dbh = $self->{dbh};
-
     my $res = eval {
-      local $SIG{ALRM} = sub { die "alarm\n" };
+      if (!$self->{dbh}) {
+        $self->set_dbh;
+      }
+
+      my $dbh = $self->{dbh};
+
       my $return;
-      alarm 120;
 
       # DBI is very strict about how many arguments are passed in
       if (defined $arg2) {
@@ -52,25 +49,22 @@ sub AUTOLOAD {
         $return = $dbh->$method();
       }
 
-      alarm 0;
       return $return;
     };
 
-    if ($@) {
-      $@ eq "alarm\n" ?
-        warn "Connection to database timed out" :
-        warn "Error in Database.pm: [$@]\n";
-
-      warn "Retries Left: [$retries_left]";
+    if ($@ =~ /connect/ && $retries_left) {
+      warn "Connection problem, try to reconnect [$retries_left] more times...";
+      sleep 10;
       undef $self->{dbh};
+    }
+    elsif ($@) {
+      # general error or out of retries, let caller handle it
+      die $@;
     }
     else {
       return $res;
     }
   }
-
-  # if here then this method ran out of retries
-  confess "Error running [$method] with ($arg1, $arg2)";
 }
 
 sub set_autocommit {
