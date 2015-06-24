@@ -12,13 +12,14 @@ $MLS::Config::RESOURCE = 'Property';
 $MLS::Config::OBJECT = 'HiRes';
 
 # RETS Resource Classes
+# active, pending, closed, backup, contingent
 %MLS::Config::CLASSES = (
-  A => { StandardName => 'ResidentialProperty', 'SearchRequest' => "((LIST_87=1950-01-01T00:00:00+),(LIST_15=|12LL26N0CFUH,12LL26N0CKTY,PWC_15429SGZYQIT))" }, # Single Family
-  B => { StandardName => 'MultiFamily', 'SearchRequest' => "((LIST_87=1950-01-01T00:00:00+),(LIST_15=|12MKUJQH3QE8,12MKUJQH471V,PWC_15429SI5IHF3))"  }, # Income
-  C => { StandardName => 'LotsAndLand', 'SearchRequest' => "((LIST_87=1950-01-01T00:00:00+),(LIST_15=|12MKULNSLMH4,12MKULNSM049,PWC_15429SI5IO7B))" }, 
+  A => { StandardName => 'ResidentialProperty', 'SearchRequest' => "((LIST_87=2013-01-01T00:00:00+),(LIST_15=|12LL26N0CFUH,12LL26N0CKTY,12LL26N0CIFT,PWC_181KDWIXFVLN,PWC_15429SGZYQIT))" }, # Single Family
+  B => { StandardName => 'MultiFamily', 'SearchRequest' => "((LIST_87=2013-01-01T00:00:00+),(LIST_15=|12MKUJQH3QE8,12MKUJQH471V,12MKUJQH3WOS,PWC_181KDWIXMZMX,PWC_15429SI5IHF3))"  }, # Income
+  C => { StandardName => 'LotsAndLand', 'SearchRequest' => "((LIST_87=2013-01-01T00:00:00+),(LIST_15=|12MKULNSLMH4,12MKULNSM049,12MKULNSLRYR,PWC_181KDWIXON0H,PWC_15429SI5IO7B))" },
   D => { StandardName => 'CommonInterest', 'SearchRequest' => "", ignore => 1 }, # Business 
   E => { StandardName => '', 'SearchRequest' => "", ignore => 1 }, # Commercial
-  F => { StandardName => '', 'SearchRequest' => "((LIST_87=1950-01-01T00:00:00+),(LIST_15=|12MKV6FH8HUD,12MKV6FH8VXQ,PWC_15429SI5J9U2))" }, # Rentals
+  F => { StandardName => '', 'SearchRequest' => "((LIST_87=2013-01-01T00:00:00+),(LIST_15=|12MKV6FH8HUD,12MKV6FH8VXQ,12MKV6FH8NEG,PWC_181KDWIXV3M0,PWC_15429SI5J9U2))" }, # Rentals
 );
 
 # RETS Resource Primary Key
