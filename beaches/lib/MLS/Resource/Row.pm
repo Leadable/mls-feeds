@@ -19,7 +19,7 @@ sub go {
   my ($self) = @_;
 
   print "----Syncing listing rows----\n\n";
-  $self->{totals} = { new => 0, updated => 0 };
+  $self->{totals} = { new => 0, updated => 0, dupes => 0 };
   $self->fetch_pg_col_info();
 
   foreach my $class_id (sort keys %MLS::Config::CLASSES) {
@@ -226,6 +226,7 @@ sub fetch_remote {
 
   $self->monitor('new', $self->{totals}{new});
   $self->monitor('updated', $self->{totals}{updated});
+  $self->monitor('dupes', $self->{totals}{dupes});
 }
 
 sub update {
@@ -325,9 +326,25 @@ sub insert {
 
   my $sql = 'INSERT INTO ' . $MLS::Config::MLS . '."' . $MLS::Config::RESOURCE . '"(' . join(',', @cols) . ') VALUES(' . join(',', @vals) . ')';
   $self->{temp_error} = "$sql\n";
-  $dbh->do($sql);
 
-  $self->{totals}{new}++;
+  eval {
+    $dbh->do($sql);
+  };
+
+  # known issue with this MLS board:
+  # ActiveAgent primary keys are not unique
+  if ($MLS::Config::RESOURCE eq 'ActiveAgent' && $@ =~ /unique constraint/) {
+    warn "Duplicate primary key found\n";
+    warn Dumper $data;
+    $self->{totals}{dupes}++;
+  }
+  elsif ($@) {
+    # some other error, die normally
+    die $@;
+  }
+  else {
+    $self->{totals}{new}++;
+  }
 }
 
 sub update_mutation_table {
