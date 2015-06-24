@@ -85,7 +85,8 @@ sub dumpAllTables {
       LongName => $table->GetLongName(),
       Unique => $table->IsUnique(),
       DataType => $table->GetDataType() . " (" . $DATA_TYPE_FROM_RETS_TO_PG{ $table->GetDataType() } . ")",
-      Interpretation => $table->GetInterpretation() . " (" . $INTERPRETATION_TYPE_FROM_RETS_TO_PG{ $table->GetInterpretation() } . ")"
+      Interpretation => $table->GetInterpretation() . " (" . $INTERPRETATION_TYPE_FROM_RETS_TO_PG{ $table->GetInterpretation() } . ")",
+      LookupName => $table->GetLookupName(),
     );
 
     my $longname = $table->GetLongName();
@@ -105,6 +106,36 @@ sub dumpAllTables {
     $columns->{ $resource->GetStandardName() }->{ $class->GetClassName() }->{ $table->GetSystemName() } = \%info;
 
     $columns->{ $resource->GetStandardName() }->{'ALL'}->{ $table->GetSystemName() } = { column => $sql, comment => $comment };
+  }
+}
+
+sub dumpAllLookups {
+  my $metadata = shift;
+  my $resource = shift;
+  my $lookups = shift;
+
+  return if ($resource->GetStandardName() ne 'Property');
+
+  my $lookup_list = $metadata->GetAllLookups($resource->GetStandardName());
+  foreach my $lookup (@$lookup_list) {
+    my $lookup_key = $lookup->GetLookupName();
+    next if (
+      $lookup_key ne '20121126194254125316000000' &&
+      $lookup_key ne '20121126194254552567000000' &&
+      $lookup_key ne '20121126194254956195000000' &&
+      $lookup_key ne '20121126194255366362000000' &&
+      $lookup_key ne '20121126194255771141000000' &&
+      $lookup_key ne '20121126194256185939000000'
+    );
+
+    my $lookup_types = $metadata->GetAllLookupTypes($lookup);
+    foreach my $lookup_type (@$lookup_types) {
+
+       push @{$lookups->{$lookup_key}}, {
+        long_value => $lookup_type->GetLongValue(),
+        value      => $lookup_type->GetValue(),
+      };
+    }
   }
 }
 
@@ -139,6 +170,7 @@ get '/' => sub {
 
   my $resources = $metadata->GetAllResources();
   my %columns;
+  my %lookups;
 
   foreach my $resource (@$resources) {
     $columns{ $resource->GetStandardName() } = { 'ALL' => {} };
@@ -149,11 +181,14 @@ get '/' => sub {
     print join(', ', @{ $resource->GetAttributeNames() });
     dumpAllObjects($metadata, $resource);
     dumpAllClasses($metadata, $resource, \%columns);
+    dumpAllLookups($metadata, $resource, \%lookups);
+
+    print Dumper \%lookups;
   }
 
   $rets->Logout();
 
-  $c->render(template => 'columns', mls => 'beaches', columns => \%columns);
+  $c->render(template => 'columns', mls => 'beaches', columns => \%columns, lookups => \%lookups);
 };
 
 app->start;
@@ -175,7 +210,7 @@ __DATA__
 
       <tr>
         <th colspan="2">&nbsp;</th>
-        % foreach my $attr (qw(StandardName DBName ShortName LongName Unique DataType Interpretation sql)) {
+        % foreach my $attr (qw(StandardName DBName ShortName LongName Unique DataType Interpretation LookupName sql)) {
           <th><%= $attr %></th>
         % }
       </tr>
@@ -188,7 +223,7 @@ __DATA__
         <tr bgcolor="<%= $x++ % 2 ? '#f7f7f7' : '#fff' %>">
           <td>&nbsp;</td>
           <td><%= $class_id %></td>
-          % foreach my $attr (qw(StandardName DBName ShortName LongName Unique DataType Interpretation sql)) {
+          % foreach my $attr (qw(StandardName DBName ShortName LongName Unique DataType Interpretation LookupName sql)) {
             <td><%== $info ? $info->{$attr} : '&nbsp;' %></td>
           % }
         </tr>
@@ -198,6 +233,30 @@ __DATA__
       <tr><td colspan="10"><%= $resource->{ALL}->{ $col_id }->{comment} %></td></tr>
     </table>
     <br><br>
+  % }
+
+    <h3>Lookups</h3>
+  % foreach my $lookup_name (sort keys %$lookups) {
+    <table width="100%" cellpadding="2" cellspacing="2" border="1">
+
+      <tr>
+        <td colspan="2"><%= $lookup_name %></td>
+      </tr>
+
+      <tr>
+        % foreach my $attr (qw(LongValue Value)) {
+          <th><%= $attr %></th>
+        % }
+      </tr>
+
+        % foreach my $lookup (@{$lookups->{$lookup_name}}) {
+          <tr>
+          % foreach my $attr (qw(long_value value)) {
+            <td><%= $lookup->{$attr} %></td>
+          % }
+          </tr>
+        % }
+    </table>
   % }
 % }
 
