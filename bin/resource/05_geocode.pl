@@ -16,12 +16,12 @@ require MLS::Resource::Geo;
 my $resource = $ARGV[1] || 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
-my $ua = Mojo::UserAgent->new();
 my $dbh = MLS::Database->new({db => 'feeds'});
+my $tools_dbh = MLS::Database->new({db => 'tools'});
 
 MLS::Resource::Geo->new({
   dbh => $dbh,
-  ua => $ua
+  dbh_tools => $tools_dbh,
 })->go();
 
 exit(0);

@@ -66,7 +66,7 @@ sub go {
 
     if ($remote_row->{remote_address} eq 'INVALID') {
       $self->{totals}{invalid}++;
-      
+
       $self->update_local_row($remote_row);
       $self->update_mutation_row($remote_row->{remote_id});
       
@@ -156,10 +156,29 @@ sub http_fail {
   exit(1);
 }
 
+sub get_user_agent {
+  my $self = shift;
+
+  if (!$self->{proxy_servers}) {
+    my $rs = $self->{dbh_tools}->selectall_arrayref('SELECT * FROM geocode_proxy', {Slice => {}});
+    die "No proxy servers in table" if (!$rs);
+    $self->{proxy_servers} = $rs;
+  }
+
+  # pick a proxy server at random
+  my $proxy = $self->{proxy_servers}->[rand @{$self->{proxy_servers}}];
+
+  my $ua = Mojo::UserAgent->new();
+  $ua->proxy->http("http://$proxy->{hostname}:8080")->https("http://$proxy->{hostname}:8080");
+
+  $self->{google_api_key} = $proxy->{api_token};
+
+  return $ua;
+}
+
 sub request {
   my ($self, $service, $url) = @_;
 
-  my $ua = $self->{ua};
   my $dbh = $self->{dbh};
 
   my @conditions = (
@@ -176,6 +195,11 @@ sub request {
   my $tx;
 
   while (1) {
+    my $ua = $self->get_user_agent;
+
+    # have to get google api key before we write the url for google
+    $url .= '&key=' . $self->{google_api_key} if ($service eq 'google');
+
     $tx = $ua->get($url);
    
     last unless $tx->error;
@@ -189,9 +213,6 @@ sub request {
     $attempts++;
 
     die if ($attempts == 10);
-
-
-    $ua = $self->{ua} = Mojo::UserAgent->new(); # try to get a different server process from the remote resource
 
     sleep(10);
   }
@@ -343,9 +364,8 @@ sub geocode_google {
 
   $self->{totals}{google}{total}++;
 
-  my $url = sprintf('https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s'
+  my $url = sprintf('https://maps.googleapis.com/maps/api/geocode/json?address=%s'
     , url_escape($remote_row->{remote_address})
-    , $MLS::Config::GOOGLE_ACCESS_TOKEN
   );
 
   $self->{temp_error} = "$url\n";
