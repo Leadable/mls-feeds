@@ -120,12 +120,7 @@ sub dumpAllLookups {
   foreach my $lookup (@$lookup_list) {
     my $lookup_key = $lookup->GetLookupName();
     next if (
-      $lookup_key ne '20121126194254125316000000' &&
-      $lookup_key ne '20121126194254552567000000' &&
-      $lookup_key ne '20121126194254956195000000' &&
-      $lookup_key ne '20121126194255366362000000' &&
-      $lookup_key ne '20121126194255771141000000' &&
-      $lookup_key ne '20121126194256185939000000'
+      $lookup_key ne 'Status'
     );
 
     my $lookup_types = $metadata->GetAllLookupTypes($lookup);
@@ -148,11 +143,11 @@ sub dumpAllLookups {
 get '/' => sub {
   my $c = shift;
 
-  my $rets = new librets::RetsSession( "http://retsgw.flexmls.com/rets2_1/Login");
+  my $rets = new librets::RetsSession( "http://matrixrets.carolinamls.com/rets/login.ashx");
 
   #$rets->SetUserAgentAuthType( $librets::UserAgentAuthType::USER_AGENT_AUTH_RETS_1_7);
 
-  if (!$rets->Login("fl.rets.dbarr", "dbarr")) {
+  if (!$rets->Login("idxRaelstrom", "Zj0Y9g34")) {
       $c->render( text => "Invalid login" );
       return;
   }
@@ -271,7 +266,6 @@ BEGIN;
     <%== $resource->{ALL}->{ $col_id }->{comment} %>;
     <%= ' ' %>
   % }
-  GRANT SELECT, UPDATE, INSERT ON TABLE <%= $mls %>."<%= $resource_id %>" TO GROUP <%= $mls %>;
 % }
 
 COMMIT;
