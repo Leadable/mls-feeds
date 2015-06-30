@@ -6,12 +6,29 @@ use lib "blib/lib", "blib/arch", "$FindBin::Bin/../lib";
 use DBI;
 use librets;
 use Mojo::UserAgent;
+use Getopt::Long;
+use Pod::Usage;
 
 use MLS::Storage;
 use MLS::Monitor;
 use MLS::Database;
 
-my $mls = $ARGV[0] or die "You must specify an MLS board";
+my $mls;
+my $resource;
+my $no_publish;
+my $force_rebuild;
+my $help;
+
+GetOptions(
+    "board=s"        => \$mls,
+    "resource=s"     => \$resource,
+    "nopublish"      => \$no_publish,
+    "force-rebuild"  => \$force_rebuild,
+    "help"           => \$help,
+) or pod2usage(1);
+
+pod2usage(1) if ($help || !$mls);
+
 push @INC, "/opt/mls-feeds/$mls/lib";
 
 require MLS::Resource::Mutation;
@@ -21,7 +38,7 @@ require MLS::Resource::Photo;
 require MLS::Resource::Geo;
 require MLS::Resource::Publish;
 
-my $resource = $ARGV[1] || 'Property';
+$resource ||= 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
 my $dbh       = MLS::Database->new({db => 'feeds'});
@@ -51,15 +68,18 @@ eval {
     MLS::Resource::Photo->new({ dbh => $dbh, rets => $rets, monitor => $monitor, storage_client => $photo_storage })->go();
     MLS::Resource::Geo->new({ dbh => $dbh, dbh_tools => $tools_dbh, monitor => $monitor,})->go();
 
-    my @areas = @MLS::Config::AREAS ? @MLS::Config::AREAS : ($resource);
-    foreach my $id (@areas) {
-        MLS::Resource::Publish->new({
-            dbh => $dbh,
-            tools_dbh => $tools_dbh,
-            monitor => $monitor,
-            storage_client => $publish_storage,
-            id => $id,
-        })->go();
+    unless ($no_publish) {
+        my @areas = @MLS::Config::AREAS ? @MLS::Config::AREAS : ($resource);
+        foreach my $id (@areas) {
+            MLS::Resource::Publish->new({
+                id             => $id,
+                dbh            => $dbh,
+                monitor        => $monitor,
+                tools_dbh      => $tools_dbh,
+                force_rebuild  => $force_rebuild,
+                storage_client => $publish_storage,
+            })->go();
+        }
     }
 };
 
@@ -72,3 +92,47 @@ if ($@) {
 $monitor->finish();
 
 exit(0);
+
+__END__
+
+=head1 run.pl
+
+sample - Using Getopt::Long and Pod::Usage
+
+=head1 SYNOPSIS
+
+run.pl [options]
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<-b, --board=>
+
+Specify the MLS board to use
+
+=item B<-r, --resource=Property>
+
+Specify the resource to use. Defaults to Property.
+
+=item B<-n, --nopublish>
+
+Do not publish SQL to tools database after gathering data
+
+=item B<-f, --force-rebuild>
+
+During the publish phase, generate a SQL diff containing the entire feeds data
+
+=item B<--help>
+
+Print a brief help message and exits.
+
+=back
+
+=head1 DESCRIPTION
+
+B<This program> syncs MLS data with the specified board
+
+=cut
+
+1;
