@@ -81,8 +81,13 @@ sub go {
       print $fh $remote_row->{remote_address} . "\n";
 
       next if $self->geocode_google($remote_row);
+      $self->{totals}{fail}++;
     };
-    next if ($@);
+
+    if ($@) {
+      $self->{totals}{fail}++;
+      next;
+    }
 
     # if we got here none of the geocoders found an address
     $self->update_local_row($remote_row);
@@ -197,29 +202,31 @@ sub request {
   while (1) {
     my $ua = $self->get_user_agent;
 
-    # have to get google api key before we write the url for google
-    $url .= '&key=' . $self->{google_api_key} if ($service eq 'google');
+    my $req_url = $url;
 
-    $tx = $ua->get($url);
-   
-    last unless $tx->error;
- 
-    my ($err, $code) = $tx->error;
-    
-    print "HTTP USER AGENT ERROR:";
-    print $code ? "$code response: $err" : "Connection error: $err\n"; 
-    print "HTTP Error. Attempt #" . ($attempts + 1) . "\n";
+    # add the key to the url before we search so it doesn't muck with the cache
+    if ($service eq 'google') {
+      $req_url .= '&key=' . $self->{google_api_key};
+    }
+    elsif ($service eq 'mapbox') {
+      $req_url .= '&access_token=' . $MLS::Config::MAPBOX_ACCESS_TOKEN;
+    }
+    elsif ($service eq 'bing') {
+      $req_url .= '&key=' . $MLS::Config::BING_ACCESS_TOKEN;
+    }
 
-    $attempts++;
+    $tx = $ua->get($req_url);
 
-    die if ($attempts == 10);
-
-    sleep(10);
+    if ($tx->success) {
+      last;
+    }
+    else {
+      http_fail($tx);
+      die if ($attempts++ == 10);
+    }
   }
 
   my $res = $tx->success;
-
-  http_fail($tx) unless $res;
 
   my $json = $res->json;
   die "Response is not JSON!" unless $json;
@@ -266,9 +273,8 @@ sub geocode_mapbox {
 
   $self->{totals}{mapbox}{total}++;
 
-  my $url = sprintf('http://api.tiles.mapbox.com/v4/geocode/mapbox.places/%s.json?access_token=%s'
+  my $url = sprintf('http://api.tiles.mapbox.com/v4/geocode/mapbox.places/%s.json?'
     , url_escape($remote_row->{remote_address})
-    , $MLS::Config::MAPBOX_ACCESS_TOKEN
   );
 
   $self->{temp_error} = "$url\n";
@@ -299,7 +305,6 @@ sub geocode_mapbox {
     return 1;
   }
 
-  $self->{totals}{fail}++;
   $self->{totals}{mapbox}{fail}++;
 
   return 0;
@@ -310,9 +315,8 @@ sub geocode_bing {
 
   $self->{totals}{bing}{total}++;
 
-  my $url = sprintf('http://dev.virtualearth.net/REST/v1/Locations?query=%s&key=%s'
+  my $url = sprintf('http://dev.virtualearth.net/REST/v1/Locations?query=%s'
     , url_escape($remote_row->{remote_address})
-    , $MLS::Config::BING_ACCESS_TOKEN
   );
 
   $self->{temp_error} = "$url\n";
@@ -325,7 +329,6 @@ sub geocode_bing {
   }
 
   unless (@{ $json->{resourceSets}->[0]->{resources} }) {
-    $self->{totals}{fail}++;
     $self->{totals}{bing}{fail}++;
 
     return 0;
@@ -353,7 +356,6 @@ sub geocode_bing {
     return 1;
   }
 
-  $self->{totals}{fail}++;
   $self->{totals}{bing}{fail}++;
 
   return 0;
@@ -373,7 +375,6 @@ sub geocode_google {
   my $json = $self->request('google', $url);
 
   if ($json->{status} eq 'ZERO_RESULTS') {
-    $self->{totals}{fail}++;
     $self->{totals}{google}{fail}++;
 
     return 0;
@@ -387,7 +388,6 @@ sub geocode_google {
   my $result = $json->{results}->[0];
 
   unless ($result) {
-    $self->{totals}{fail}++;
     $self->{totals}{google}{fail}++;
 
     return 0;
@@ -417,10 +417,8 @@ sub geocode_google {
     return 1;
   }
 
-  $self->{totals}{fail}++;
   $self->{totals}{google}{fail}++;
 
-  #sleep(2);
   return 0;
 }
 
