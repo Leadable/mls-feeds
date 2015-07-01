@@ -57,8 +57,10 @@ sub go {
     # compile list of instructions based on this
     my $sql_to_write = $self->generate_sql;
 
+    my $gz_fh = $self->compress_sql($sql_to_write);
+
     # dump .sql file to somewhere
-    $self->store_diff($sql_to_write);
+    $self->store_diff($gz_fh);
 
     if ($self->{rebuild}) {
         $self->store_schema;
@@ -293,10 +295,10 @@ sub format_row_data {
     return qq|UPDATE $self->{live_table} as l SET ($cols_str) = ($vals_str) WHERE $where_sql;|;
 }
 
-sub store_diff {
+sub compress_sql {
     my ($self, $sql) = @_;
 
-    print "Storing sql diff\n";
+    print "Compressing file..\n";
 
     my ($fh, $filename) = tempfile(
         TEMPLATE => "$MLS::Config::MLS-$self->{id}-data-XXXXXXXX",
@@ -314,15 +316,37 @@ sub store_diff {
     $gz->gzwrite(qq|COMMENT ON table $self->{live_table} is '$self->{view_data_md5}';|);
     die "there was a problem flushing [$filename]" if ($gz->gzclose);
 
-    my $storage_client = $self->{storage_client};
-    my $url = $storage_client->store_file({
-      source_filename => $filename,
-      dest_filename   => "$MLS::Config::MLS/" . basename($filename),
-      content_type    => 'text/plain',
-    });
+    return $fh;
+}
 
-    $self->{data_file_url} = $url;
-    print "File uploaded to: [$url]\n";
+sub store_diff {
+    my ($self, $fh) = @_;
+
+    print "Storing diff...\n";
+
+    my $storage_client = $self->{storage_client};
+
+    # store file in 10M chunks
+    my $buffer;
+    while (read($fh, $buffer, 10000000)) {
+
+        my ($part_fh, $part_filename) = tempfile(
+            TEMPLATE => "$MLS::Config::MLS-$self->{id}-data-XXXXXXXX",
+            DIR      => '/tmp',
+            SUFFIX   => '.sql.gz',
+            UNLINK   => 1,
+        );
+
+         my $url = $storage_client->store_file({
+          source_filename => $part_filename,
+          dest_filename   => "$MLS::Config::MLS/" . basename($part_filename),
+          content_type    => 'text/plain',
+        });
+
+        push @{$self->{data_file_url}}, $url;
+        print "File uploaded to: [$url]\n";
+    }
+
 }
 
 sub store_schema {
