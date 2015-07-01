@@ -55,16 +55,17 @@ sub go {
     $self->build_id_lists;
 
     # compile list of instructions based on this
-    my $sql_to_write = $self->generate_sql;
+    my $sql_to_write = $self->generate_row_data;
 
-    my $gz_fh = $self->compress_sql($sql_to_write);
+    # add to our SQL diff if doing a full rebuild
+    if ($self->{rebuild}) {
+        $sql_to_write = $self->add_rebuild_sql($sql_to_write);
+    }
+
+    my $gz_filename = $self->compress_sql($sql_to_write);
 
     # dump .sql file to somewhere
-    $self->store_diff($gz_fh);
-
-    if ($self->{rebuild}) {
-        $self->store_schema;
-    }
+    $self->store_diff($gz_filename);
 
     # add a row to the live publish table
     $self->insert_publish_table;
@@ -227,7 +228,7 @@ sub do_md5sum_data {
     );
 }
 
-sub generate_sql {
+sub generate_row_data {
     my $self = shift;
 
     my $dbh = $self->{dbh};
@@ -297,6 +298,84 @@ sub format_row_data {
     return qq|UPDATE $self->{live_table} as l SET ($cols_str) = ($vals_str) WHERE $where_sql;|;
 }
 
+sub add_rebuild_sql {
+    my ($self, $sql) = @_;
+
+    # build new table to house the data
+    # later it will atomically replace current table
+    my $schema = $self->{view_schema};
+    my $index_sql = generate_index_sql($self, $schema, "view_$self->{id}");
+    my $extra_sql = get_extra_sql($self->{id});
+
+    my $cols = join ',',
+               map {$self->{dbh}->quote_identifier($_->{col_name}) . ' ' . $_->{col_type}} @$schema;
+    my $new_table_sql = qq|CREATE TABLE $self->{view}_new ($cols);|;
+
+    my $mv_table_sql = qq|DROP TABLE IF EXISTS $self->{view} CASCADE; ALTER TABLE $self->{view}_new RENAME TO "view_$self->{id}";|;
+
+    return qq|
+      $new_table_sql
+      $sql
+      $mv_table_sql
+      $index_sql
+      $extra_sql
+    |;
+}
+
+sub generate_index_sql {
+  my ($self, $schema, $table) = @_;
+
+  my $dbh = $self->{dbh};
+  my @indexes;
+  my @table_abbrev = ($table =~ /_(\S)/g);
+  my $id = 1;
+
+  foreach my $col (@$schema) {
+    my $idx_type;
+    if ($col->{col_type} eq 'geometry') {
+      $idx_type = 'GIST';
+    }
+    elsif ($col->{col_type} =~ /\[\]/) {
+      $idx_type = 'GIN'
+    }
+    else {
+      $idx_type = 'BTREE';
+    }
+
+    my $index_name = $dbh->quote_identifier(
+      join '_', ('idx', 'view', @table_abbrev, $col->{col_name}, $id++)
+    );
+
+    my $col_name = $dbh->quote_identifier($col->{col_name});
+
+    my $index = qq|CREATE INDEX $index_name ON $self->{view} USING $idx_type ($col_name);|;
+    push @indexes, $index;
+  }
+
+  my $sql = join "\n", @indexes;
+  return $sql;
+}
+
+# extra sql could include comments, creation of views, etc
+sub get_extra_sql {
+  my $name = shift;
+
+  my $file = "$FindBin::Bin/../../$MLS::Config::MLS/sql/extra/$name.sql";
+  return '' if (! -e $file);
+
+  open (my $fh, '<', $file) or
+    die "Could not open [$file] for read: $!";
+
+  # slurp file into $sql
+  my $sql;
+  {
+    local $/ = undef;
+    $sql = <$fh>;
+  }
+
+  return $sql;
+}
+
 sub compress_sql {
     my ($self, $sql) = @_;
 
@@ -314,19 +393,23 @@ sub compress_sql {
 
     my $md5_json = j({old => $self->{live_data_md5}, new => $self->{view_data_md5}});
     $gz->gzwrite("--$md5_json\n");
+    $gz->gzwrite("BEGIN;\n");
     $gz->gzwrite($sql);
-    $gz->gzwrite(qq|COMMENT ON table $self->{live_table} is '$self->{view_data_md5}';|);
+    $gz->gzwrite(qq|COMMENT ON table $self->{view} is '$self->{view_data_md5}';|);
+    $gz->gzwrite("COMMIT;\n");
     die "there was a problem flushing [$filename]" if ($gz->gzclose);
 
-    return $fh;
+    return $filename;
 }
 
 sub store_diff {
-    my ($self, $fh) = @_;
+    my ($self, $filename) = @_;
 
     print "Storing diff...\n";
 
     my $storage_client = $self->{storage_client};
+    open (my $fh, '<', $filename)
+        or die "Could not open file [$filename]";
 
     # store file in 10M chunks
     my $buffer;
@@ -355,30 +438,6 @@ sub store_diff {
 
 }
 
-sub store_schema {
-    my $self = shift;
-
-    my ($fh, $filename) = tempfile(
-        TEMPLATE => "$MLS::Config::MLS-$self->{id}-schema-XXXXXXXX",
-        DIR      => '/tmp',
-        SUFFIX   => '.json',
-        UNLINK   => 1,
-    );
-
-    my $md5_json = j($self->{view_schema});
-    print $fh $md5_json;
-    close $fh;
-
-    my $storage_client = $self->{storage_client};
-    my $url = $storage_client->store_file({
-      source_filename => $filename,
-      dest_filename   => "$MLS::Config::MLS/" . basename($filename),
-      content_type    => 'text/plain',
-    });
-
-    $self->{schema_file_url} = $url;
-}
-
 sub insert_publish_table {
     my $self = shift;
 
@@ -390,8 +449,6 @@ sub insert_publish_table {
         area              => $self->{id},
         full              => $self->{rebuild} || '0',
         data_file_url     => $self->{data_file_url},
-        schema_file_url   => $self->{schema_file_url},
-        schema_md5        => $self->{view_schema_md5}, # TODO: is this column necessary?
         data_md5          => $self->{view_data_md5},
         previous_data_md5 => $self->{live_data_md5},
     );

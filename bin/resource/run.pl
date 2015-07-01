@@ -1,7 +1,7 @@
 use strict; 
 
 use FindBin;
-use lib "blib/lib", "blib/arch", "$FindBin::Bin/../lib";
+use lib "blib/lib", "blib/arch", "$FindBin::Bin/../../lib";
 
 use DBI;
 use librets;
@@ -29,7 +29,7 @@ GetOptions(
 
 pod2usage(1) if ($help || !$mls);
 
-push @INC, "/opt/mls-feeds/$mls/lib";
+push @INC, "$FindBin::Bin/../../$mls/lib";
 
 require MLS::Resource::Mutation;
 require MLS::Resource::Row;
