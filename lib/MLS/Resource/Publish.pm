@@ -69,6 +69,8 @@ sub go {
     # add a row to the live publish table
     $self->insert_publish_table;
 
+    print "Refreshing materialized view...\n";
+
     # recreate materialized view from our new view
     $self->{dbh}->do("REFRESH MATERIALIZED VIEW $self->{materialized}");
 
@@ -337,7 +339,11 @@ sub store_diff {
             UNLINK   => 1,
         );
 
-         my $url = $storage_client->store_file({
+        # store buffer in file
+        print $part_fh $buffer;
+        close $part_fh;
+
+        my $url = $storage_client->store_file({
           source_filename => $part_filename,
           dest_filename   => "$MLS::Config::MLS/" . basename($part_filename),
           content_type    => 'text/plain',
