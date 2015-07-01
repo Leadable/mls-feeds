@@ -56,7 +56,7 @@ sub go {
 
     # compile list of instructions based on this
     my $sql_to_write = $self->generate_row_data;
-    $sql_to_write .= qq|COMMENT ON table $self->{live_table} is '$self->{view_data_md5}';|
+    $sql_to_write .= qq|COMMENT ON table $self->{live_table} is '$self->{view_data_md5}';|;
 
     # add to our SQL diff if doing a full rebuild
     if ($self->{rebuild}) {
