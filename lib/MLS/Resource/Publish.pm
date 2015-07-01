@@ -56,6 +56,7 @@ sub go {
 
     # compile list of instructions based on this
     my $sql_to_write = $self->generate_row_data;
+    $sql_to_write .= qq|COMMENT ON table $self->{live_table} is '$self->{view_data_md5}';|
 
     # add to our SQL diff if doing a full rebuild
     if ($self->{rebuild}) {
@@ -311,14 +312,16 @@ sub add_rebuild_sql {
                map {$self->{dbh}->quote_identifier($_->{col_name}) . ' ' . $_->{col_type}} @$schema;
     my $new_table_sql = qq|CREATE TABLE $self->{view}_new ($cols);|;
 
-    my $mv_table_sql = qq|DROP TABLE IF EXISTS $self->{view} CASCADE; ALTER TABLE $self->{view}_new RENAME TO "view_$self->{id}";|;
+    my $mv_table_sql = qq|DROP TABLE IF EXISTS $self->{view} CASCADE; ALTER TABLE $self->{live_table} RENAME TO "view_$self->{id}";|;
 
     return qq|
+      BEGIN;
       $new_table_sql
       $sql
       $mv_table_sql
-      $index_sql
       $extra_sql
+      COMMIT;
+      $index_sql
     |;
 }
 
@@ -393,10 +396,7 @@ sub compress_sql {
 
     my $md5_json = j({old => $self->{live_data_md5}, new => $self->{view_data_md5}});
     $gz->gzwrite("--$md5_json\n");
-    $gz->gzwrite("BEGIN;\n");
     $gz->gzwrite($sql);
-    $gz->gzwrite(qq|COMMENT ON table $self->{view} is '$self->{view_data_md5}';|);
-    $gz->gzwrite("COMMIT;\n");
     die "there was a problem flushing [$filename]" if ($gz->gzclose);
 
     return $filename;
