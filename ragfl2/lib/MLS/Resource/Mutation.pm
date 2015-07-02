@@ -75,47 +75,35 @@ sub fetch_remote {
       my $request = $rets->CreateSearchRequest($MLS::Config::RESOURCE, $class_id, $class->{SearchRequest});
       $request->SetSelect("$MLS::Config::PRIMARY_KEY{SystemName},$MLS::Config::ROW_MOD_TS_COLUMN{SystemName},$MLS::Config::IMG_MOD_TS_COLUMN{SystemName}");
       $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
+      $request->SetOffset($librets::SearchRequest::OFFSET_NONE);
       $request->SetStandardNames(0);
       $request->SetCountType($librets::SearchRequest::RECORD_COUNT_AND_RESULTS);
       $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
 
       my $sanity_count = 0;
       my $record_count = 0;
-      my $chunk = 100000;
-      $request->SetLimit($chunk);
 
-      my $i = 0;
+      my $results = $rets->Search($request);
 
-      while (1) {
-        my $offset = ($chunk * $i++) + 1;
+      my $new_record_count = $results->GetCount();
+      if ($new_record_count > $record_count) {
+        $record_count = $new_record_count;
+        print "Set record count: [" . $record_count . "]\n";
+      }
 
-        last if ($record_count && $record_count < $offset);
+      while ($results->HasNext()) {
+        my $row_mod_ts = $results->GetString( $MLS::Config::ROW_MOD_TS_COLUMN{SystemName} );
+        my $img_mod_ts = %MLS::Config::IMG_MOD_TS_COLUMN ? $results->GetString( $MLS::Config::IMG_MOD_TS_COLUMN{SystemName} ) : '';
 
-        print "Searching with offset: [" . $offset . "]\n\n";
+        my %data = (
+          remote_row_mod_ts => $row_mod_ts,
+          remote_img_mod_ts => $img_mod_ts,
+          class => $class_id
+        );
 
-        $request->SetOffset($offset);
-        my $results = $rets->Search($request);
+        $remote->{ $results->GetString( $MLS::Config::PRIMARY_KEY{SystemName} ) } = \%data;
 
-        my $new_record_count = $results->GetCount();
-        if ($new_record_count > $record_count) {
-          $record_count = $new_record_count;
-          print "Set record count: [" . $record_count . "]\n";
-        }
-
-        while ($results->HasNext()) {
-          my $row_mod_ts = $results->GetString( $MLS::Config::ROW_MOD_TS_COLUMN{SystemName} );
-          my $img_mod_ts = %MLS::Config::IMG_MOD_TS_COLUMN ? $results->GetString( $MLS::Config::IMG_MOD_TS_COLUMN{SystemName} ) : '';
-
-          my %data = (
-            remote_row_mod_ts => $row_mod_ts,
-            remote_img_mod_ts => $img_mod_ts,
-            class => $class_id
-          );
-
-          $remote->{ $results->GetString( $MLS::Config::PRIMARY_KEY{SystemName} ) } = \%data;
-
-          $sanity_count++;
-        }
+        $sanity_count++;
       }
 
       print "WARNING: Expected record count was [$record_count] but received [$sanity_count]\n" if ($sanity_count != $record_count);

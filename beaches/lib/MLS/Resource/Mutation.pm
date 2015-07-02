@@ -74,7 +74,6 @@ sub fetch_remote {
 
       my $request = $rets->CreateSearchRequest($MLS::Config::RESOURCE, $class_id, $class->{SearchRequest});
       $request->SetSelect("$MLS::Config::PRIMARY_KEY{SystemName},$MLS::Config::ROW_MOD_TS_COLUMN{SystemName},$MLS::Config::IMG_MOD_TS_COLUMN{SystemName}");
-      $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
       $request->SetStandardNames(0);
       $request->SetCountType($librets::SearchRequest::RECORD_COUNT_AND_RESULTS);
       $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
