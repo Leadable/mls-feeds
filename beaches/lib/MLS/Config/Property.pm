@@ -14,12 +14,12 @@ $MLS::Config::OBJECT = 'HiRes';
 # RETS Resource Classes
 # active, pending, closed, backup, contingent
 %MLS::Config::CLASSES = (
-  A => { StandardName => 'ResidentialProperty',   'SearchRequest' => "(LIST_87=2013-01-01T00:00:00+)" },  # Single Family
-  B => { StandardName => 'MultiFamily',           'SearchRequest' => "(LIST_87=2013-01-01T00:00:00+)"  }, # Income
-  C => { StandardName => 'LotsAndLand',           'SearchRequest' => "(LIST_87=2013-01-01T00:00:00+)" },  # Land
+  A => { StandardName => 'ResidentialProperty',   'SearchRequest' => "(LIST_87=1900-01-01T00:00:00+)" },  # Single Family
+  B => { StandardName => 'MultiFamily',           'SearchRequest' => "(LIST_87=1900-01-01T00:00:00+)"  }, # Income
+  C => { StandardName => 'LotsAndLand',           'SearchRequest' => "(LIST_87=1900-01-01T00:00:00+)" },  # Land
   D => { StandardName => 'CommonInterest',        'SearchRequest' => "", ignore => 1 },                   # Business
   E => { StandardName => '',                      'SearchRequest' => "", ignore => 1 },                   # Commercial
-  F => { StandardName => '',                      'SearchRequest' => "(LIST_87=2013-01-01T00:00:00+)" },  # Rentals
+  F => { StandardName => '',                      'SearchRequest' => "(LIST_87=1900-01-01T00:00:00+)" },  # Rentals
 );
 
 # RETS Resource Primary Key
