@@ -82,6 +82,8 @@ sub fetch_remote {
       my $sanity_count = 0;
       my $record_count = 0;
       my $chunk = 100000;
+      $request->SetLimit($chunk);
+
       my $i = 0;
 
       while (1) {
