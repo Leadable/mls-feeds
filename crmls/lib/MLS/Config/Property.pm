@@ -16,13 +16,13 @@ $MLS::Config::OBJECT = 'LargePhoto';
 #my $status = '(Status=|A,B,L,P,S)';
 my $status = '(Status=|A,B)';
 %MLS::Config::CLASSES = (
-  Residential       => { StandardName => 'Residential',       'SearchRequest' => "((TimestampModified=1900-01-01+),$status)" },
-  Commercial        => { StandardName => 'Commercial',        'SearchRequest' => "((TimestampModified=1900-01-01+),$status,((County=|LA,SA,VE)|(City=|DP,LN,SC)))"  },
-  Land              => { StandardName => 'Land',              'SearchRequest' => "((TimestampModified=1900-01-01+),$status)" },
+  Residential       => { StandardName => 'Residential',       'SearchRequest' => "(TimestampModified=1900-01-01+)" },
+  Commercial        => { StandardName => 'Commercial',        'SearchRequest' => "(TimestampModified=1900-01-01+)" },
+  Land              => { StandardName => 'Land',              'SearchRequest' => "(TimestampModified=1900-01-01+)" },
   Mobile            => { StandardName => 'Mobile',            'SearchRequest' => "", ignore => 1 },
   CrossProperty     => { StandardName => 'CrossProperty',     'SearchRequest' => "", ignore => 1 },
-  ResidentialIncome => { StandardName => 'ResidentialIncome', 'SearchRequest' => "((TimestampModified=1900-01-01+),$status,((County=|LA,SA,VE)|(City=|DP,LN,SC)))" },
-  ResidentialLease  => { StandardName => 'ResidentialLease',  'SearchRequest' => "((TimestampModified=1900-01-01+),$status)" },
+  ResidentialIncome => { StandardName => 'ResidentialIncome', 'SearchRequest' => "(TimestampModified=1900-01-01+)" },
+  ResidentialLease  => { StandardName => 'ResidentialLease',  'SearchRequest' => "(TimestampModified=1900-01-01+)" },
 );
 
 # RETS Resource Primary Key

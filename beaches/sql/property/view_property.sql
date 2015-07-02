@@ -23,6 +23,8 @@ CREATE VIEW beaches.view_property AS
     "Property"."LIST_1" AS listing_id,
     "Property"."LIST_105" AS mlsnum,
     "Property"."LIST_15" AS status,
+    "Property"."LIST_12" AS sold_date,
+    "Property"."LIST_23" AS sold_price,
     "Property"."LIST_15" = 'Active Contingent'::text OR "Property"."LIST_15" = 'Pending'::text OR "Property"."LIST_15" = 'Closed'::text OR "Property"."LIST_15" = 'Contingent'::text AS under_contract,
     CASE "Property"."LIST_15"
         WHEN 'Pending'::text THEN 'Pending'::text
@@ -228,6 +230,8 @@ UNION
     sysid::text as listing_id,
     "MLNumb_157" as mlsnum,
     "Status_246" as status,
+    "CloseDa_62" as sold_date,
+    null::numeric as sold_price,
     "Status_246" <> 'Active-Available' as under_contract,
     CASE "Status_246"
       WHEN 'Backup Contract-Call LA' THEN 'Backup Contract-Call LA'

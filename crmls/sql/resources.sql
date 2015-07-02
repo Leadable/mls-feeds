@@ -49,7 +49,7 @@ BEGIN;
     ALTER TABLE crmls."Media" ADD COLUMN "ClassID" integer;
     COMMENT ON COLUMN crmls."Media"."ClassID" IS 'ClassID';
      
-  CREATE TABLE crmls."OpenHouse"() ;
+  CREATE TABLE crmls."OpenHouse"() INHERITS (property);
     ALTER TABLE crmls."OpenHouse" ADD COLUMN "showingofficeid" text;
     COMMENT ON COLUMN crmls."OpenHouse"."showingofficeid" IS 'showingofficeid';
      
