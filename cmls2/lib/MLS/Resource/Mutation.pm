@@ -86,9 +86,10 @@ sub fetch_remote {
 
       while (1) {
         my $offset = ($chunk * $i++) + 1;
-        print "Offset: [" . $offset . "]\n\n";
 
         last if ($record_count && $record_count < $offset);
+
+        print "Searching with offset: [" . $offset . "]\n\n";
 
         $request->SetOffset($offset);
         my $results = $rets->Search($request);
@@ -115,7 +116,7 @@ sub fetch_remote {
         }
       }
 
-      print "WARNING: Expected record count was [$record_count] but received [$sanity_count]" if ($sanity_count != $record_count);
+      print "WARNING: Expected record count was [$record_count] but received [$sanity_count]\n" if ($sanity_count != $record_count);
     };
 
     if ($@) {
