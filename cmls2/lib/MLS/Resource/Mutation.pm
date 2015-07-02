@@ -79,22 +79,27 @@ sub fetch_remote {
       $request->SetCountType($librets::SearchRequest::RECORD_COUNT_AND_RESULTS);
       $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
 
-      my $chunk = 5000;
+      my $sanity_count = 0;
+      my $record_count = 0;
+      my $chunk = 100000;
       my $i = 0;
 
       while (1) {
         my $offset = ($chunk * $i++) + 1;
+        print "Offset: [" . $offset . "]\n\n";
+
+        last if ($record_count && $record_count < $offset);
 
         $request->SetOffset($offset);
         my $results = $rets->Search($request);
 
-        print "Record count: " . $results->GetCount() . "\n";
-        print "Offset: " . $offset . "\n\n";
+        my $new_record_count = $results->GetCount();
+        if ($new_record_count > $record_count) {
+          $record_count = $new_record_count;
+          print "Set record count: [" . $record_count . "]\n";
+        }
 
-        my $NO_RESULTS = 1;
         while ($results->HasNext()) {
-          $NO_RESULTS = 0;
-
           my $row_mod_ts = $results->GetString( $MLS::Config::ROW_MOD_TS_COLUMN{SystemName} );
           my $img_mod_ts = %MLS::Config::IMG_MOD_TS_COLUMN ? $results->GetString( $MLS::Config::IMG_MOD_TS_COLUMN{SystemName} ) : '';
 
@@ -105,10 +110,12 @@ sub fetch_remote {
           );
 
           $remote->{ $results->GetString( $MLS::Config::PRIMARY_KEY{SystemName} ) } = \%data;
-        }
 
-        last if ($NO_RESULTS);
+          $sanity_count++;
+        }
       }
+
+      print "WARNING: Expected record count was [$record_count] but received [$sanity_count]" if ($sanity_count != $record_count);
     };
 
     if ($@) {
