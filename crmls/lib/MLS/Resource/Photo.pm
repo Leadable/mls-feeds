@@ -84,33 +84,36 @@ sub mutated {
 sub fetch_remote {
   my ($self, $row) = @_;
 
-  my $rets = $self->{rets};
+  my $dbh = $self->{dbh};
 
-  my $objectKey = $row->{remote_id} . '';
+  my $pkey      = $dbh->quote_identifier($MLS::Config::PRIMARY_KEY{SystemName});
+  my $remote_id = $dbh->quote($row->{remote_id});
 
-  my $request = new librets::GetObjectRequest($MLS::Config::RESOURCE, $MLS::Config::OBJECT);
+  # get the SourceKey column for this listing
+  my $sql = 'SELECT ' . $dbh->quote_identifier('SourceKey') . " from $MLS::Config::MLS." . $dbh->quote_identifier("$MLS::Config::RESOURCE") .
+            " WHERE $pkey = $remote_id";
 
-  $request->SetLocation(1);
-  $request->AddAllObjects($objectKey);
+  my $source_key = $dbh->selectcol_arrayref($sql)->[0];
 
-  my $response = $rets->GetObject($request);
+  my $search = "(ClassSourceKey=$source_key)";
 
   my @urls;
 
-  my $objectDescriptor = $response->NextObject();
-      
-  while ($objectDescriptor) {
-    my $location = $objectDescriptor->GetLocationUrl();
-    $location .= '?v=' . time if ($location);
+  my $rets = $self->{rets};
 
-    print "$location\n";
+  my $request = $rets->CreateSearchRequest('Media', 'Media', $search);
+  $request->SetSelect('MediaURL');
+  $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
+  $request->SetOffset($librets::SearchRequest::OFFSET_NONE);
+  $request->SetStandardNames(0);
+  $request->SetCountType($librets::SearchRequest::RECORD_COUNT_AND_RESULTS);
+  $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
 
-    push(@urls, $location);
-    $self->{totals}{photo_urls_fetched}++;
-    $objectDescriptor = $response->NextObject();
+  my $results = $rets->Search($request);
+
+  while ($results->HasNext()) {
+    push @urls, $results->GetString("MediaURL") . '?v=' . time;
   }
-
-  exit;
 
   $self->update($row, \@urls);
   $self->update_mutation_table($row->{remote_id}); 
