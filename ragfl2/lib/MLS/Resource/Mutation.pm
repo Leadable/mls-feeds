@@ -118,7 +118,7 @@ sub fetch_remote {
         }
       }
 
-      print "WARNING: Expected record count was [$recount_count] but received [$sanity_count]\n" if ($sanity_count != $record_count);
+      print "WARNING: Expected record count was [$record_count] but received [$sanity_count]\n" if ($sanity_count != $record_count);
     };
 
     if ($@) {
