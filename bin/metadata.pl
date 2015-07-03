@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
-use lib "blib/lib", "blib/arch"; 
-use strict; 
+use lib "blib/lib", "blib/arch";
+use strict;
 use librets;
 
 use Data::Dumper qw(Dumper);
@@ -60,7 +60,7 @@ sub dumpAllClasses {
   foreach my $class (@$classes) {
     next if ($IGNORED_CLASSES{ $class->GetClassName });
 
-    $columns->{ $resource->GetStandardName() }->{ $class->GetClassName() } = {};
+    $columns->{ $resource->GetResourceID() }->{ $class->GetClassName() } = {};
 
     print "Class ID: " . $class->GetId() . "\n";
     print "Class name: " . $class->GetClassName() . " [" .  $class->GetStandardName() . "] " . $class->GetVisibleName . "\n";
@@ -92,8 +92,8 @@ sub dumpAllTables {
     my $longname = $table->GetLongName();
     $longname =~ s/'/''/;
 
-    my $comment = 'COMMENT ON COLUMN beaches."' . $resource->GetStandardName() . '"."' . $table->GetSystemName() . '" IS \'' . $longname . "'";
-    my $sql = 'ALTER TABLE beaches."' . $resource->GetStandardName() . '" ADD COLUMN "' . $table->GetSystemName() . '" ' . $DATA_TYPE_FROM_RETS_TO_PG{ $table->GetDataType() };
+    my $comment = 'COMMENT ON COLUMN aarretsx."' . $resource->GetResourceID() . '"."' . $table->GetSystemName() . '" IS \'' . $longname . "'";
+    my $sql = 'ALTER TABLE aarretsx."' . $resource->GetResourceID() . '" ADD COLUMN "' . $table->GetSystemName() . '" ' . $DATA_TYPE_FROM_RETS_TO_PG{ $table->GetDataType() };
 
     # LOOKUP MULTI, make column an array
     $sql .= '[]' if ($INTERPRETATION_TYPE_FROM_RETS_TO_PG{ $table->GetInterpretation() } eq 'array');
@@ -102,10 +102,10 @@ sub dumpAllTables {
     $sql .= ' PRIMARY KEY' if ($table->GetSystemName() eq $resource->GetKeyField());
 
     $info{sql} = $sql;
- 
-    $columns->{ $resource->GetStandardName() }->{ $class->GetClassName() }->{ $table->GetSystemName() } = \%info;
 
-    $columns->{ $resource->GetStandardName() }->{'ALL'}->{ $table->GetSystemName() } = { column => $sql, comment => $comment };
+    $columns->{ $resource->GetResourceID() }->{ $class->GetClassName() }->{ $table->GetSystemName() } = \%info;
+
+    $columns->{ $resource->GetResourceID() }->{'ALL'}->{ $table->GetSystemName() } = { column => $sql, comment => $comment };
   }
 }
 
@@ -114,9 +114,9 @@ sub dumpAllLookups {
   my $resource = shift;
   my $lookups = shift;
 
-  return if ($resource->GetStandardName() ne 'Property');
+  return if ($resource->GetResourceID() ne 'Property');
 
-  my $lookup_list = $metadata->GetAllLookups($resource->GetStandardName());
+  my $lookup_list = $metadata->GetAllLookups($resource->GetResourceID());
   foreach my $lookup (@$lookup_list) {
     my $lookup_key = $lookup->GetLookupName();
     next if (
@@ -135,7 +135,7 @@ sub dumpAllLookups {
 }
 
 #my $mt = Mojo::Template->new;
-#my $sql = $mt->render_file('./tables.mt', 'beaches', $metadata);
+#my $sql = $mt->render_file('./tables.mt', 'aarretsx', $metadata);
 #print $sql;
 
 #print Dumper(\%columns);
@@ -143,18 +143,24 @@ sub dumpAllLookups {
 get '/' => sub {
   my $c = shift;
 
-  my $rets = new librets::RetsSession( "http://matrixrets.carolinamls.com/rets/login.ashx");
+  my $rets = new librets::RetsSession( "http://rets172lax.raprets.com:6103/Annarbor/ANNA/login.aspx");
+  $rets->SetHttpLogName("/tmp/rets.log");
 
+  $rets->SetRetsVersion($librets::RETS_1_7_2);
+
+  $rets->SetUserAgent('IDXIO-1.0');
+  #$rets->SetUserAgentPassword('xio');
+  #$rets->SetUserAgentAuthType($librets::UserAgentAuthType::USER_AGENT_AUTH_INTEREALTY);
   #$rets->SetUserAgentAuthType( $librets::UserAgentAuthType::USER_AGENT_AUTH_RETS_1_7);
 
-  if (!$rets->Login("idxRaelstrom", "Zj0Y9g34")) {
+  if (!$rets->Login("IDXAnn", "xio")) {
       $c->render( text => "Invalid login" );
       return;
   }
 
   # Very useful for determining differences between RETS servers
   # and understanding the metadata
-  $rets->SetHttpLogName("rets.log");
+  #$rets->SetHttpLogName("/tmp/rets.log");
 
   # Get metadata
   my $metadata = $rets->GetMetadata;
@@ -168,7 +174,7 @@ get '/' => sub {
   my %lookups;
 
   foreach my $resource (@$resources) {
-    $columns{ $resource->GetStandardName() } = { 'ALL' => {} };
+    $columns{ $resource->GetResourceID() } = { 'ALL' => {} };
 
     print "Resource name: " . $resource->GetResourceID() . " [" .  $resource->GetStandardName() . "]\n";
     print "Key Field: " . $resource->GetKeyField() . "\n";
@@ -178,12 +184,12 @@ get '/' => sub {
     dumpAllClasses($metadata, $resource, \%columns);
     dumpAllLookups($metadata, $resource, \%lookups);
 
-    print Dumper \%lookups;
+    #print Dumper \%lookups;
   }
 
   $rets->Logout();
 
-  $c->render(template => 'columns', mls => 'beaches', columns => \%columns, lookups => \%lookups);
+  $c->render(template => 'columns', mls => 'aarretsx', columns => \%columns, lookups => \%lookups);
 };
 
 app->start;
@@ -210,7 +216,7 @@ __DATA__
         % }
       </tr>
 
-      
+
       % foreach my $class_id (sort keys %$resource) {
         % next if $class_id eq 'ALL';
         % my $x = 0;

@@ -1,4 +1,4 @@
-use strict; 
+use strict;
 
 use FindBin;
 use lib "blib/lib", "blib/arch", "$FindBin::Bin/../../lib";
@@ -8,7 +8,7 @@ use librets;
 use MLS::Database;
 
 my $mls = $ARGV[0] or die "You must specify an MLS board";
-push @INC, "/opt/mls-feeds/$mls/lib";
+push @INC, "$FindBin::Bin/../../$mls/lib";
 
 require MLS::Resource::Row;
 
