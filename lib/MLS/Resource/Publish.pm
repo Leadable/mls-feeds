@@ -37,7 +37,7 @@ sub go {
     $self->{dbh}->do(qq|
         DROP MATERIALIZED VIEW IF EXISTS $self->{new_data_materialized};
         CREATE MATERIALIZED VIEW $self->{new_data_materialized} as SELECT * from $self->{view};
-        CREATE INDEX "idx_view_$self->{id}" ON $self->{new_data_materialized} USING BTREE ("id");
+        CREATE INDEX "idx_view_$self->{id}_new" ON $self->{new_data_materialized} USING BTREE ("id");
     |);
 
     # is the materialized table empty?
@@ -97,6 +97,7 @@ sub go {
         BEGIN;
         DROP MATERIALIZED VIEW $self->{materialized};
         ALTER MATERIALIZED VIEW $self->{new_data_materialized} RENAME TO view_$self->{id}_materialized;
+        ALTER INDEX $MLS::Config::MLS.idx_view_$self->{id}_new RENAME TO idx_view_$self->{id};
         COMMIT;
     |);
 
