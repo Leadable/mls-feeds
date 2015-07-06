@@ -14,6 +14,11 @@ sub new {
   $opts->{AutoCommit} ||= 1;
 
   bless $opts, $class;
+
+  # immediately grab the dbh
+  $opts->set_dbh;
+
+  return $opts;
 }
 
 # proxy all DBI functions here
