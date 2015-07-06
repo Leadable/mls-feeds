@@ -269,10 +269,10 @@ sub generate_row_data {
 
     # new
     if (scalar @new_ids) {
+        print 'Getting [' . scalar(@new_ids) . "] new records (1000 at a time)\n";
         while (@new_ids) {
             # chunk requests
             my @ids = splice @new_ids, 0, 1000;
-            print 'Getting [' . scalar(@ids) . "] new records\n";
 
             my $new_ids_str = join ' OR ',
                               map {"id = " . $dbh->quote($_)} @ids;
@@ -286,15 +286,17 @@ sub generate_row_data {
 
             my $vals = join ",\n", @$new_rs;
             $return_sql .= qq|INSERT INTO $self->{live_table} ($col_str) VALUES $vals;\n|;
+
+            print 'Remaining: [' . scalar(@new_ids) . "]\n";
         }
     }
 
     # updated
     if (scalar @updated_ids) {
+        print 'Getting [' . scalar(@updated_ids) . "] updated records (5000 at a time)\n";
         while (@updated_ids) {
             # chunk requests
             my @ids = splice @updated_ids, 0, 5000;
-            print 'Getting [' . scalar(@ids) . "] updated records\n";
 
             my $update_ids_str = join ' OR ',
                               map {"id = " . $dbh->quote($_)} @ids;
@@ -302,6 +304,8 @@ sub generate_row_data {
             $return_sql .= join "\n",
                            map {$self->format_row_data($_, $dbh)} @$update_rs;
             $return_sql .= "\n";
+
+            print 'Remaining: [' . scalar(@updated_ids) . "]\n";
         }
     }
 
