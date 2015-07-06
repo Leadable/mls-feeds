@@ -11,13 +11,11 @@ $MLS::Config::MLS = 'crmls';
 $MLS::Config::LOG_DIR = "/tmp/log/$MLS::Config::MLS";
 
 # RETS session object
-$MLS::Config::RETS = sub {
-  my $rets = new librets::RetsSession('https://rets.crmls.org/contact/rets/login');
-
-  die "Invalid RETS login" unless $rets->Login("LISTINGPAGES", "dri7c-Atr");
-
-  return $rets;
-};
+$MLS::Config::RETS = MLS::Rets->new({
+  login_url => 'https://rets.crmls.org/contact/rets/login',
+  username  => 'LISTINGPAGES',
+  password  => 'dri7c-Atr'
+});
 
 # bucket name for photos
 $MLS::Config::PHOTO_STORAGE_BUCKET = 'dfo-photos';
