@@ -2,6 +2,7 @@ package MLS::Config;
 
 use strict;
 
+use MLS::Rets;
 use Geo::StreetAddress::US;
 
 # MLS identifier
