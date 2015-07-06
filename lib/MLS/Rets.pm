@@ -26,6 +26,9 @@ sub login {
 
     my $rets = new librets::RetsSession($self->{login_url});
 
+    $rets->SetRetsVersion($self->{rets_version}) if ($self->{rets_version});
+    $rets->SetUserAgent($self->{user_agent})   if ($self->{user_agent});
+
     die "Invalid RETS login" unless $rets->Login($self->{username}, $self->{password});
 
     $self->{rets} = $rets;
@@ -54,25 +57,32 @@ sub AUTOLOAD {
 
     my $return;
 
-    # librets is very strict about how many arguments are passed in
-    if (defined $arg3) {
-        $return = $rets->$method($arg1, $arg2, $arg3);
-    }
-    elsif (defined $arg2) {
-        $return = $rets->$method($arg1, $arg2);
-    }
-    elsif (defined $arg1) {
-        $return = $rets->$method($arg1);
+    if ($method eq 'Search' || $method eq 'GetObject') {
+        $return = $self->retryable_method($method, $arg1);
     }
     else {
-        $return = $rets->$method();
+        # librets is very strict about how many arguments are passed in
+        if (defined $arg3) {
+            $return = $rets->$method($arg1, $arg2, $arg3);
+        }
+        elsif (defined $arg2) {
+            $return = $rets->$method($arg1, $arg2);
+        }
+        elsif (defined $arg1) {
+            $return = $rets->$method($arg1);
+        }
+        else {
+            $return = $rets->$method();
+        }
     }
 
     return $return;
 }
 
-sub Search {
-    my ($self, $request) = @_;
+# To be used for Search or GetObject methods
+# which both take one argument
+sub retryable_method {
+    my ($self, $method, $request) = @_;
 
     my $retries_left = $self->{NumRetry} + 1;
 
@@ -80,12 +90,13 @@ sub Search {
         my $rets = $self->{rets};
 
         my $results = eval {
-            $rets->Search($request);
+            $rets->$method($request);
         };
 
         # login and try again
         if ($@ && $retries_left) {
-            print "Retrying RETS search [$retries_left] more times\n";
+            print "Retrying RETS method [$method] [$retries_left] more times\n";
+            sleep 10;
             $self->login;
         }
         elsif ($@) {
