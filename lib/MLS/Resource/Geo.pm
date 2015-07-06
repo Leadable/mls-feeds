@@ -144,21 +144,22 @@ sub mutated {
 }
 
 sub http_fail {
-  my ($self, $tx) = @_;
+  my ($tx, $ua) = @_;
 
   my ($err, $code) = $tx->error;
   if ($err) { 
-    print "HTTP USER AGENT ERROR:";
+    print "\n\nHTTP USER AGENT ERROR:";
     print $code ? "$code response: $err" : "Connection error: $err"; 
   }
 
-  print "\nREQUEST:";
+  print "\n\nPROXY:";
+  print $ua->proxy->http;
+
+  print "\n\nREQUEST:";
   print $tx->req->to_string;
-  print "\nRESPONSE:";
+  print "\n\nRESPONSE:";
   print $tx->res->to_string;
   print "\n";
-
-  exit(1);
 }
 
 sub get_user_agent {
@@ -221,7 +222,7 @@ sub request {
       last;
     }
     else {
-      http_fail($tx);
+      http_fail($tx, $ua);
       die if ($attempts++ == 10);
     }
   }

@@ -115,7 +115,7 @@ sub fetch_remote {
     push @urls, $results->GetString("MediaURL") . '?v=' . time;
   }
 
-  $self->update($row, \@urls);
+  $self->update($row, \@urls) if (scalar @urls);
   $self->update_mutation_table($row->{remote_id}); 
 }
 
