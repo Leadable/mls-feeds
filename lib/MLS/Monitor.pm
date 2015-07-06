@@ -153,11 +153,18 @@ sub finish {
   });
 
   # Store rets log
-  my $rets_log_url = $storage_client->store_file({
-    source_filename => "$self->{log_dir}/rets.log",
-    dest_filename   => "$filename_root-rets.log",
-    content_type    => 'text/plain',
-  });
+  my $rets_log_url = eval {
+    $storage_client->store_file({
+      source_filename => "$self->{log_dir}/rets.log",
+      dest_filename   => "$filename_root-rets.log",
+      content_type    => 'text/plain',
+    });
+  };
+
+  if ($@) {
+    print $@;
+    $rets_log_url = '';
+  }
 
   %new_data = (
     log_monitor_url => $dbh->quote($monitor_log_url),
