@@ -349,8 +349,8 @@ sub add_rebuild_sql {
       $sql
       $mv_table_sql
       $extra_sql
-      COMMIT;
       $index_sql
+      COMMIT;
     |;
 }
 
