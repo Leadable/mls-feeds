@@ -1,10 +1,9 @@
 use strict; 
 
 use FindBin;
-use lib "blib/lib", "blib/arch", "$FindBin::Bin/../../lib";
+use lib "$FindBin::Bin/../../lib";
 
 use DBI;
-use librets;
 use Mojo::UserAgent;
 use Getopt::Long;
 use Pod::Usage;
@@ -44,7 +43,7 @@ eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$res
 my $dbh       = MLS::Database->new({db => 'feeds'});
 my $tools_dbh = MLS::Database->new({db => 'tools'});
 
-my $rets = $MLS::Config::RETS->();
+my $rets = $MLS::Config::RETS;
 $rets->SetHttpLogName("$MLS::Config::LOG_DIR/rets.log");
 
 my $photo_storage   = MLS::Storage->new({ use_s3 => 0, bucket => $MLS::Config::PHOTO_STORAGE_BUCKET });

@@ -17,7 +17,7 @@ my $resource = $ARGV[1] || 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
 my $dbh = MLS::Database->new({db => 'feeds'});
-my $rets = $MLS::Config::RETS->();
+my $rets = $MLS::Config::RETS;
 $rets->SetHttpLogName("$MLS::Config::LOG_DIR/sync_photos.log");
 my $storage = MLS::Storage->new({ use_s3 => 0, bucket => $MLS::Config::PHOTO_STORAGE_BUCKET });
 
