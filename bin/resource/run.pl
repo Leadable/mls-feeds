@@ -30,13 +30,6 @@ pod2usage(1) if ($help || !$mls);
 
 push @INC, "$FindBin::Bin/../../$mls/lib";
 
-require MLS::Resource::Mutation;
-require MLS::Resource::Row;
-require MLS::Resource::Purge;
-require MLS::Resource::Photo;
-require MLS::Resource::Geo;
-require MLS::Resource::Publish;
-
 $resource ||= 'Property';
 eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
 
@@ -54,6 +47,13 @@ my $monitor = MLS::Monitor->new({ dbh => $tools_dbh, log_dir => $MLS::Config::LO
 
 my @areas = @MLS::Config::AREAS;
 push @areas, $resource if (! @areas);
+
+require MLS::Resource::Mutation;
+require MLS::Resource::Row;
+require MLS::Resource::Purge;
+require MLS::Resource::Photo;
+require MLS::Resource::Geo;
+require MLS::Resource::Publish;
 
 eval {
     $| = 1;
