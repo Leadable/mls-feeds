@@ -174,6 +174,9 @@ sub get_user_agent {
   my $ua = Mojo::UserAgent->new();
   $ua->proxy->http("http://$proxy->{hostname}:8080")->https("http://$proxy->{hostname}:8080");
 
+  # do not use proxy for bing, mapbox
+  $ua->proxy->not([qw(virtualearth.net mapbox.com)]);
+
   $self->{google_api_key} = $proxy->{api_token};
 
   return $ua;
