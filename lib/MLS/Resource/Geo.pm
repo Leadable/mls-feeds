@@ -48,13 +48,6 @@ sub go {
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
 
-  if (! -d $MLS::Config::LOG_DIR) {
-    mkpath($MLS::Config::LOG_DIR);
-  }
-
-  open(my $fh, '>', "$MLS::Config::LOG_DIR/bad_addresses.txt") or
-    die "Could not open [$MLS::Config::LOG_DIR/bad_addresses.txt]: $!";
-
   my $i = 0;
   foreach my $remote_row (@$mutated) {
     $self->{totals}{total}++;
@@ -76,10 +69,6 @@ sub go {
     eval {
       next if $self->geocode_mapbox($remote_row);
       next if $self->geocode_bing($remote_row);
-
-      # write this address out to a file
-      print $fh $remote_row->{remote_address} . "\n";
-
       next if $self->geocode_google($remote_row);
       $self->{totals}{fail}++;
     };
@@ -94,7 +83,6 @@ sub go {
     $self->update_mutation_row($remote_row->{remote_id});
   }
 
-  close $fh;
   $self->finish();
 }
 
@@ -133,6 +121,15 @@ sub mutated {
     "remote_address <> COALESCE(local_address, '')",
     "remote_removed_at IS NULL"
   );
+
+  # partition should be an arrayref with digits
+  # note: on some boards the right most digit may all be the same
+  if ($self->{partition}) {
+    my $digits_sql =  join ',',
+                      map {$dbh->quote($_)} @{$self->{partition}};
+
+    push @conditions, "RIGHT(remote_id, 1)" . " IN (" . $digits_sql . ")";
+  }
 
   my $sql = "SELECT remote_id, remote_address, local_address FROM $MLS::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id DESC";
   $self->{temp_error} = "$sql\n";
