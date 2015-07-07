@@ -2,6 +2,7 @@ package MLS::Config;
 
 use strict;
 
+use MLS::Rets;
 use Geo::StreetAddress::US;
 
 # MLS identifier
@@ -11,14 +12,13 @@ $MLS::Config::MLS = 'aarretsx';
 $MLS::Config::LOG_DIR = "/tmp/log/$MLS::Config::MLS";
 
 # RETS session object
-$MLS::Config::RETS = sub {
-  my $rets = new librets::RetsSession("http://rets172lax.raprets.com:6103/Annarbor/ANNA/login.aspx");
-  $rets->SetRetsVersion($librets::RETS_1_7_2);
-  $rets->SetUserAgent('IDXIO-1.0');
-  die "Invalid RETS login" unless $rets->Login("IDXAnn", "xio");
-
-  return $rets;
-};
+$MLS::Config::RETS = MLS::Rets->new({
+  login_url    => 'http://rets172lax.raprets.com:6103/Annarbor/ANNA/login.aspx',
+  username     => 'IDXAnn',
+  password     => 'xio',
+  user_agent   => 'IDXIO-1.0',
+  rets_version => $librets::RETS_1_7_2,
+});
 
 # bucket name for photos
 $MLS::Config::PHOTO_STORAGE_BUCKET = 'dfo-photos';

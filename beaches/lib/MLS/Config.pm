@@ -18,6 +18,8 @@ $MLS::Config::RETS = MLS::Rets->new({
   password  => 'dbarr'
 });
 
+$MLS::Config::Mutation::OFFSET_SIZE = 100000;
+
 # bucket name for photos
 $MLS::Config::PHOTO_STORAGE_BUCKET = 'dfo-photos';
 

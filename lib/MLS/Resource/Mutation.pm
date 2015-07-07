@@ -47,9 +47,9 @@ sub monitor {
   my $monitor = $self->{monitor} or return;
 
   my @class = split(/::/, ref($self));
-  
+
   shift @class; # remove MLS
-  
+
   $monitor->status({ namespace => \@class, key => $key, value => $value });
 }
 
@@ -64,14 +64,14 @@ sub fetch_remote {
 
   foreach my $class_id (sort keys %MLS::Config::CLASSES) {
     my $class = $MLS::Config::CLASSES{ $class_id };
-    print "Resource Class: $class_id\n";
+    print "\n\nResource Class: $class_id\n";
     print "Ignoring this class\n\n" if ($class->{ignore});
 
     next if $class->{ignore};
 
-    eval {
-      print "Search request: " . $class->{SearchRequest} . "\n";
+    print "Search request: " . $class->{SearchRequest} . "\n";
 
+    eval {
       my $request = $rets->CreateSearchRequest($MLS::Config::RESOURCE, $class_id, $class->{SearchRequest});
       $request->SetSelect("$MLS::Config::PRIMARY_KEY{SystemName},$MLS::Config::ROW_MOD_TS_COLUMN{SystemName},$MLS::Config::IMG_MOD_TS_COLUMN{SystemName}");
       $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
@@ -80,33 +80,105 @@ sub fetch_remote {
       $request->SetCountType($librets::SearchRequest::RECORD_COUNT_AND_RESULTS);
       $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
 
-      my $results = $rets->Search($request);
-
-      print "Record count: " . $results->GetCount() . "\n\n";
-
-      my $x = 0;
-      while ($results->HasNext()) {
-        my $row_mod_ts = $results->GetString( $MLS::Config::ROW_MOD_TS_COLUMN{SystemName} );
-        my $img_mod_ts = %MLS::Config::IMG_MOD_TS_COLUMN ? $results->GetString( $MLS::Config::IMG_MOD_TS_COLUMN{SystemName} ) : '';
-
-        my %data = (
-          remote_row_mod_ts => $row_mod_ts,
-          remote_img_mod_ts => $img_mod_ts,
-          class => $class_id
-        );
-
-        $remote->{ $results->GetString( $MLS::Config::PRIMARY_KEY{SystemName} ) } = \%data;
+      if ($MLS::Config::Mutation::OFFSET_SIZE) {
+        $self->remote_search_offset($request, $class_id);
+      }
+      else {
+        $self->remote_search_no_offset($request, $class_id);
       }
     };
 
-    if ($@) {
-      print "librets::RetsException: " . $@->GetFullReport();
+    if (ref $@ eq 'librets::RetsReplyException') {
+      die "librets::RetsException: " . $@->GetFullReport();
+    }
+    elsif ($@) {
       die $@;
     }
   }
 }
 
-# fetch local 
+sub remote_search_offset {
+  my ($self, $request, $class_id) = @_;
+
+  my $rets = $self->{rets};
+  my $remote = $self->{remote};
+
+  my $record_count = 0;
+  my $chunk_size = $MLS::Config::Mutation::OFFSET_SIZE;
+  $request->SetLimit($chunk_size);
+
+  my $i = 0;
+
+  while (1) {
+    my $offset = ($chunk_size * $i++) + 1;
+
+    last if ($record_count && $record_count < $offset);
+
+    print "Searching with offset: [" . $offset . "]\n\n";
+
+    $request->SetOffset($offset);
+    my $results = $rets->Search($request);
+
+    my $new_record_count = $results->GetCount();
+    if ($new_record_count > $record_count) {
+      $record_count = $new_record_count;
+      print "Set record count: [" . $record_count . "]\n";
+    }
+
+    my $sanity_count = 0;
+
+    while ($results->HasNext()) {
+      my $row_mod_ts = $results->GetString( $MLS::Config::ROW_MOD_TS_COLUMN{SystemName} );
+      my $img_mod_ts = %MLS::Config::IMG_MOD_TS_COLUMN ? $results->GetString( $MLS::Config::IMG_MOD_TS_COLUMN{SystemName} ) : '';
+
+      my %data = (
+        remote_row_mod_ts => $row_mod_ts,
+        remote_img_mod_ts => $img_mod_ts,
+        class => $class_id
+      );
+
+      $remote->{ $results->GetString( $MLS::Config::PRIMARY_KEY{SystemName} ) } = \%data;
+
+      $sanity_count++;
+    }
+
+    die "ERROR: Expected record count was [$chunk_size] but received [$sanity_count]\n" if ($chunk_size - $sanity_count > 10);
+  }
+}
+
+sub remote_search_no_offset {
+  my ($self, $request, $class_id) = @_;
+
+  my $rets = $self->{rets};
+  my $remote = $self->{remote};
+
+  my $sanity_count = 0;
+
+  my $results = $rets->Search($request);
+  my $record_count = $results->GetCount();
+
+  print "Record count: [$record_count]\n";
+
+  my $x = 0;
+  while ($results->HasNext()) {
+    my $row_mod_ts = $results->GetString( $MLS::Config::ROW_MOD_TS_COLUMN{SystemName} );
+    my $img_mod_ts = %MLS::Config::IMG_MOD_TS_COLUMN ? $results->GetString( $MLS::Config::IMG_MOD_TS_COLUMN{SystemName} ) : '';
+
+    my %data = (
+      remote_row_mod_ts => $row_mod_ts,
+      remote_img_mod_ts => $img_mod_ts,
+      class => $class_id
+    );
+
+    $remote->{ $results->GetString( $MLS::Config::PRIMARY_KEY{SystemName} ) } = \%data;
+
+    $sanity_count++;
+  }
+
+  die "ERROR: Expected record count was [$record_count] but received [$sanity_count]\n" if ($record_count - $sanity_count > 10);
+}
+
+# fetch local
 sub fetch_local {
   my ($self) = @_;
 
@@ -115,10 +187,10 @@ sub fetch_local {
 
   print "Fetching local rows\n\n";
 
-  my $sql = "SELECT remote_id, remote_row_mod_ts, remote_img_mod_ts, remote_removed_at 
+  my $sql = "SELECT remote_id, remote_row_mod_ts, remote_img_mod_ts, remote_removed_at
              FROM $MLS::Config::MLS.mutation
              WHERE resource = '$MLS::Config::RESOURCE'";
-  
+
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
   foreach (@$rs) {
     my %data = (
@@ -136,20 +208,20 @@ sub fetch_local {
 # create row in mutation table
 sub new_remote_rows {
   my ($self) = @_;
- 
+
   print "Looking for new remote rows\n";
- 
+
   my $dbh = $self->{dbh};
   my ($local, $remote) = ($self->{local}, $self->{remote});
 
   my $i = 0;
   foreach my $remote_id (keys %$remote) {
 
-    next if ($local->{ $remote_id }); 
-   
+    next if ($local->{ $remote_id });
+
     my $remote_row = $remote->{ $remote_id };
 
-    my @cols = qw(resource class remote_id remote_row_mod_ts remote_img_mod_ts); 
+    my @cols = qw(resource class remote_id remote_row_mod_ts remote_img_mod_ts);
     my @vals = (
       $dbh->quote($MLS::Config::RESOURCE),
       $dbh->quote($remote_row->{class}),
@@ -175,9 +247,9 @@ sub new_remote_rows {
 # look for rows in remote and local and compare remote_row_mod_ts and remote_img_mod_ts
 sub updated_remote_rows {
   my ($self) = @_;
- 
+
   print "Looking for updated rows.\n";
- 
+
   my $dbh = $self->{dbh};
   my ($local, $remote) = ($self->{local}, $self->{remote});
 
@@ -192,7 +264,7 @@ sub updated_remote_rows {
 
     my $row_mod_ts_mutated = ($remote_row->{remote_row_mod_ts} eq $local_row->{remote_row_mod_ts}) ? 0 : 1;
     my $img_mod_ts_mutated = ($remote_row->{remote_img_mod_ts} eq $local_row->{remote_img_mod_ts}) ? 0 : 1;
-    
+
     if ($row_mod_ts_mutated or $img_mod_ts_mutated) {
       my @data = (
         'remote_row_mod_ts = ' . $dbh->quote($remote_row->{remote_row_mod_ts}),
@@ -215,7 +287,7 @@ sub updated_remote_rows {
       print "[$i]\n" if (++$i % 100 == 0);
     }
   }
- 
+
   print "\n";
   $self->monitor('updated', $self->{totals}->{updated});
 }
@@ -224,9 +296,9 @@ sub updated_remote_rows {
 # look for rows in local that are no longer in remote
 sub deleted_remote_rows {
   my ($self) = @_;
- 
+
   print "Looking for removed rows.\n";
- 
+
   my $dbh = $self->{dbh};
   my ($local, $remote) = ($self->{local}, $self->{remote});
 
@@ -262,9 +334,9 @@ sub deleted_remote_rows {
 # look for rows that were removed but now are back in the remote feed
 sub resurrect_remote_rows {
   my ($self) = @_;
- 
+
   print "Looking for resurrected rows.\n";
- 
+
   my $dbh = $self->{dbh};
   my ($local, $remote) = ($self->{local}, $self->{remote});
 
@@ -273,7 +345,7 @@ sub resurrect_remote_rows {
   foreach my $remote_id (keys %$remote) {
     my $remote_row = $remote->{ $remote_id };
     my $local_row = $local->{ $remote_id };
- 
+
     next unless ($local_row && $local_row->{remote_removed_at});
 
     my @conditions = (
