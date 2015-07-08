@@ -2006,7 +2006,7 @@ BEGIN;
     ALTER TABLE aarretsx."Property" ADD COLUMN "INCPOUTF" text[];
     COMMENT ON COLUMN aarretsx."Property"."INCPOUTF" IS 'Outside Features';
 
-    ALTER TABLE aarretsx."Property" ADD COLUMN "Area" integer;
+    ALTER TABLE aarretsx."Property" ADD COLUMN "Area" text;
     COMMENT ON COLUMN aarretsx."Property"."Area" IS 'Area';
 
     ALTER TABLE aarretsx."Property" ADD COLUMN "COMMNETI" decimal;

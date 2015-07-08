@@ -18,6 +18,9 @@ $MLS::Config::RETS = MLS::Rets->new({
   password  => 'W1Nt3R2015'
 });
 
+# Should be SystemName or DBName
+$MLS::Config::Row::COLUMN_IDENTIFIER = 'DBName';
+
 # bucket name for photos
 $MLS::Config::PHOTO_STORAGE_BUCKET = 'dfo-photos';
 

@@ -20,6 +20,8 @@ $MLS::Config::RETS = MLS::Rets->new({
   rets_version => $librets::RETS_1_7_2,
 });
 
+$MLS::Config::Row::OFFSET_SIZE = 300;
+
 # bucket name for photos
 $MLS::Config::PHOTO_STORAGE_BUCKET = 'dfo-photos';
 

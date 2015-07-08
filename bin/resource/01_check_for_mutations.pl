@@ -72,7 +72,7 @@ Print a brief help message and exits.
 
 =head1 DESCRIPTION
 
-B<This program> syncs MLS data with the specified board
+B<This program> checks to see what MLS listings have changed since it last ran (new, removed, updated, resurrected)
 
 =cut
 
