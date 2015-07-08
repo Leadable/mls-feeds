@@ -325,7 +325,10 @@ sub geocode_bing {
   my $json = $self->request('bing', $url);
 
   if ($json->{statusCode} ne '200') {
+    warn "Error from Bing:\n";
     warn Dumper($json);
+
+    $self->{totals}{bing}{fail}++;
     die;
   }
 
@@ -382,7 +385,10 @@ sub geocode_google {
   }
 
   if ($json->{status} ne 'OK') {
+    warn "Error from Google:\n";
     warn Dumper($json);
+
+    $self->{totals}{google}{fail}++;
     die;
   }
 
