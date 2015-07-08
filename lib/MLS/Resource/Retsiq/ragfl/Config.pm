@@ -8,9 +8,6 @@ use Geo::StreetAddress::US;
 # MLS identifier
 $MLS::Config::MLS = 'ragfl';
 
-# Rets Vendor
-$MLS::Config::Vendor = 'Retsiq';
-
 # Location of logging
 $MLS::Config::LOG_DIR = "/tmp/log/$MLS::Config::MLS";
 

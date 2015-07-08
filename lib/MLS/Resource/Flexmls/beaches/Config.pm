@@ -8,9 +8,6 @@ use Geo::StreetAddress::US;
 # MLS identifier
 $MLS::Config::MLS = 'beaches';
 
-# Rets Vendor
-$MLS::Config::Vendor = 'Flexmls';
-
 # Location of logging
 $MLS::Config::LOG_DIR = "/tmp/log/$MLS::Config::MLS";
 
