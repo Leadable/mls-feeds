@@ -80,12 +80,8 @@ sub fetch_remote {
       $request->SetCountType($librets::SearchRequest::RECORD_COUNT_AND_RESULTS);
       $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
 
-      if ($MLS::Config::Mutation::OFFSET_SIZE) {
-        $self->remote_search_offset($request, $class_id);
-      }
-      else {
-        $self->remote_search_no_offset($request, $class_id);
-      }
+      # subclass method
+      $self->remote_search($request, $class_id);
     };
 
     if (ref $@ eq 'librets::RetsReplyException') {
@@ -95,87 +91,6 @@ sub fetch_remote {
       die $@;
     }
   }
-}
-
-sub remote_search_offset {
-  my ($self, $request, $class_id) = @_;
-
-  my $rets = $self->{rets};
-  my $remote = $self->{remote};
-
-  my $record_count = 0;
-  my $chunk_size = $MLS::Config::Mutation::OFFSET_SIZE;
-  $request->SetLimit($chunk_size);
-
-  my $i = 0;
-
-  while (1) {
-    my $offset = ($chunk_size * $i++) + 1;
-
-    last if ($record_count && $record_count < $offset);
-
-    print "Searching with offset: [" . $offset . "]\n\n";
-
-    $request->SetOffset($offset);
-    my $results = $rets->Search($request);
-
-    my $new_record_count = $results->GetCount();
-    if ($new_record_count > $record_count) {
-      $record_count = $new_record_count;
-      print "Set record count: [" . $record_count . "]\n";
-    }
-
-    my $sanity_count = 0;
-
-    while ($results->HasNext()) {
-      my $row_mod_ts = $results->GetString( $MLS::Config::ROW_MOD_TS_COLUMN{SystemName} );
-      my $img_mod_ts = %MLS::Config::IMG_MOD_TS_COLUMN ? $results->GetString( $MLS::Config::IMG_MOD_TS_COLUMN{SystemName} ) : '';
-
-      my %data = (
-        remote_row_mod_ts => $row_mod_ts,
-        remote_img_mod_ts => $img_mod_ts,
-        class => $class_id
-      );
-
-      $remote->{ $results->GetString( $MLS::Config::PRIMARY_KEY{SystemName} ) } = \%data;
-
-      $sanity_count++;
-    }
-
-    die "ERROR: Expected record count was [$chunk_size] but received [$sanity_count]\n" if ($chunk_size - $sanity_count > 10);
-  }
-}
-
-sub remote_search_no_offset {
-  my ($self, $request, $class_id) = @_;
-
-  my $rets = $self->{rets};
-  my $remote = $self->{remote};
-
-  my $sanity_count = 0;
-
-  my $results = $rets->Search($request);
-  my $record_count = $results->GetCount();
-
-  print "Record count: [$record_count]\n";
-
-  my $x = 0;
-  while ($results->HasNext()) {
-    my $row_mod_ts = $results->GetString( $MLS::Config::ROW_MOD_TS_COLUMN{SystemName} );
-    my $img_mod_ts = %MLS::Config::IMG_MOD_TS_COLUMN ? $results->GetString( $MLS::Config::IMG_MOD_TS_COLUMN{SystemName} ) : '';
-
-    my %data = (
-      remote_row_mod_ts => $row_mod_ts,
-      remote_img_mod_ts => $img_mod_ts,
-      class => $class_id
-    );
-
-    $remote->{ $results->GetString( $MLS::Config::PRIMARY_KEY{SystemName} ) } = \%data;
-
-    $sanity_count++;
-  }
-
-  die "ERROR: Expected record count was [$record_count] but received [$sanity_count]\n" if ($record_count - $sanity_count > 10);
 }
 
 # fetch local

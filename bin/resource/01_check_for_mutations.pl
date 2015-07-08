@@ -16,9 +16,10 @@ my $rets = $MLS::Config::RETS;
 
 $rets->SetHttpLogName("$MLS::Config::LOG_DIR/check_for_mutations.log");
 
-require MLS::Resource::Mutation;
+my $module = "MLS::Resource::Mutation::$MLS::Config::Vendor";
+eval "require $module" or die "Could not find [$module]: $@\n";
 
-MLS::Resource::Mutation->new({
+$module->new({
   dbh => $dbh,
   rets => $rets,
 })->go();

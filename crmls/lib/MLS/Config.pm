@@ -8,6 +8,9 @@ use Geo::StreetAddress::US;
 # MLS identifier
 $MLS::Config::MLS = 'crmls';
 
+# Rets Vendor
+$MLS::Config::Vendor = 'Retsiq';
+
 # Location of logging
 $MLS::Config::LOG_DIR = "/tmp/log/$MLS::Config::MLS";
 
@@ -17,8 +20,6 @@ $MLS::Config::RETS = MLS::Rets->new({
   username  => 'LISTINGPAGES',
   password  => 'dri7c-Atr'
 });
-
-$MLS::Config::Mutation::OFFSET_SIZE = 0;
 
 # bucket name for photos
 $MLS::Config::PHOTO_STORAGE_BUCKET = 'dfo-photos';

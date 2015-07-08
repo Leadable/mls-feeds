@@ -8,6 +8,9 @@ use Geo::StreetAddress::US;
 # MLS identifier
 $MLS::Config::MLS = 'aarretsx';
 
+# Rets Vendor
+$MLS::Config::Vendor = 'Rapattoni';
+
 # Location of logging
 $MLS::Config::LOG_DIR = "/tmp/log/$MLS::Config::MLS";
 
