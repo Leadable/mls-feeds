@@ -11,6 +11,7 @@ use Pod::Usage;
 use MLS::Storage;
 use MLS::Monitor;
 use MLS::Database;
+use MLS::Resource::Utils;
 
 my $mls;
 my $resource;
@@ -28,10 +29,14 @@ GetOptions(
 
 pod2usage(1) if ($help || !$mls);
 
-push @INC, "$FindBin::Bin/../../$mls/lib";
+my $vendor = MLS::Resource::Utils::find_vendor($mls, "$FindBin::Bin/../../lib/MLS/Resource");
 
 $resource ||= 'Property';
-eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
+
+my $board_path = "MLS::Resource::${vendor}::$mls";
+my $config_path = "${board_path}::Config::$resource";
+
+eval "require $config_path" or die "Could not find [$config_path]: $@\n";
 
 my $dbh       = MLS::Database->new({db => 'feeds'});
 my $tools_dbh = MLS::Database->new({db => 'tools'});
@@ -45,27 +50,55 @@ my $log_storage     = MLS::Storage->new({ use_s3 => 0, bucket => $MLS::Config::L
 
 my $monitor = MLS::Monitor->new({ dbh => $tools_dbh, log_dir => $MLS::Config::LOG_DIR, storage_client => $log_storage });
 
-my @areas = @MLS::Config::AREAS;
-push @areas, $resource if (! @areas);
+my $mutation_module = "${board_path}::Mutation";
+my $row_module      = "${board_path}::Row";
+my $purge_module    = "${board_path}::Purge";
+my $photo_module    = "${board_path}::Photo";
 
-require MLS::Resource::Mutation;
-require MLS::Resource::Row;
-require MLS::Resource::Purge;
-require MLS::Resource::Photo;
-require MLS::Resource::Geo;
-require MLS::Resource::Publish;
+foreach ($mutation_module, $row_module, $purge_module, $photo_module) {
+    eval "require $_" or die "Could not find [$_]: $@\n";
+}
+
+unless ($no_publish) {
+    require MLS::Resource::Publish;
+};
 
 eval {
     $| = 1;
 
+    print "\nRun [tail -f /tmp/log/$MLS::Config::MLS/monitor.log] to see output\n";
+
     $monitor->start();
 
-    # Property
-    MLS::Resource::Mutation->new({ dbh => $dbh, rets => $rets, monitor => $monitor, })->go();
-    MLS::Resource::Row->new({ dbh => $dbh, rets => $rets, monitor => $monitor, rets_search_limit => 1000 })->go();
-    MLS::Resource::Purge->new({ dbh => $dbh, monitor => $monitor, })->go();
-    MLS::Resource::Photo->new({ dbh => $dbh, rets => $rets, monitor => $monitor, storage_client => $photo_storage })->go();
-    MLS::Resource::Geo->new({ dbh => $dbh, dbh_tools => $tools_dbh, monitor => $monitor,})->go();
+    $mutation_module->new({
+        dbh => $dbh,
+        rets => $rets,
+        monitor => $monitor,
+    })->go();
+
+    $row_module->new({
+        dbh => $dbh,
+        rets => $rets,
+        monitor => $monitor,
+    })->go();
+
+    $purge_module->new({
+        dbh => $dbh,
+        monitor => $monitor,
+    })->go();
+
+    $photo_module->new({
+        dbh => $dbh,
+        rets => $rets,
+        monitor => $monitor,
+        storage_client => $photo_storage
+    })->go();
+
+    MLS::Resource::Geo->new({
+        dbh => $dbh,
+        dbh_tools => $tools_dbh,
+        monitor => $monitor,
+    })->go();
 
     unless ($no_publish) {
         my @areas = @MLS::Config::AREAS ? @MLS::Config::AREAS : ($resource);
