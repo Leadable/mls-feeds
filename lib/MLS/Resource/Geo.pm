@@ -229,7 +229,11 @@ sub request {
   my $sql = "SELECT *, ts + expires::interval <= NOW() as expired FROM $MLS::Config::MLS.geocoder_cache WHERE " . join(' AND ', @conditions);
   my $row = $dbh->selectrow_hashref($sql);
 
-  return j($row->{response}) if ($row && !($row->{expired}));
+  if ($row && !($row->{expired})) {
+    return {
+      json => j($row->{response}),
+    };
+  }
 
   my $res = $self->http_request($service, $url);
 
@@ -298,7 +302,7 @@ sub geocode_mapbox {
   # update cache
   my $cache_sql = $response->{cache_sql};
   $self->{temp_error} = "$cache_sql\n";
-  $self->{dbh}->do($cache_sql);
+  $self->{dbh}->do($cache_sql) if ($cache_sql);
 
   my $feature = $json->{features}->[0];
 
@@ -360,7 +364,7 @@ sub geocode_bing {
   # update cache
   my $cache_sql = $response->{cache_sql};
   $self->{temp_error} = "$cache_sql\n";
-  $self->{dbh}->do($cache_sql);
+  $self->{dbh}->do($cache_sql) if ($cache_sql);
 
   my $result = $json->{resourceSets}->[0]->{resources}->[0];
   my @codes = @{ $result->{matchCodes} };
@@ -428,7 +432,7 @@ sub geocode_google {
   # update cache
   my $cache_sql = $response->{cache_sql};
   $self->{temp_error} = "$cache_sql\n";
-  $self->{dbh}->do($cache_sql);
+  $self->{dbh}->do($cache_sql) if ($cache_sql);
 
   my @types = @{ $result->{types} };
   my @place = split(', ', $result->{formatted_address});
