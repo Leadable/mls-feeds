@@ -8,6 +8,7 @@ use Pod::Usage;
 use Mojo::UserAgent;
 
 use MLS::Database;
+use MLS::Resource::Utils;
 
 my $mls;
 my $resource;
@@ -23,10 +24,14 @@ GetOptions(
 
 pod2usage(1) if ($help || !$mls);
 
-push @INC, "$FindBin::Bin/../../$mls/lib";
+my $vendor = MLS::Resource::Utils::find_vendor($mls, "$FindBin::Bin/../../lib/MLS/Resource");
 
 $resource ||= 'Property';
-eval qq|require MLS::Config::$resource| or die "Could not find MLS::Config::$resource : $@\n";
+
+my $board_path = "MLS::Resource::${vendor}::$mls";
+my $config_path = "${board_path}::Config::$resource";
+
+eval "require $config_path" or die "Could not find [$config_path]: $@\n";
 
 require MLS::Resource::Geo;
 
