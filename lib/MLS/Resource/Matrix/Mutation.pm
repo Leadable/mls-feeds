@@ -10,6 +10,7 @@ sub remote_search {
   my $remote = $self->{remote};
 
   my $record_count = 0;
+  my $sanity_count = 0;
   my $chunk_size;
 
   if (! defined $MLS::Config::Mutation::OFFSET_SIZE) {
@@ -34,13 +35,8 @@ sub remote_search {
     $request->SetOffset($offset);
     my $results = $rets->Search($request);
 
-    my $new_record_count = $results->GetCount();
-    if ($new_record_count > $record_count) {
-      $record_count = $new_record_count;
-      print "Set record count: [" . $record_count . "]\n";
-    }
-
-    my $sanity_count = 0;
+    $record_count = $results->GetCount() if (!$record_count);
+    print "Results found: [" . $record_count . "]\n";
 
     while ($results->HasNext()) {
       my $row_mod_ts = $results->GetString( $MLS::Config::ROW_MOD_TS_COLUMN{SystemName} );
@@ -56,9 +52,9 @@ sub remote_search {
 
       $sanity_count++;
     }
-
-    die "ERROR: Expected record count was [$chunk_size] but received [$sanity_count]\n" if ($chunk_size - $sanity_count > 10);
   }
+
+  die "ERROR: Expected record count was [$record_count] but received [$sanity_count]\n" if ($record_count - $sanity_count > 10);
 }
 
 1;
