@@ -229,8 +229,8 @@ sub request {
 
   my $res = $tx->success;
 
-  my $json = $res->json;
-  die "Response is not JSON!" unless $json;
+  my $json = $res->json or
+    die "Response is not JSON!";
 
   if ($row) {
     $sql = "UPDATE $MLS::Config::MLS.geocoder_cache SET ts = NOW(), response = " . $dbh->quote(j($json)) . ' WHERE ' . join(' AND ', @conditions);
@@ -238,11 +238,10 @@ sub request {
     $sql = "INSERT INTO $MLS::Config::MLS.geocoder_cache(service, query, response) VALUES(" . $dbh->quote($service) .', ' . $dbh->quote($url) . ', ' . $dbh->quote(j($json)) . ')';
   }
 
-  $self->{temp_error} = "$sql\n";
-
-  $dbh->do($sql);
-
-  return $json;
+  return {
+    json      => $json,
+    cache_sql => $sql,
+  };
 }
 
 sub does_request_equal_response {
@@ -280,7 +279,13 @@ sub geocode_mapbox {
 
   $self->{temp_error} = "$url\n";
 
-  my $json = $self->request('mapbox', $url);
+  my $response = $self->request('mapbox', $url);
+  my $json = $response->{json};
+
+  # update cache
+  my $cache_sql = $response->{cache_sql};
+  $self->{temp_error} = "$cache_sql\n";
+  $self->{dbh}->do($cache_sql);
 
   my $feature = $json->{features}->[0];
 
@@ -322,7 +327,8 @@ sub geocode_bing {
 
   $self->{temp_error} = "$url\n";
 
-  my $json = $self->request('bing', $url);
+  my $response = $self->request('bing', $url);
+  my $json = $response->{json};
 
   if ($json->{statusCode} ne '200') {
     warn "Error from Bing:\n";
@@ -337,6 +343,11 @@ sub geocode_bing {
 
     return 0;
   }
+
+  # update cache
+  my $cache_sql = $response->{cache_sql};
+  $self->{temp_error} = "$cache_sql\n";
+  $self->{dbh}->do($cache_sql);
 
   my $result = $json->{resourceSets}->[0]->{resources}->[0];
   my @codes = @{ $result->{matchCodes} };
@@ -376,7 +387,8 @@ sub geocode_google {
 
   $self->{temp_error} = "$url\n";
 
-  my $json = $self->request('google', $url);
+  my $response = $self->request('google', $url);
+  my $json = $response->{json};
 
   if ($json->{status} eq 'ZERO_RESULTS') {
     $self->{totals}{google}{fail}++;
@@ -399,6 +411,11 @@ sub geocode_google {
 
     return 0;
   }
+
+  # update cache
+  my $cache_sql = $response->{cache_sql};
+  $self->{temp_error} = "$cache_sql\n";
+  $self->{dbh}->do($cache_sql);
 
   my @types = @{ $result->{types} };
   my @place = split(', ', $result->{formatted_address});
