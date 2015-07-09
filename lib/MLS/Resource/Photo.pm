@@ -90,7 +90,7 @@ sub fetch_remote {
   return if ! defined $urls;
 
   $self->{totals}{photo_urls_fetched} += scalar @$urls;
-  $self->update($row, $urls);
+  $self->update($row, $urls) if (scalar @$urls);
   $self->update_mutation_table($row->{remote_id}); 
 }
 
