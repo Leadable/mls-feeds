@@ -17,6 +17,11 @@ sub search_remote {
 
   my $source_key = $dbh->selectcol_arrayref($sql)->[0];
 
+  if (!$source_key) {
+    print "WARNING: Could not find SourceKey for [$remote_id], skipping\n";
+    return;
+  }
+
   my $search = "(ClassSourceKey=$source_key)";
 
   my @urls;

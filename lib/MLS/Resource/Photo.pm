@@ -87,6 +87,8 @@ sub fetch_remote {
   # subclass method
   my $urls = $self->search_remote($row);
 
+  return if ! defined $urls;
+
   $self->{totals}{photo_urls_fetched} += scalar @$urls;
   $self->update($row, $urls);
   $self->update_mutation_table($row->{remote_id}); 
