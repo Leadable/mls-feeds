@@ -92,7 +92,7 @@ sub retryable_method {
         my $results = eval {
             local $SIG{ALRM} = sub { die "alarm\n" };
 
-            alarm (($self->{NumRetry} + 1) - $retries_left))*5*60; # increase timeout value in 5 minute increments
+            alarm (($self->{NumRetry} + 1) - $retries_left)*5*60; # increase timeout value in 5 minute increments
             my $return = $rets->$method($request);
             alarm 0;
 
