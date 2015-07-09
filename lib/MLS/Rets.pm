@@ -90,12 +90,25 @@ sub retryable_method {
         my $rets = $self->{rets};
 
         my $results = eval {
-            $rets->$method($request);
+            local $SIG{ALRM} = sub { die "alarm\n" };
+
+            alarm ($self->{NumRetry} - $retries_left)*5*60; # increase timeout value in 5 minute increments
+            my $return = $rets->$method($request);
+            alarm 0;
+
+            return $return;
         };
 
         # login and try again
         if ($@ && $retries_left) {
-            print $@->GetFullReport;
+
+            if ($@ eq "alarm\n") {
+                print "TIMEOUT\n";
+            }
+            else {
+                print $@->GetFullReport;
+            }
+
             print "Retrying RETS method [$method] [$retries_left] more times\n";
             sleep 10;
             $self->login;
