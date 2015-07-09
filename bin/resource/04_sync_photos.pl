@@ -48,11 +48,11 @@ exit(0);
 
 __END__
 
-=head1 03_purge.pl
+=head1 04_sync_photo.pl
 
 =head1 SYNOPSIS
 
-03_purge.pl [options]
+04_sync_photo.pl [options]
 
 =head1 OPTIONS
 
