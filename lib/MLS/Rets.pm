@@ -95,6 +95,7 @@ sub retryable_method {
 
         # login and try again
         if ($@ && $retries_left) {
+            print $@->GetFullReport;
             print "Retrying RETS method [$method] [$retries_left] more times\n";
             sleep 10;
             $self->login;

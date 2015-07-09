@@ -1,7 +1,7 @@
-package MLS::Resource::Retsiq::ragfl::Photo;
+package MLS::Resource::Rapattoni::Photo;
 use strict;
 
-use base 'MLS::Resource::Retsiq::Photo';
+use base 'MLS::Resource::Photo';
 
 sub search_remote {
   my ($self, $row) = @_;
@@ -60,5 +60,6 @@ sub search_remote {
 
   return \@urls;
 }
+
 
 1;
