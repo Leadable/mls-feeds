@@ -59,6 +59,8 @@ foreach ($mutation_module, $row_module, $purge_module, $photo_module) {
     eval "require $_" or die "Could not find [$_]: $@\n";
 }
 
+require MLS::Resource::Geo;
+
 unless ($no_publish) {
     require MLS::Resource::Publish;
 };
