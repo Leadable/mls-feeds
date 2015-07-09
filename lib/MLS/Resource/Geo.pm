@@ -182,25 +182,13 @@ sub get_user_agent {
   return $ua;
 }
 
-sub request {
+sub http_request {
   my ($self, $service, $url) = @_;
 
-  my $dbh = $self->{dbh};
-
-  my @conditions = (
-    'service = ' . $dbh->quote($service),
-    'query = ' . $dbh->quote($url)
-  );
-
-  my $sql = "SELECT *, ts + expires::interval <= NOW() as expired FROM $MLS::Config::MLS.geocoder_cache WHERE " . join(' AND ', @conditions);
-  my $row = $dbh->selectrow_hashref($sql);
-
-  return j($row->{response}) if ($row && !($row->{expired}));
-
-  my $attempts = 0;
+  my $attempts = 10;
   my $tx;
 
-  while (1) {
+  while ($attempts--) {
     my $ua = $self->get_user_agent;
 
     my $req_url = $url;
@@ -219,18 +207,43 @@ sub request {
     $tx = $ua->get($req_url);
 
     if ($tx->success) {
-      last;
+      return $tx->success;
     }
     else {
       http_fail($tx, $ua);
-      die if ($attempts++ == 10);
+      die if (!$attempts);
     }
   }
+}
 
-  my $res = $tx->success;
+sub request {
+  my ($self, $service, $url) = @_;
+
+  my $dbh = $self->{dbh};
+
+  my @conditions = (
+    'service = ' . $dbh->quote($service),
+    'query = ' . $dbh->quote($url)
+  );
+
+  my $sql = "SELECT *, ts + expires::interval <= NOW() as expired FROM $MLS::Config::MLS.geocoder_cache WHERE " . join(' AND ', @conditions);
+  my $row = $dbh->selectrow_hashref($sql);
+
+  return j($row->{response}) if ($row && !($row->{expired}));
+
+  my $res = $self->http_request($service, $url);
 
   my $json = $res->json or
     die "Response is not JSON!";
+
+  # special case for google requests, retry other geocoders if query limit hit
+  my $google_attempts = 20;
+  while ($service eq 'google' && $json->{status} eq 'OVER_QUERY_LIMIT' && $google_attempts--) {
+    $res = http_request($service, $url);
+
+    $json = $res->json or
+      die "Response is not JSON!";
+  }
 
   if ($row) {
     $sql = "UPDATE $MLS::Config::MLS.geocoder_cache SET ts = NOW(), response = " . $dbh->quote(j($json)) . ' WHERE ' . join(' AND ', @conditions);
