@@ -264,12 +264,14 @@ sub update {
     my $price_newval = $results->GetString($MLS::Config::PRICE_COLUMN{SystemName});
 
     if ($price_val != $price_newval) {
-      # __percent_reduced
-      my $amount_reduced = $price_val - $price_newval;
-      my $percent_reduced = $amount_reduced / $price_val * 100;
 
-      push(@vals, '__percent_reduced = ' . $percent_reduced);
+      if ($price_val) {
+        # __percent_reduced
+        my $amount_reduced = $price_val - $price_newval;
+        my $percent_reduced = $amount_reduced / $price_val * 100;
 
+        push(@vals, '__percent_reduced = ' . $percent_reduced);
+      }
 
       # __price_updated_at
       push(@vals, '__price_updated_at = NOW()');
