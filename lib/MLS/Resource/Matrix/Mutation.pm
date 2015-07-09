@@ -35,8 +35,10 @@ sub remote_search {
     $request->SetOffset($offset);
     my $results = $rets->Search($request);
 
-    $record_count = $results->GetCount() if (!$record_count);
-    print "Results found: [" . $record_count . "]\n";
+    if (!$record_count) {
+      $record_count = $results->GetCount();
+      print "Results found: [" . $record_count . "]\n";
+    }
 
     while ($results->HasNext()) {
       my $row_mod_ts = $results->GetString( $MLS::Config::ROW_MOD_TS_COLUMN{SystemName} );
