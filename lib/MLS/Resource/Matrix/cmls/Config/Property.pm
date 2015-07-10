@@ -16,10 +16,10 @@ $MLS::Config::OBJECT = 'LargePhoto';
 my $status = '(Status=|ACT,UCNS,UCS,CLOSD)';
 %MLS::Config::CLASSES = (
   Resi   => { StandardName => 'Residential', 'SearchRequest' => "((MatrixModifiedDT=1900-01-01+),$status)" },
-  # Comm   => { StandardName => 'Commercial',  'SearchRequest' => "", ignore => 1 },
-  # Land   => { StandardName => 'Land',        'SearchRequest' => "" },
-  # MF     => { StandardName => 'MultiFamily', 'SearchRequest' => "" },
-  # Rent   => { StandardName => 'Rental',      'SearchRequest' => "" },
+  Comm   => { StandardName => 'Commercial',  'SearchRequest' => "((MatrixModifiedDT=1900-01-01+),$status)", ignore => 1 },
+  Land   => { StandardName => 'Land',        'SearchRequest' => "((MatrixModifiedDT=1900-01-01+),$status)" },
+  MF     => { StandardName => 'MultiFamily', 'SearchRequest' => "((MatrixModifiedDT=1900-01-01+),$status)" },
+  Rent   => { StandardName => 'Rental',      'SearchRequest' => "((MatrixModifiedDT=1900-01-01+),$status)" },
 );
 
 # RETS Resource Primary Key
