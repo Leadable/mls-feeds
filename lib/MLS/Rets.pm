@@ -37,7 +37,7 @@ sub login {
         };
 
         if ($@) {
-            if (ref $@ =~ /librets/) {
+            if ((ref $@) =~ /librets/) {
                 print "RetsError: " . $@->GetFullReport . "\n";
             }
             else {
@@ -136,7 +136,7 @@ sub retryable_method {
             if ($@ eq "alarm\n") {
                 print "TIMEOUT\n";
             }
-            elsif (ref $@ =~ /librets/) {
+            elsif ((ref $@) =~ /librets/) {
                 print "RetsError: " . $@->GetFullReport . "\n";
             }
             else {
