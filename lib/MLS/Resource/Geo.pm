@@ -285,6 +285,21 @@ sub does_request_equal_response {
   return $ok;
 }
 
+sub update_cache {
+  my ($self, $response) = @_;
+
+  my $cache_sql = $response->{cache_sql};
+  $self->{temp_error} = "$cache_sql\n";
+
+  eval {
+    $self->{dbh}->do($cache_sql) if ($cache_sql);
+  };
+
+  if ($@) {
+    print "Error updating geocoder cache: $@";
+  }
+}
+
 sub geocode_mapbox {
   my ($self, $remote_row) = @_;
 
@@ -299,10 +314,7 @@ sub geocode_mapbox {
   my $response = $self->request('mapbox', $url);
   my $json = $response->{json};
 
-  # update cache
-  my $cache_sql = $response->{cache_sql};
-  $self->{temp_error} = "$cache_sql\n";
-  $self->{dbh}->do($cache_sql) if ($cache_sql);
+  $self->update_cache($response);
 
   my $feature = $json->{features}->[0];
 
@@ -361,10 +373,7 @@ sub geocode_bing {
     return 0;
   }
 
-  # update cache
-  my $cache_sql = $response->{cache_sql};
-  $self->{temp_error} = "$cache_sql\n";
-  $self->{dbh}->do($cache_sql) if ($cache_sql);
+  $self->update_cache($response);
 
   my $result = $json->{resourceSets}->[0]->{resources}->[0];
   my @codes = @{ $result->{matchCodes} };
@@ -429,10 +438,7 @@ sub geocode_google {
     return 0;
   }
 
-  # update cache
-  my $cache_sql = $response->{cache_sql};
-  $self->{temp_error} = "$cache_sql\n";
-  $self->{dbh}->do($cache_sql) if ($cache_sql);
+  $self->update_cache($response);
 
   my @types = @{ $result->{types} };
   my @place = split(', ', $result->{formatted_address});
