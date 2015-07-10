@@ -57,7 +57,7 @@ sub AUTOLOAD {
       return $return;
     };
 
-    if ($@ =~ /connect/ && $retries_left) {
+    if ($@ =~ /connect/i && $retries_left) {
       warn "Connection problem, try to reconnect [$retries_left] more times...";
       sleep 10;
       undef $self->{dbh};
