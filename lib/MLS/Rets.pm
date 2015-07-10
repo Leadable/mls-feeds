@@ -29,9 +29,37 @@ sub login {
     $rets->SetRetsVersion($self->{rets_version}) if ($self->{rets_version});
     $rets->SetUserAgent($self->{user_agent})   if ($self->{user_agent});
 
-    die "Invalid RETS login" unless $rets->Login($self->{username}, $self->{password});
+    my $retries_left = $self->{NumRetry} + 1;
 
-    $self->{rets} = $rets;
+    while ($retries_left--) {
+        my $success = eval {
+            $rets->Login($self->{username}, $self->{password});
+        };
+
+        if ($@) {
+            if (ref $@ =~ /librets/) {
+                print "RetsError: " . $@->GetFullReport . "\n";
+            }
+            else {
+                print $@;
+            }
+
+            if ($retries_left) {
+                print "Retrying RETS login [$retries_left] more times\n";
+                sleep 10;
+            }
+            else {
+                die $@;
+            }
+        }
+        elsif (!$success) {
+            die "Invalid RETS login\n";
+        }
+        else {
+            $self->{rets} = $rets;
+            last;
+        }
+    }
 }
 
 sub SetHttpLogName {
@@ -104,21 +132,25 @@ sub retryable_method {
         };
 
         # login and try again
-        if ($@ && $retries_left) {
-
+        if ($@) {
             if ($@ eq "alarm\n") {
                 print "TIMEOUT\n";
             }
-            elsif (ref $@ eq 'librets::RetsReplyException') {
+            elsif (ref $@ =~ /librets/) {
                 print "RetsError: " . $@->GetFullReport . "\n";
             }
+            else {
+                print $@;
+            }
 
-            print "Retrying RETS method [$method] [$retries_left] more times\n";
-            sleep 10;
-            $self->login;
-        }
-        elsif ($@) {
-            die $@;
+            if ($retries_left) {
+                print "Retrying RETS method [$method] [$retries_left] more times\n";
+                sleep 10;
+                $self->login;
+            }
+            else {
+                die $@;
+            }
         }
         else {
             return $results;
