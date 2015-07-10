@@ -98,6 +98,8 @@ sub retryable_method {
             my $return = $rets->$method($request);
             alarm 0;
 
+            die if ($method eq 'Search' && $return->GetCount() == -1);
+
             return $return;
         };
 
@@ -107,8 +109,8 @@ sub retryable_method {
             if ($@ eq "alarm\n") {
                 print "TIMEOUT\n";
             }
-            else {
-                print $@->GetFullReport;
+            elsif (ref $@ eq 'librets::RetsReplyException') {
+                print "RetsError: " . $@->GetFullReport . "\n";
             }
 
             print "Retrying RETS method [$method] [$retries_left] more times\n";
