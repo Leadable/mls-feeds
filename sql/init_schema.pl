@@ -97,7 +97,6 @@ $dbh->do('COMMIT');
 $dbh->disconnect;
 print "[DONE]\n\n";
 
-my $sql_dir = "./$mls/sql";
 my $psql_cmd = qq|psql -q -h $host -p $port -U $user $dbname|;
 
 ##############################
@@ -105,53 +104,17 @@ my $psql_cmd = qq|psql -q -h $host -p $port -U $user $dbname|;
 ##############################
 print "Creating the resource tables\n";
 
-die "Could not find [$sql_dir/resources.sql]" if (! -e "$sql_dir/resources.sql");
+die "Could not find [$$mls/resources.sql]" if (! -e "$mls/resources.sql");
 
-my $cmd = qq|$psql_cmd < $sql_dir/resources.sql|;
+$ENV{PGPASSWORD} = $pass;
+
+my $cmd = qq|$psql_cmd < $mls/resources.sql|;
 print "$cmd\n";
 system($cmd) == 0 or
   die "There was a problem with the command: [" . ($? >> 8) . "]";
 
 print "[DONE]\n\n";
 
-##############################################################################
-# Create the places table, populate it with data, and make the property view #
-# TODO: this may need to change if multiple places tables are possible       #
-##############################################################################
-print "Creating places table and property view\n";
-my @files = (
-  "$sql_dir/property/places_schema.sql",
-  "$sql_dir/property/places_data.sql",
-  "$sql_dir/property/view_property.sql"
-);
-
-foreach (@files) {
-  die "Could not find: [$_]" if (! -e $_);
-}
-
-my $file_str = join ' ', @files;
-
-# Execute multiple SQL files at once with cat
-$cmd = qq{cat $file_str | } . qq{$psql_cmd -f -};
-print "$cmd\n";
-system($cmd) == 0 or
-  die "There was a problem with the command: [" . ($? >> 8) . "]";
-
-print "[DONE]\n\n";
-
-######################################################
-# create the views for all places and resource types #
-######################################################
-print "Creating all views\n";
-
-# Execute multiple SQL files at once with cat
-$cmd = qq{cat $sql_dir/views/* | } . qq{$psql_cmd -f -};
-print "$cmd\n";
-system($cmd) == 0 or
-  die "There was a problem with the command: [" . ($? >> 8) . "]";
-
-print "[DONE]\n\n";
-
-print "---Done intializing DB for [$mls]--\n";
+print "---Done initializing DB for [$mls]--\n";
 
 1;
