@@ -6,7 +6,7 @@ use MLS::Rets;
 use Geo::StreetAddress::US;
 
 # MLS identifier
-$MLS::Config::MLS = 'cmls2';
+$MLS::Config::MLS = 'cmls';
 
 # Location of logging
 $MLS::Config::LOG_DIR = "/tmp/log/$MLS::Config::MLS";
