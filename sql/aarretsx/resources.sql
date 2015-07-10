@@ -1,6 +1,6 @@
 BEGIN;
 
-  CREATE TABLE aarretsx."ActiveAgent"() ;
+  CREATE TABLE aarretsx."ActiveAgent"() INHERITS (property);
     ALTER TABLE aarretsx."ActiveAgent" ADD COLUMN "TransferDate" text;
     COMMENT ON COLUMN aarretsx."ActiveAgent"."TransferDate" IS 'Transfer Date';
 
@@ -160,7 +160,7 @@ BEGIN;
     ALTER TABLE aarretsx."ActiveAgent" ADD COLUMN "HomePhoneNumber" text;
     COMMENT ON COLUMN aarretsx."ActiveAgent"."HomePhoneNumber" IS 'Home Phone Number';
 
-  CREATE TABLE aarretsx."Agent"() ;
+  CREATE TABLE aarretsx."Agent"() INHERITS (property);
     ALTER TABLE aarretsx."Agent" ADD COLUMN "TransferDate" text;
     COMMENT ON COLUMN aarretsx."Agent"."TransferDate" IS 'Transfer Date';
 
@@ -388,7 +388,7 @@ BEGIN;
     ALTER TABLE aarretsx."MemberAssociation" ADD COLUMN "StatusDate" text;
     COMMENT ON COLUMN aarretsx."MemberAssociation"."StatusDate" IS 'Status Date';
 
-  CREATE TABLE aarretsx."Office"() ;
+  CREATE TABLE aarretsx."Office"() INHERITS (property);
     ALTER TABLE aarretsx."Office" ADD COLUMN "BillingOffice" integer;
     COMMENT ON COLUMN aarretsx."Office"."BillingOffice" IS 'Billing Office';
 
@@ -3190,7 +3190,7 @@ BEGIN;
     ALTER TABLE aarretsx."PropertyWithheld" ADD COLUMN "OfficeIDX" text;
     COMMENT ON COLUMN aarretsx."PropertyWithheld"."OfficeIDX" IS 'Office IDX';
 
-  CREATE TABLE aarretsx."Prospect"() ;
+  CREATE TABLE aarretsx."Prospect"() INHERITS (property);
     ALTER TABLE aarretsx."Prospect" ADD COLUMN "OtherPhoneAreaCode1" text;
     COMMENT ON COLUMN aarretsx."Prospect"."OtherPhoneAreaCode1" IS 'Other Phone Area Code 1';
 
@@ -3476,40 +3476,6 @@ BEGIN;
 
     ALTER TABLE aarretsx."Tour" ADD COLUMN "OfficeStreetState" text;
     COMMENT ON COLUMN aarretsx."Tour"."OfficeStreetState" IS 'Office Street State';
-
-  CREATE TABLE aarretsx."VirtualMedia"() ;
-    ALTER TABLE aarretsx."VirtualMedia" ADD COLUMN "MediaType" text;
-    COMMENT ON COLUMN aarretsx."VirtualMedia"."MediaType" IS 'Media Type';
-
-    ALTER TABLE aarretsx."VirtualMedia" ADD COLUMN "LastModifiedDateTime" text;
-    COMMENT ON COLUMN aarretsx."VirtualMedia"."LastModifiedDateTime" IS 'Last Modified Date Time';
-
-    ALTER TABLE aarretsx."VirtualMedia" ADD COLUMN "VirtualMediaRid" integer PRIMARY KEY;
-    COMMENT ON COLUMN aarretsx."VirtualMedia"."VirtualMediaRid" IS 'Virtual Media RID';
-
-    ALTER TABLE aarretsx."VirtualMedia" ADD COLUMN "Branded" boolean;
-    COMMENT ON COLUMN aarretsx."VirtualMedia"."Branded" IS 'Branded';
-
-    ALTER TABLE aarretsx."VirtualMedia" ADD COLUMN "URL" text;
-    COMMENT ON COLUMN aarretsx."VirtualMedia"."URL" IS 'URL';
-
-    ALTER TABLE aarretsx."VirtualMedia" ADD COLUMN "PropertyType" text;
-    COMMENT ON COLUMN aarretsx."VirtualMedia"."PropertyType" IS 'Property Type';
-
-    ALTER TABLE aarretsx."VirtualMedia" ADD COLUMN "MLNumber" integer;
-    COMMENT ON COLUMN aarretsx."VirtualMedia"."MLNumber" IS 'ML Number';
-
-    ALTER TABLE aarretsx."VirtualMedia" ADD COLUMN "ListingOfficeNumber" integer;
-    COMMENT ON COLUMN aarretsx."VirtualMedia"."ListingOfficeNumber" IS 'Listing Office Number';
-
-    ALTER TABLE aarretsx."VirtualMedia" ADD COLUMN "ListingRid" integer;
-    COMMENT ON COLUMN aarretsx."VirtualMedia"."ListingRid" IS 'Listing Row ID';
-
-    ALTER TABLE aarretsx."VirtualMedia" ADD COLUMN "ListingAgentNumber" integer;
-    COMMENT ON COLUMN aarretsx."VirtualMedia"."ListingAgentNumber" IS 'Listing Agent Number';
-
-    ALTER TABLE aarretsx."VirtualMedia" ADD COLUMN "MLS" text;
-    COMMENT ON COLUMN aarretsx."VirtualMedia"."MLS" IS 'MLS';
 
 
 COMMIT;
