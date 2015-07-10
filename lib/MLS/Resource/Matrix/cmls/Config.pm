@@ -1,4 +1,4 @@
-package MLS::Resource::Matrix::cmls2::Config;
+package MLS::Resource::Matrix::cmls::Config;
 
 use strict;
 

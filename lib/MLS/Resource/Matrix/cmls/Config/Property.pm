@@ -1,7 +1,7 @@
-package MLS::Resource::Matrix::cmls2::Config::Property;
+package MLS::Resource::Matrix::cmls::Config::Property;
 use strict;
 
-use MLS::Resource::Matrix::cmls2::Config;
+use MLS::Resource::Matrix::cmls::Config;
 
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';

@@ -1,4 +1,4 @@
-package MLS::Resource::Matrix::cmls2::Purge;
+package MLS::Resource::Matrix::cmls::Purge;
 
 use strict;
 use base 'MLS::Resource::Matrix::Purge';
