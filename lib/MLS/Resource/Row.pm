@@ -68,12 +68,7 @@ sub monitor {
   my($self, $key, $value) = @_;
 
   my $monitor = $self->{monitor} or return;
-
-  my @class = split(/::/, ref($self));
-
-  shift @class; # remove MLS
-
-  $monitor->status({ namespace => \@class, key => $key, value => $value });
+  $monitor->status({ namespace => ['Row'], key => $key, value => $value });
 }
 
 
