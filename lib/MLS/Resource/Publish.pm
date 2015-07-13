@@ -37,7 +37,7 @@ sub go {
     $self->{dbh}->do(qq|
         DROP MATERIALIZED VIEW IF EXISTS $self->{new_data_materialized};
         CREATE MATERIALIZED VIEW $self->{new_data_materialized} as SELECT * from $self->{view};
-        CREATE INDEX "idx_view_$self->{id}_new" ON $self->{new_data_materialized} USING BTREE ("id");
+        CREATE INDEX "idx_view_$self->{id}_new" ON $self->{new_data_materialized} USING BTREE ("listing_id");
     |);
 
     # is the materialized table empty?
@@ -181,11 +181,11 @@ sub is_data_change {
         join ',',
         map {"extract(epoch from $_) as $_"} @key_cols;
 
-    my $new_rs = $self->{new_rs} = $dbh->selectall_hashref("SELECT $cols_str,id from $self->{new_data_materialized}", 'id');
+    my $new_rs = $self->{new_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $self->{new_data_materialized}", 'listing_id');
 
     my $old_rs = {};
     if (!$self->{rebuild}) {
-        $old_rs = $self->{old_rs} = $dbh->selectall_hashref("SELECT $cols_str,id from $self->{materialized}", 'id');
+        $old_rs = $self->{old_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $self->{materialized}", 'listing_id');
     }
 
     print scalar(keys %$new_rs) ." records in new view\n";
@@ -241,7 +241,7 @@ sub do_md5sum_data {
     # sort by keys (listing id) here so data is always in same order
     return md5_hex(
         map {
-            $table_data->{$_}{id} .
+            $table_data->{$_}{listing_id} .
             $table_data->{$_}{__inserted_at} .
             $table_data->{$_}{__modified_at} .
             $table_data->{$_}{__removed_at}
@@ -270,7 +270,7 @@ sub generate_row_data {
             my @ids = splice @new_ids, 0, 1000;
 
             my $new_ids_str = join ' OR ',
-                              map {"id = " . $dbh->quote($_)} @ids;
+                              map {"listing_id = " . $dbh->quote($_)} @ids;
             my $new_rs = $dbh->selectall_arrayref("SELECT * from $self->{new_data_materialized} where $new_ids_str", {Slice => {}});
 
             foreach my $row (@$new_rs) {
@@ -294,7 +294,7 @@ sub generate_row_data {
             my @ids = splice @updated_ids, 0, 5000;
 
             my $update_ids_str = join ' OR ',
-                              map {"id = " . $dbh->quote($_)} @ids;
+                              map {"listing_id = " . $dbh->quote($_)} @ids;
             my $update_rs = $dbh->selectall_arrayref("SELECT * from $self->{new_data_materialized} where $update_ids_str", {Slice => {}});
             $return_sql .= join "\n",
                            map {$self->format_row_data($_, $dbh)} @$update_rs;
@@ -318,7 +318,7 @@ sub format_row_data {
     my $vals_str = join ',',
                    map {$dbh->quote($_)} values %$row_data;
 
-    my $where_sql = 'l.id = ' . $dbh->quote($row_data->{id});
+    my $where_sql = 'l.listing_id = ' . $dbh->quote($row_data->{listing_id});
 
     return qq|UPDATE $self->{live_table} as l SET ($cols_str) = ($vals_str) WHERE $where_sql;|;
 }
