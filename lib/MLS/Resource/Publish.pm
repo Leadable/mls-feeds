@@ -12,6 +12,62 @@ use Compress::Zlib qw(gzopen Z_BEST_COMPRESSION);
 
 $| = 1;
 
+my %INDEXABLE_COLUMNS;
+
+map {$INDEXABLE_COLUMNS{$_} = 1}
+qw(
+    __removed_at
+    __active
+    age
+    __inserted_at
+    __modified_at
+    __price_updated_at
+    __percent_reduced
+    __geo_geom
+    __geo_outlier
+    id
+    listing_id
+    mlsnum
+    status
+    sold_date
+    sold_price
+    under_contract
+    price
+    price_per_sqft
+    beds
+    type
+    baths_total
+    address_line1
+    city
+    city_st
+    zip
+    square_feet
+    year_built
+    acres
+    garage
+    basement
+    fireplace
+    fenced_yard
+    waterfront
+    one_story
+    pool
+    patio_deck_porch
+    walk_in_closets
+    double_vanity
+    __minor_area
+    __major_area
+    subdivision
+    elementary_school
+    middle_school
+    high_school
+    office_name
+    "feature_private_pool[]"
+    feature_governing_body
+    feature_pets_allowed
+    "feature_restrictions[]"
+    __geo_neigh
+);
+
 sub new {
   my ($class, $opts) = @_;
 
@@ -358,6 +414,8 @@ sub generate_index_sql {
   my $id = 1;
 
   foreach my $col (@$schema) {
+    next if (!$INDEXABLE_COLUMNS{$col->{col_name}});
+
     my $idx_type;
     if ($col->{col_type} eq 'geometry') {
       $idx_type = 'GIST';
