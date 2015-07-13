@@ -374,6 +374,7 @@ sub update_mutation_table {
   eval {
     my $address_sql;
     if ($MLS::Config::ADDRESS) {
+      # be aware: this can sometimes die silently
       my $address = $MLS::Config::ADDRESS->($remote_row);
       $address_sql = ', remote_address = ' . $dbh->quote($address);
     }
