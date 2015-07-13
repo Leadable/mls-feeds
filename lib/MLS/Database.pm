@@ -2,6 +2,7 @@ package MLS::Database;
 use strict;
 
 use Data::Dumper;
+use Carp;
 use DBI;
 use vars qw{$AUTOLOAD};
 
@@ -64,6 +65,8 @@ sub AUTOLOAD {
     }
     elsif ($@) {
       # general error or out of retries, let caller handle it
+      print "SQL: [$arg1]\n";
+      Carp::confess;
       die $@;
     }
     else {

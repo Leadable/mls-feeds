@@ -256,7 +256,7 @@ sub update {
 
   if (%MLS::Config::PRICE_COLUMN) {
     my $price_val = $local_row->{ $MLS::Config::PRICE_COLUMN{$self->{column_identifier}} };
-    my $price_newval = $results->GetString($MLS::Config::PRICE_COLUMN{SystemName});
+    my $price_newval = $results->GetString($MLS::Config::PRICE_COLUMN{SystemName}) || 0;
 
     if ($price_val != $price_newval) {
 
@@ -280,7 +280,7 @@ sub update {
   }
 
   my $status_val = $local_row->{ $MLS::Config::STATUS_COLUMN{$self->{column_identifier}} };
-  my $status_newval = $results->GetString($MLS::Config::STATUS_COLUMN{SystemName});
+  my $status_newval = $results->GetString($MLS::Config::STATUS_COLUMN{SystemName}) || 'NULL';
   if ($status_val ne $status_newval) {
     # __status_updated_at
     push(@vals, '__status_updated_at = NOW()');
@@ -324,7 +324,7 @@ sub insert {
 
     # __price_history_vals
     push(@cols, '__price_history_vals');
-    push(@vals, 'ARRAY[' . $data->{ $MLS::Config::PRICE_COLUMN{$self->{column_identifier}} } . '::numeric]');
+    push(@vals, 'ARRAY[' . ($data->{ $MLS::Config::PRICE_COLUMN{$self->{column_identifier}} } || 0) . '::numeric]');
   }
 
   if (%MLS::Config::STATUS_COLUMN) {
@@ -334,7 +334,7 @@ sub insert {
 
     # __status_history_vals
     push(@cols, '__status_history_vals');
-    push(@vals, 'ARRAY[' . $data->{ $MLS::Config::STATUS_COLUMN{$self->{column_identifier}} } . ']');
+    push(@vals, 'ARRAY[' . ($data->{ $MLS::Config::STATUS_COLUMN{$self->{column_identifier}} } || 'NULL') . ']');
   }
 
   # __inserted_at
