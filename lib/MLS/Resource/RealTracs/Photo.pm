@@ -27,7 +27,6 @@ sub search_remote {
     if ($location) {
       $location .= '?v=' . time;
       push @urls, $location;
-      print "$location\n";
     }
 
     $objectDescriptor = $response->NextObject();
