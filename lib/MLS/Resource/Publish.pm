@@ -107,7 +107,7 @@ sub go {
     # determine if there is a schema change
     # if so, must rebuild the entire table on live
     print "Checking for schema differences...\n";
-    if ($self->is_schema_change || $self->{force_rebuild}) {
+    if ($self->is_schema_change) {
         print "Full rebuild required\n";
 
         $self->{rebuild} = 1;
@@ -208,16 +208,7 @@ sub is_schema_change {
         AND    NOT attisdropped;|
     );
 
-    my $old_schema = $dbh->selectall_arrayref(qq|
-        SELECT attname, format_type(atttypid, atttypmod)
-        FROM   pg_attribute
-        WHERE  attrelid = '$self->{materialized}'::regclass
-        AND    attnum > 0
-        AND    NOT attisdropped;|
-    );
-
     $self->{new_schema_md5} = do_md5sum_schema($new_schema);
-    $self->{old_schema_md5} = do_md5sum_schema($old_schema);
 
     # format schema for publish later
     $self->{new_schema} = [
@@ -226,7 +217,22 @@ sub is_schema_change {
         } @$new_schema
     ];
 
-    return $self->{new_schema_md5} ne $self->{old_schema_md5};
+    if (!$self->{force_rebuild}) {
+        my $old_schema = $dbh->selectall_arrayref(qq|
+            SELECT attname, format_type(atttypid, atttypmod)
+            FROM   pg_attribute
+            WHERE  attrelid = '$self->{materialized}'::regclass
+            AND    attnum > 0
+            AND    NOT attisdropped;|
+        );
+
+        $self->{old_schema_md5} = do_md5sum_schema($old_schema);
+
+        return $self->{new_schema_md5} ne $self->{old_schema_md5};
+    }
+    else {
+        return 1;
+    }
 }
 
 sub is_data_change {
