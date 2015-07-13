@@ -17,7 +17,7 @@ $MLS::Config::OBJECT = 'Photo';
   CND => { StandardName => 'Condominium',     'SearchRequest' => "(ModDate=1900-01-01T00:00:00+)" },
   RES => { StandardName => 'Residential',     'SearchRequest' => "(ModDate=1900-01-01T00:00:00+)" },
   LLF => { StandardName => 'Land-Lots-Farms', 'SearchRequest' => "(ModDate=1900-01-01T00:00:00+)" },
-  RNT => { StandardName => 'Rental',          'SearchRequest' => "(ModDate=1900-01-01T00:00:00+)" },
+  RNT => { StandardName => 'Rental',          'SearchRequest' => "", ignore => 1 }, # price field not available for this
   MLS => { StandardName => 'Cross-Class',     'SearchRequest' => "", ignore => 1 },
   COM => { StandardName => 'Commercial',      'SearchRequest' => "", ignore => 1 },
   MUL => { StandardName => 'Multi-Family',    'SearchRequest' => "", ignore => 1 },
