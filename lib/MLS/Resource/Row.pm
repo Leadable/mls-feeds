@@ -285,17 +285,19 @@ sub update {
     }
   }
 
-  my $status_val = $local_row->{$self->{local_status_col}};
-  my $status_newval = $results->GetString($self->{remote_status_col}) || 'NULL';
-  if ($status_val ne $status_newval) {
-    # __status_updated_at
-    push(@vals, '__status_updated_at = NOW()');
+  if (%MLS::Config::STATUS_COLUMN) {
+    my $status_val = $local_row->{$self->{local_status_col}};
+    my $status_newval = $results->GetString($self->{remote_status_col}) || 'NULL';
+    if ($status_val ne $status_newval) {
+      # __status_updated_at
+      push(@vals, '__status_updated_at = NOW()');
 
-    # __status_history_times
-    push(@vals, '__status_history_times = array_append(__status_history_times, LOCALTIMESTAMP)');
+      # __status_history_times
+      push(@vals, '__status_history_times = array_append(__status_history_times, LOCALTIMESTAMP)');
 
-    # __status_history_vals
-    push(@vals, '__status_history_vals = array_append(__status_history_vals, ' . $dbh->quote($status_newval) . ')');
+      # __status_history_vals
+      push(@vals, '__status_history_vals = array_append(__status_history_vals, ' . $dbh->quote($status_newval) . ')');
+    }
   }
 
   my $pkey_ident = $MLS::Config::PRIMARY_KEY{SystemName};
