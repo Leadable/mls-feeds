@@ -648,6 +648,40 @@ BEGIN;
      
     ALTER TABLE cmls."Property" ADD COLUMN "CoListAgentFullName" text;
     COMMENT ON COLUMN cmls."Property"."CoListAgentFullName" IS 'Co List Agent Full Name';
+
+    CREATE TABLE cmls."PropertySubTable"() INHERITS (property);
+    ALTER TABLE cmls."PropertySubTable" ADD COLUMN "MonthlyRent" decimal;
+    COMMENT ON COLUMN cmls."PropertySubTable"."MonthlyRent" IS 'Monthly Rent';
+     
+    ALTER TABLE cmls."PropertySubTable" ADD COLUMN "MatrixModifiedDT" text;
+    COMMENT ON COLUMN cmls."PropertySubTable"."MatrixModifiedDT" IS 'Matrix Modified DT';
+     
+    ALTER TABLE cmls."PropertySubTable" ADD COLUMN "InputEntryOrder" integer;
+    COMMENT ON COLUMN cmls."PropertySubTable"."InputEntryOrder" IS 'Input Entry Order';
+     
+    ALTER TABLE cmls."PropertySubTable" ADD COLUMN "BathsFull" integer;
+    COMMENT ON COLUMN cmls."PropertySubTable"."BathsFull" IS 'Baths Full';
+     
+    ALTER TABLE cmls."PropertySubTable" ADD COLUMN "Listing_MUI" bigint;
+    COMMENT ON COLUMN cmls."PropertySubTable"."Listing_MUI" IS 'Listing MUI';
+     
+    ALTER TABLE cmls."PropertySubTable" ADD COLUMN "BathsTotal" decimal;
+    COMMENT ON COLUMN cmls."PropertySubTable"."BathsTotal" IS 'Baths Total';
+     
+    ALTER TABLE cmls."PropertySubTable" ADD COLUMN "BedsTotal" integer;
+    COMMENT ON COLUMN cmls."PropertySubTable"."BedsTotal" IS 'Beds Total';
+     
+    ALTER TABLE cmls."PropertySubTable" ADD COLUMN "RoomType" text[];
+    COMMENT ON COLUMN cmls."PropertySubTable"."RoomType" IS 'Room Type';
+     
+    ALTER TABLE cmls."PropertySubTable" ADD COLUMN "BathsHalf" integer;
+    COMMENT ON COLUMN cmls."PropertySubTable"."BathsHalf" IS 'Baths Half';
+     
+    ALTER TABLE cmls."PropertySubTable" ADD COLUMN "matrix_unique_id" bigint PRIMARY KEY;
+    COMMENT ON COLUMN cmls."PropertySubTable"."matrix_unique_id" IS 'Matrix Unique Id';
+     
+    ALTER TABLE cmls."PropertySubTable" ADD COLUMN "RoomLevel" text;
+    COMMENT ON COLUMN cmls."PropertySubTable"."RoomLevel" IS 'Room Level';
      
 
 COMMIT;
