@@ -66,9 +66,18 @@ sub fetch_remote {
 
     print "Search request: " . $class->{SearchRequest} . "\n";
 
+    my @select_fields = (
+      $MLS::Config::PRIMARY_KEY{SystemName},
+      $MLS::Config::ROW_MOD_TS_COLUMN{SystemName}
+    );
+
+    if ($MLS::Config::IMG_MOD_TS_COLUMN{SystemName}) {
+      push @select_fields, $MLS::Config::IMG_MOD_TS_COLUMN{SystemName};
+    }
+
     eval {
       my $request = $rets->CreateSearchRequest($MLS::Config::RESOURCE, $class_id, $class->{SearchRequest});
-      $request->SetSelect("$MLS::Config::PRIMARY_KEY{SystemName},$MLS::Config::ROW_MOD_TS_COLUMN{SystemName},$MLS::Config::IMG_MOD_TS_COLUMN{SystemName}");
+      $request->SetSelect(join(',', @select_fields));
       $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
       $request->SetOffset($librets::SearchRequest::OFFSET_NONE);
       $request->SetStandardNames(0);
