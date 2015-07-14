@@ -17,7 +17,7 @@ $MLS::Config::OBJECT = 'Photo';
   CND => { StandardName => 'Condominium',     'SearchRequest' => "(ModDate=1900-01-01T00:00:00+)" },
   RES => { StandardName => 'Residential',     'SearchRequest' => "(ModDate=1900-01-01T00:00:00+)" },
   LLF => { StandardName => 'Land-Lots-Farms', 'SearchRequest' => "(ModDate=1900-01-01T00:00:00+)" },
-  RNT => { StandardName => 'Rental',          'SearchRequest' => "", ignore => 1 }, # price field not available for this
+  RNT => { StandardName => 'Rental',          'SearchRequest' => "(ModDate=1900-01-01T00:00:00+)",},
   MLS => { StandardName => 'Cross-Class',     'SearchRequest' => "", ignore => 1 },
   COM => { StandardName => 'Commercial',      'SearchRequest' => "", ignore => 1 },
   MUL => { StandardName => 'Multi-Family',    'SearchRequest' => "", ignore => 1 },
@@ -34,10 +34,10 @@ $MLS::Config::OBJECT = 'Photo';
 %MLS::Config::IMG_MOD_TS_COLUMN = ( SystemName => 'MediaUpdateDate', );
 
 # RETS Resource status column
-%MLS::Config::STATUS_COLUMN = ( SystemName => 'ContingencyType', );
+%MLS::Config::STATUS_COLUMN = ( SystemName => 'ContingencyType', RNT => 'ListingStatusID'); # TODO: for Rentals, make sure this is correct
 
 # RETS Resource price column
-%MLS::Config::PRICE_COLUMN = ( SystemName => 'ListPrice', );
+%MLS::Config::PRICE_COLUMN = ( SystemName => 'ListPrice', RNT => 'LeasePerMonth');
 
 %MLS::Config::ADDR_COLUMNS = (
   street   => 'StreetName',

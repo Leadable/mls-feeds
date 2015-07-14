@@ -150,11 +150,11 @@ sub fetch_local {
   );
 
   if (%MLS::Config::STATUS_COLUMN) {
-    push @select, $dbh->quote_identifier($MLS::Config::STATUS_COLUMN{$self->{column_identifier}});
+    push @select, $dbh->quote_identifier($self->{local_status_col});
   }
 
   if (%MLS::Config::PRICE_COLUMN) {
-    push @select, $dbh->quote_identifier($MLS::Config::PRICE_COLUMN{$self->{column_identifier}});
+    push @select, $dbh->quote_identifier($self->{local_price_col});
   }
 
   my $sql = "SELECT " . join(', ', @select) . " FROM $MLS::Config::MLS.\"$MLS::Config::RESOURCE\" WHERE " . $dbh->quote_identifier($pkey) . " IN('" . join("','", map($_->{remote_id}, @$mutated)) . "')";
@@ -171,6 +171,12 @@ sub fetch_remote {
   my $rets = $self->{rets};
   my $rets_table_info = $self->{rets_table_info};
   my $pg_col_info = $self->{pg_col_info};
+
+  # classes may use different columns for price/status
+  $self->{local_price_col}   = $MLS::Config::PRICE_COLUMN{$class_id}  || $MLS::Config::PRICE_COLUMN{$self->{column_identifier}};
+  $self->{remote_price_col}  = $MLS::Config::PRICE_COLUMN{$class_id}  || $MLS::Config::PRICE_COLUMN{SystemName};
+  $self->{local_status_col}  = $MLS::Config::STATUS_COLUMN{$class_id} || $MLS::Config::STATUS_COLUMN{$self->{column_identifier}};
+  $self->{remote_status_col} = $MLS::Config::STATUS_COLUMN{$class_id} || $MLS::Config::STATUS_COLUMN{SystemName};
 
   my $expected_count = scalar @$remote_ids;
   my $local_rows = $self->fetch_local($remote_ids);
@@ -255,8 +261,8 @@ sub update {
   }
 
   if (%MLS::Config::PRICE_COLUMN) {
-    my $price_val = $local_row->{ $MLS::Config::PRICE_COLUMN{$self->{column_identifier}} };
-    my $price_newval = $results->GetString($MLS::Config::PRICE_COLUMN{SystemName}) || 0;
+    my $price_val = $local_row->{$self->{local_price_col}};
+    my $price_newval = $results->GetString($self->{remote_price_col}) || 0;
 
     if ($price_val != $price_newval) {
 
@@ -279,8 +285,8 @@ sub update {
     }
   }
 
-  my $status_val = $local_row->{ $MLS::Config::STATUS_COLUMN{$self->{column_identifier}} };
-  my $status_newval = $results->GetString($MLS::Config::STATUS_COLUMN{SystemName}) || 'NULL';
+  my $status_val = $local_row->{$self->{local_status_col}};
+  my $status_newval = $results->GetString($self->{remote_status_col}) || 'NULL';
   if ($status_val ne $status_newval) {
     # __status_updated_at
     push(@vals, '__status_updated_at = NOW()');
@@ -324,7 +330,7 @@ sub insert {
 
     # __price_history_vals
     push(@cols, '__price_history_vals');
-    push(@vals, 'ARRAY[' . ($data->{ $MLS::Config::PRICE_COLUMN{$self->{column_identifier}} } || 0) . '::numeric]');
+    push(@vals, 'ARRAY[' . ($data->{$self->{local_price_col}} || 0) . '::numeric]');
   }
 
   if (%MLS::Config::STATUS_COLUMN) {
@@ -334,7 +340,7 @@ sub insert {
 
     # __status_history_vals
     push(@cols, '__status_history_vals');
-    push(@vals, 'ARRAY[' . ($data->{ $MLS::Config::STATUS_COLUMN{$self->{column_identifier}} } || 'NULL') . ']');
+    push(@vals, 'ARRAY[' . ($data->{$self->{local_status_col}} || 'NULL') . ']');
   }
 
   # __inserted_at
