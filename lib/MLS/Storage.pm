@@ -18,14 +18,14 @@ sub new {
     $opts->{azure_obj} = _make_azure_client($opts->{account_name}, $opts->{bucket});
   }
 
+  $opts->{NumRetry} ||= 3;
+
   bless $opts, $class;
 }
 
 # returns URL to file that is stored
-sub store_file {
+sub do_store_file {
   my ($self, $opts) = @_;
-
-  die "Missing arguments for storing" if (!$opts->{source_filename} || !$opts->{dest_filename});
 
   if ($self->{use_s3}) {
     my $obj = $self->{s3_obj}->object(
@@ -43,11 +43,40 @@ sub store_file {
     my $res = $self->{azure_obj}->put_blob($opts->{dest_filename}, $params);
 
     if (!$res->is_success) {
-      # TODO: retry
       die "Error uploading file: " . $res->status_line;
     }
 
     return "https://$self->{account_name}.blob.core.windows.net/$self->{bucket}/$opts->{dest_filename}";
+  }
+}
+
+# helper function
+sub store_file {
+  my ($self, $opts) = @_;
+
+  die "Missing arguments for storing" if (!$opts->{source_filename} || !$opts->{dest_filename});
+
+  my $retries_left = $self->{NumRetry} + 1;
+
+  while ($retries_left--) {
+    my $url = eval {
+      $self->do_store_file($opts);
+    };
+
+    if ($@) {
+      print $@;
+
+      if ($retries_left) {
+        print "Retry file storage of [$opts->{source_filename}] [$retries_left] more times...\n";
+        sleep 10;
+      }
+      else {
+        die $@;
+      }
+    }
+    else {
+      return $url;
+    }
   }
 }
 
