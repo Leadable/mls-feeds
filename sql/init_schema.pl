@@ -104,7 +104,7 @@ my $psql_cmd = qq|psql -q -h $host -p $port -U $user $dbname|;
 ##############################
 print "Creating the resource tables\n";
 
-die "Could not find [$$mls/resources.sql]" if (! -e "$mls/resources.sql");
+die "Could not find [$mls/resources.sql]" if (! -e "$mls/resources.sql");
 
 $ENV{PGPASSWORD} = $pass;
 
