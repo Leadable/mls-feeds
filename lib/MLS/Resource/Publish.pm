@@ -189,9 +189,18 @@ sub is_materialized_empty {
 
     my $dbh = $self->{dbh};
 
-    my $count = $dbh->selectcol_arrayref("select count(*) from $self->{materialized}")->[0];
+    # this can fail if the materialized table hasnt been created
+    # in which case just return true
+    my $count = eval {
+        $dbh->selectcol_arrayref("select count(*) from $self->{materialized}")->[0];
+    };
 
-    return $count == 0;
+    if ($@) {
+        return 1;
+    }
+    else {
+        return $count == 0;
+    }
 }
 
 sub is_schema_change {
