@@ -1,2 +1,3 @@
 #!/bin/sh
+MLS_NAME=`basename $(pwd)`
 exec envdir ./env ./run2

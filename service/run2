@@ -11,6 +11,8 @@ die "MLS_NAME not set" if (!$ENV{MLS_NAME});
 
 my $mls = $ENV{MLS_NAME};
 
+my $extra_params = $ENV{MLS_FEEDS_RUN_PARAMS};
+
 my $db_vars_hash = {
     'east-1' => {
         POSTGRES_PORT_5432_TCP_ADDR => '10.0.0.5', # leadable-mls-feeds-db-1.cloudapp.net
@@ -60,7 +62,7 @@ elsif ($pid == 0) {
         qq|--name=mls-feeds-$mls|,
         q|--rm|,
         q|leadable/mls-feeds|,
-        qq|perl /opt/mls-feeds/bin/resource/run.pl -b $mls|,
+        qq|perl /opt/mls-feeds/bin/resource/run.pl -b $mls $extra_params|,
     );
 
     `@cmd`;
