@@ -6,7 +6,7 @@ use MLS::Resource::Matrix::cmls::Config;
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
 
-#@MLS::Config::AREAS = qw();
+@MLS::Config::AREAS = qw(maxwell);
 
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'LargePhoto';

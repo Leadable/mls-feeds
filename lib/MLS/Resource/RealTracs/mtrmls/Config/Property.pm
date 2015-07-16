@@ -6,7 +6,7 @@ use MLS::Resource::RealTracs::mtrmls::Config;
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
 
-#@MLS::Config::AREAS = qw(kanga_realty);
+@MLS::Config::AREAS = qw(move_in_nashville);
 
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'Photo';
