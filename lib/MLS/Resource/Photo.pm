@@ -21,7 +21,7 @@ sub go {
   my ($self) = @_;
 
   print "----Fetching photos----\n\n";
-  $self->{totals} = {photo_urls_fetched => 0};
+  $self->{totals} = {listings_complete => 0, photo_urls_fetched => 0};
 
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
@@ -85,6 +85,8 @@ sub fetch_remote {
   return if ! defined $urls;
 
   $self->{totals}{photo_urls_fetched} += scalar @$urls;
+  $self->{totals}{listings_complete}++;
+
   $self->update($row, $urls) if (scalar @$urls);
   $self->update_mutation_table($row->{remote_id}); 
 }
