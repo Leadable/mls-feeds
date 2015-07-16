@@ -65,8 +65,8 @@ sub start {
     }
   }
 
-  if (! -e $self->{log_file}) {
-    mkpath($self->{log_file});
+  if (! -d $self->{log_dir}) {
+    mkpath($self->{log_dir});
   }
 
   my $pid = fork;
