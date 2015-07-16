@@ -68,8 +68,6 @@ unless ($no_publish) {
 eval {
     $| = 1;
 
-    print "\nRun [tail -f /tmp/log/$MLS::Config::MLS/monitor.log] to see output\n";
-
     $monitor->start();
 
     $mutation_module->new({

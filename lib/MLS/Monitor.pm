@@ -65,15 +65,38 @@ sub start {
     }
   }
 
-  if (! -d $self->{log_dir}) {
-    mkpath($self->{log_dir});
+  if (! -e $self->{log_file}) {
+    mkpath($self->{log_file});
   }
 
-  # capture STDOUT, STDIN to log file
-  open(STDOUT, '>', $self->{log_file}) or
-    die "Cannot redirect STDOUT to [$self->{log_file}]: $!";
-  open(STDERR, ">&STDOUT") or
-    die "Cannot redirect STDERR to STDOUT: $!";
+  my $pid = fork;
+
+  if (! defined $pid) {
+    die "There was a problem with fork";
+  }
+  elsif ($pid == 0) {
+    # child, print from log file
+    open(my $FH, '<', $self->{log_file}) or
+      die "Cannot open [$self->{log_file}]: $!";
+
+    $| = 1;
+
+    my $ppid = getppid;
+
+    # print from log file until parent goes away
+    while (kill(0, $ppid)) {
+      print <$FH>;
+    }
+
+    exit;
+  }
+  else {
+    # capture STDOUT, STDIN to log file
+    open(STDOUT, '>', $self->{log_file}) or
+      die "Cannot redirect STDOUT to [$self->{log_file}]: $!";
+    open(STDERR, ">&STDOUT") or
+      die "Cannot redirect STDERR to STDOUT: $!";
+  }
 }
 
 sub get_blank_row {
