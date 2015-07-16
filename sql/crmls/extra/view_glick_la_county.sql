@@ -70,3 +70,6 @@ COMMENT ON COLUMN crmls.view_glick_la_county."feature_view[]"
   IS '{ "advanced": true, "label": "View", "input": "checkbox-group", "rank": 90 }';
 COMMENT ON COLUMN crmls.view_glick_la_county."feature_keywords[]"
   IS '{ "advanced": true, "label": "Commercial Type", "input": "checkbox-group", "rank": 95 }';
+
+CREATE VIEW crmls.view_glick_la_county_mv AS SELECT * FROM crmls.view_glick_la_county;
+CREATE VIEW crmls.view_glick_la_county_mv_active as SELECT * FROM crmls.view_glick_la_county WHERE __active;

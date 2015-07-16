@@ -69,3 +69,6 @@ COMMENT ON COLUMN crmls.view_paxson."feature_style[]"
   IS '{ "advanced": true, "label": "Style", "input": "checkbox-group", "rank": 85 }';
 COMMENT ON COLUMN crmls.view_paxson."feature_view[]" 
   IS '{ "advanced": true, "label": "View", "input": "checkbox-group", "rank": 90 }';
+
+CREATE VIEW crmls.view_paxson_mv AS SELECT * FROM crmls.view_paxson;
+CREATE VIEW crmls.view_paxson_mv_active as SELECT * FROM crmls.view_paxson WHERE __active;

@@ -65,3 +65,6 @@ COMMENT ON COLUMN crmls.view_young."feature_style[]"
   IS '{ "advanced": true, "label": "Style", "input": "checkbox-group", "rank": 85 }';
 COMMENT ON COLUMN crmls.view_young."feature_view[]" 
   IS '{ "advanced": true, "label": "View", "input": "checkbox-group", "rank": 90 }';
+
+CREATE VIEW crmls.view_young_mv AS SELECT * FROM crmls.view_young;
+CREATE VIEW crmls.view_young_mv_active as SELECT * FROM crmls.view_young WHERE __active;
