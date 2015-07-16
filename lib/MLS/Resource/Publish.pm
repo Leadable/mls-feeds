@@ -170,7 +170,8 @@ sub finish {
         updated => scalar @{$self->{id_lists}{updated}},
     };
 
-    $self->monitor($self->{id}, $totals);
+    $self->monitor($self->{id} . '_new', $totals->{new});
+    $self->monitor($self->{id} . '_updated', $totals->{updated});
 
     print "\nReport:\n";
     print Dumper $totals;
