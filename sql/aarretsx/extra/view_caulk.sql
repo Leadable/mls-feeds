@@ -70,3 +70,6 @@ COMMENT ON COLUMN aarretsx.view_caulk."feature_new_construction"
   IS '{ "advanced": true, "label": "New Construction", "input": "checkbox-group", "rank": 170 }';
 COMMENT ON COLUMN aarretsx.view_caulk."feature_ownership" 
   IS '{ "advanced": true, "label": "Ownership", "input": "checkbox-group", "rank": 180 }';
+
+CREATE VIEW aarretsx.view_caulk_mv AS SELECT * FROM aarretsx.view_caulk;
+CREATE VIEW aarretsx.view_caulk_mv_active as SELECT * FROM aarretsx.view_caulk WHERE __active;

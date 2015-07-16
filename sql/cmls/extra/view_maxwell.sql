@@ -57,3 +57,6 @@ COMMENT ON COLUMN cmls.view_maxwell."feature_fireplace[]"
   IS '{ "advanced": true, "label": "Fireplace Description", "input": "checkbox-group", "rank": 170 }';
 COMMENT ON COLUMN cmls.view_maxwell."feature_exterior_construction[]"
   IS '{ "advanced": true, "label": "Exterior Construction", "input": "checkbox-group", "rank": 180 }';
+
+CREATE VIEW cmls.view_maxwell_mv AS SELECT * FROM cmls.view_maxwell;
+CREATE VIEW cmls.view_maxwell_mv_active as SELECT * FROM cmls.view_maxwell WHERE __active;
