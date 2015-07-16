@@ -43,6 +43,7 @@ sub finish {
   my $self = shift;
 
   $self->monitor('photo_urls_fetched', $self->{totals}{photo_urls_fetched});
+  $self->monitor('listings_complete', $self->{totals}{listings_complete});
 
   print "\nReport:\n";
   print Dumper $self->{totals};
