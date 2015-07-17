@@ -32,6 +32,7 @@ sub go {
     print '.';
     if (++$i % 100 == 0) {
       $self->monitor('photo_urls_fetched', $self->{totals}{photo_urls_fetched});
+      $self->monitor('listings_complete', $self->{totals}{listings_complete});
       print "[$i]\n";
     }
   }
