@@ -21,6 +21,8 @@ $MLS::Config::RETS = MLS::Rets->new({
 # Should be SystemName or DBName
 $MLS::Config::Row::COLUMN_IDENTIFIER = 'DBName';
 
+$MLS::Config::AZURE_STORAGE = 'leadablestoruseast2';
+
 # bucket name for photos
 $MLS::Config::PHOTO_STORAGE_BUCKET = 'dfo-photos';
 

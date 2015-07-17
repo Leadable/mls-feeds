@@ -14,8 +14,7 @@ sub new {
   }
   else {
     require Net::Azure::StorageClient::Blob;
-    $opts->{account_name} ||= 'leadablestoruseast2';
-    $opts->{azure_obj} = _make_azure_client($opts->{account_name}, $opts->{bucket});
+    $opts->{azure_obj} = _make_azure_client($opts->{bucket});
   }
 
   $opts->{NumRetry} ||= 3;
@@ -95,11 +94,24 @@ sub _make_s3_client{
 };
 
 sub _make_azure_client {
-  my ($acct_name, $bucket) = @_;
+  my $bucket = shift;
+
+  die '$MLS::Config::AZURE_STORAGE must be specified' if (!$MLS::Config::AZURE_STORAGE);
+
+  my $key;
+  if ($MLS::Config::AZURE_STORAGE eq 'leadablestoruswest2') {
+    $key = 'oS6TSgZZm06TDrIVI6x56MBM9IEmEdtZfQgWD82CNgZPDW13hXoRSqcgiQsFl2kEBaqWob63S6fF1qsQT/jEXg==';
+  }
+  elsif ($MLS::Config::AZURE_STORAGE eq 'leadablestoruseast2') {
+    $key = 'DPcUfEUY219/GKo9yH2sGXY6P8Al3TGyO/1Mrj/vV16Z3Z4KTvTMQ1Oz3U1GFcyVyhsKZ0Kn2Z6g1ugKC1wL5g==';
+  }
+  else {
+    die "[$MLS::Config::AZURE_STORAGE] has no key information in MLS::Storage";
+  }
 
   return Net::Azure::StorageClient::Blob->new(
-    account_name => $acct_name,
-    primary_access_key => 'DPcUfEUY219/GKo9yH2sGXY6P8Al3TGyO/1Mrj/vV16Z3Z4KTvTMQ1Oz3U1GFcyVyhsKZ0Kn2Z6g1ugKC1wL5g==',
+    account_name => $MLS::Config::AZURE_STORAGE,
+    primary_access_key => $key,
     container_name => $bucket,
   );
 }

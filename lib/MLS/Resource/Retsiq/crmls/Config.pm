@@ -18,6 +18,8 @@ $MLS::Config::RETS = MLS::Rets->new({
   password  => 'dri7c-Atr'
 });
 
+$MLS::Config::AZURE_STORAGE = 'leadablestoruswest2';
+
 # bucket name for photos
 $MLS::Config::PHOTO_STORAGE_BUCKET = 'dfo-photos';
 
