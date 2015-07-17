@@ -214,7 +214,8 @@ sub is_schema_change {
         FROM   pg_attribute
         WHERE  attrelid = '$self->{new_data_materialized}'::regclass
         AND    attnum > 0
-        AND    NOT attisdropped;|
+        AND    NOT attisdropped
+        ORDER BY attname asc;|
     );
 
     $self->{new_schema_md5} = do_md5sum_schema($new_schema);
@@ -232,7 +233,8 @@ sub is_schema_change {
             FROM   pg_attribute
             WHERE  attrelid = '$self->{materialized}'::regclass
             AND    attnum > 0
-            AND    NOT attisdropped;|
+            AND    NOT attisdropped
+            ORDER BY attname asc;|
         );
 
         $self->{old_schema_md5} = do_md5sum_schema($old_schema);
