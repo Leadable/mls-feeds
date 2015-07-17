@@ -462,7 +462,7 @@ sub generate_index_sql {
 sub get_extra_sql {
   my $name = shift;
 
-  my $file = "$FindBin::Bin/../../$MLS::Config::MLS/sql/extra/$name.sql";
+  my $file = "$FindBin::Bin/../../sql/$MLS::Config::MLS/extra/$name.sql";
   return '' if (! -e $file);
 
   open (my $fh, '<', $file) or
