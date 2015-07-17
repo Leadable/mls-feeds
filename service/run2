@@ -58,6 +58,7 @@ elsif ($pid == 0) {
         q|sudo docker run|,
         @tools_env,
         @live_env,
+	q|--privileged|,
         q|-v /home/joe/mls-feeds/:/opt/mls-feeds|,
         qq|--name=mls-feeds-$mls|,
         q|--rm|,
