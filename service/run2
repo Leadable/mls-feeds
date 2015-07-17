@@ -11,8 +11,6 @@ die "MLS_NAME not set" if (!$ENV{MLS_NAME});
 
 my $mls = $ENV{MLS_NAME};
 
-my $extra_params = $ENV{MLS_FEEDS_RUN_PARAMS};
-
 my $db_vars_hash = {
     'east-1' => {
         POSTGRES_PORT_5432_TCP_ADDR => '10.0.0.5', # leadable-mls-feeds-db-1.cloudapp.net
@@ -48,44 +46,62 @@ die "[$env_vars] not found in db_vars_hash" if (!$env_vars);
 my @tools_env = map {"-e $_='$tools->{$_}'"} keys %$tools;
 my @live_env  = map {"-e $_='$env_vars->{$_}'"} keys %$env_vars;
 
-my $pid = fork;
-if (! defined $pid) {
-    die "Error forking\n";
-}
-elsif ($pid == 0) {
-    # note: on local machines, run this command without sudo
-    my @cmd = (
-        q|sudo docker run|,
-        @tools_env,
-        @live_env,
-	q|--privileged|,
-        q|-v /home/joe/mls-feeds/:/opt/mls-feeds|,
-        qq|--name=mls-feeds-$mls|,
-        q|--rm|,
-        q|leadable/mls-feeds|,
-        qq|perl /opt/mls-feeds/bin/resource/run.pl -b $mls $extra_params|,
-    );
+my @params_list;
+if (-e "$FindBin::Bin/params") {
+    # each line of the params file will be what is executed
+    open(my $fh, '<', "$FindBin::Bin/params") or
+        die "Could not open [$FindBin::Bin/params]: $!";
 
-    `@cmd`;
-
-    exit;
+    while (<$fh>) {
+        chomp;
+        push @params_list, $_;
+    }
 }
 else {
-    # parent: poll periodically for status file
-    while (1) {
-        sleep 10;
+    # default to just running Property
+    push @params_list, '-r Property';
+}
 
-        # check for cancel file
-        if (-e "$FindBin::Bin/.cancel") {
-            print "Cancel file found while running [$mls]\n";
-            `sudo svc -d $FindBin::Bin`;
-            `sudo docker stop mls-feeds-$mls`;
-            exit;
-        }
-        elsif (! is_container_running("mls-feeds-$mls")) {
-            # docker process ended
-            print "[$mls] finished ok\n";
-            last;
+foreach my $params (@params_list) {
+    my $pid = fork;
+    if (! defined $pid) {
+        die "Error forking\n";
+    }
+    elsif ($pid == 0) {
+        # note: on local machines, run this command without sudo
+        my @cmd = (
+            q|sudo docker run|,
+            @tools_env,
+            @live_env,
+            q|--privileged|,
+            q|-v /home/joe/mls-feeds/:/opt/mls-feeds|,
+            qq|--name=mls-feeds-$mls|,
+            q|--rm|,
+            q|leadable/mls-feeds|,
+            qq|perl /opt/mls-feeds/bin/resource/run.pl -b $mls $params|,
+        );
+
+        `@cmd`;
+
+        exit;
+    }
+    else {
+        # parent: poll periodically for status file
+        while (1) {
+            sleep 10;
+
+            # check for cancel file
+            if (-e "$FindBin::Bin/.cancel") {
+                print "Cancel file found while running [$mls]\n";
+                `sudo svc -d $FindBin::Bin`;
+                `sudo docker stop mls-feeds-$mls`;
+                exit;
+            }
+            elsif (! is_container_running("mls-feeds-$mls")) {
+                # docker process ended
+                print "[$mls $params] finished ok\n";
+                last;
+            }
         }
     }
 }
