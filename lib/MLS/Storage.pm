@@ -45,7 +45,7 @@ sub do_store_file {
       die "Error uploading file: " . $res->status_line;
     }
 
-    return "https://$self->{account_name}.blob.core.windows.net/$self->{bucket}/$opts->{dest_filename}";
+    return "https://$MLS::Config::AZURE_STORAGE.blob.core.windows.net/$self->{bucket}/$opts->{dest_filename}";
   }
 }
 
