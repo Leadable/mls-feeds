@@ -405,7 +405,7 @@ sub add_rebuild_sql {
     # later it will atomically replace current table
     my $schema = $self->{new_schema};
     my $index_sql = generate_index_sql($self, $schema, "view_$self->{id}");
-    my $extra_sql = get_extra_sql($self->{id});
+    my $extra_sql = get_extra_sql("view_$self->{id}");
 
     my $cols = join ',',
                map {$self->{dbh}->quote_identifier($_->{col_name}) . ' ' . $_->{col_type}} @$schema;
