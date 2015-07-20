@@ -155,7 +155,7 @@ sub go {
         BEGIN;
         DROP MATERIALIZED VIEW IF EXISTS $self->{materialized};
         ALTER MATERIALIZED VIEW $self->{new_data_materialized} RENAME TO view_$self->{id}_materialized;
-        ALTER INDEX $MLS::Config::MLS.idx_view_$self->{id}_new RENAME TO idx_view_$self->{id};
+        ALTER INDEX "$MLS::Config::MLS.idx_view_$self->{id}_new" RENAME TO idx_view_$self->{id};
         COMMIT;
     |);
 
