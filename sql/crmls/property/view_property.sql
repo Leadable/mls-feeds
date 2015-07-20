@@ -36,6 +36,16 @@ CREATE OR REPLACE VIEW crmls.view_listings AS
             WHEN 'Leased'::text THEN 'Under Contract'::text
             ELSE NULL::text
         END AS under_contract_description,
+    CASE p."Status"
+        WHEN 'Leased'::text      THEN 'leased'::text
+        WHEN 'Closed Sale'::text THEN 'sold'::text
+        ELSE
+            CASE
+                WHEN p.__class_name = 'Commercial'::text AND 'PropertyType'::text = 'Commercial Lease' THEN 'for_rent'::text
+                WHEN p.__class_name = 'ResidentialLease'::text                                         THEN 'for_rent'::text
+                ELSE 'for_sale'::text
+            END
+    END AS listing_type,
     COALESCE(p.__image_count, 0) AS image_count,
     p."ListPrice" AS price,
     p."Bedrooms" AS beds,
