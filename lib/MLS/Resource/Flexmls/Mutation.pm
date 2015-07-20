@@ -40,7 +40,7 @@ sub remote_search {
       print "Results found: [" . $record_count . "]\n";
     }
 
-    while ($results->HasNext()) {
+    while (MLS::Rets::HasNext($results)) {
       my $row_mod_ts = $results->GetString( $MLS::Config::ROW_MOD_TS_COLUMN{SystemName} );
       my $img_mod_ts = %MLS::Config::IMG_MOD_TS_COLUMN ? $results->GetString( $MLS::Config::IMG_MOD_TS_COLUMN{SystemName} ) : '';
 

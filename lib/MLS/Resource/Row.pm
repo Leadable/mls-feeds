@@ -199,7 +199,7 @@ sub fetch_remote {
     print "Record count: [" . $results->GetCount() . "]\n";
 
     my $i = 0;
-    while ($results->HasNext()) {
+    while (MLS::Rets::HasNext($results)) {
 
       my $rets_columns = $results->GetColumns();
 

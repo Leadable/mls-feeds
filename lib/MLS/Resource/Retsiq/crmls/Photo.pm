@@ -38,7 +38,7 @@ sub search_remote {
 
   my $results = $rets->Search($request);
 
-  while ($results->HasNext()) {
+  while (MLS::Rets::HasNext($results)) {
     push @urls, $results->GetString("MediaURL") . '?v=' . time;
   }
 

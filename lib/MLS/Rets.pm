@@ -158,4 +158,29 @@ sub retryable_method {
     }
 }
 
+# HasNext is a wrapper method for a Rets::SearchResulSet
+# since the regular method can cause an infinite loop
+sub HasNext {
+    my $result_set = shift;
+
+    my $result = eval {
+        local $SIG{ALRM} = sub { die "alarm\n" };
+
+        alarm 60;
+        my $return = $result_set->HasNext();
+        alarm 0;
+
+        return $return;
+    };
+
+    if ($@ eq "alarm\n") {
+        die "Timeout in HasNext()";
+    }
+    elsif ($@) {
+        die $@;
+    }
+
+    return $result;
+}
+
 1;
