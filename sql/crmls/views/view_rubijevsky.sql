@@ -1,4 +1,4 @@
-DROP VIEW IF EXISTS crmls.view_rubijevsky;
+DROP VIEW IF EXISTS crmls.view_rubijevsky cascade;
 CREATE OR REPLACE VIEW crmls.view_rubijevsky AS
   SELECT
    68::integer as area_id,

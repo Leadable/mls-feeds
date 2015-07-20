@@ -1,4 +1,4 @@
-DROP VIEW IF EXISTS crmls.view_donovan;
+DROP VIEW IF EXISTS crmls.view_donovan cascade;
 CREATE OR REPLACE VIEW crmls.view_donovan AS
   SELECT
    65::integer as area_id,

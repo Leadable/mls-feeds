@@ -1,4 +1,4 @@
-DROP VIEW IF EXISTS crmls.view_glick_la_county;
+DROP VIEW IF EXISTS crmls.view_glick_la_county cascade;
 CREATE OR REPLACE VIEW crmls.view_glick_la_county AS
   SELECT
    25::integer as area_id,
