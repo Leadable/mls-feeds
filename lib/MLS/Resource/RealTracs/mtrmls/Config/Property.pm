@@ -34,7 +34,7 @@ $MLS::Config::OBJECT = 'Photo';
 %MLS::Config::IMG_MOD_TS_COLUMN = ( SystemName => 'MediaUpdateDate', );
 
 # RETS Resource status column
-%MLS::Config::STATUS_COLUMN = ( SystemName => 'ContingencyType', RNT => 'ListingStatusID'); # TODO: for Rentals, make sure this is correct
+%MLS::Config::STATUS_COLUMN = ( SystemName => 'ListingStatusID' );
 
 # RETS Resource price column
 %MLS::Config::PRICE_COLUMN = ( SystemName => 'ListPrice', RNT => 'LeasePerMonth');

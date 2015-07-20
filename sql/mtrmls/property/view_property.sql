@@ -18,7 +18,23 @@ SELECT
   __status_updated_at,
   __status_history_times,
   __status_history_vals,
-  "ListingStatusID" as status, -- everything is active for mtrmls
+  "ListingStatusID" as status,
+  CASE __class_name
+        WHEN 'RNT'::text THEN
+        CASE "ListingStatusID"
+            WHEN 'Active'::text            THEN 'for_rent'::text
+            WHEN 'Pending'::text           THEN 'for_rent'::text
+            WHEN 'Closed'::text            THEN 'leased'::text
+            ELSE NULL::text
+        END
+        ELSE
+        CASE "ListingStatusID"
+            WHEN 'Active'::text            THEN 'for_sale'::text
+            WHEN 'Pending'::text           THEN 'for_sale'::text
+            WHEN 'Closed'::text            THEN 'sold'::text
+            ELSE NULL::text
+        END
+  END AS listing_type,
   ("ContingencyType" is not null and "ContingencyType" <> 'None')
     as under_contract,
   "ContingencyType"::text || ' Contingency' as under_contract_description,
