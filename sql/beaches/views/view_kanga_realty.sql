@@ -23,5 +23,3 @@ CREATE OR REPLACE VIEW beaches.view_kanga_realty AS
       )
     neigh_places ON neigh_places.mlsnum = vl.mlsnum
 ;
-
-CREATE MATERIALIZED VIEW beaches.view_kanga_realty_materialized as SELECT * from beaches.view_kanga_realty;
