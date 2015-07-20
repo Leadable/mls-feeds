@@ -33,6 +33,26 @@ CREATE VIEW beaches.view_property AS
         WHEN 'Closed'::text THEN 'Closed'::text
         ELSE NULL::text
     END AS under_contract_description,
+    CASE "Property".__class_name
+        WHEN 'F'::text THEN
+        CASE "Property"."LIST_15"
+            WHEN 'Pending'::text           THEN 'for_rent'::text
+            WHEN 'Active Contingent'::text THEN 'for_rent'::text
+            WHEN 'Contingent'::text        THEN 'for_rent'::text
+            WHEN 'Active'::text            THEN 'for_rent'::text
+            WHEN 'Closed'::text            THEN 'leased'::text
+            ELSE NULL::text
+        END
+        ELSE
+        CASE "Property"."LIST_15"
+            WHEN 'Pending'::text           THEN 'for_sale'::text
+            WHEN 'Active Contingent'::text THEN 'for_sale'::text
+            WHEN 'Contingent'::text        THEN 'for_sale'::text
+            WHEN 'Active'::text            THEN 'for_sale'::text
+            WHEN 'Closed'::text            THEN 'sold'::text
+            ELSE NULL::text
+        END
+    END AS listing_type,
     COALESCE("Property".__image_count, "Property"."LIST_133", 0) AS image_count,
     "Property"."LIST_22" AS price,
     CASE __class_name
@@ -237,6 +257,10 @@ UNION
       WHEN 'Backup Contract-Call LA' THEN 'Backup Contract-Call LA'
       ELSE NULL::text
     END as under_contract_description,
+    CASE "Property".__class_name
+        WHEN '6'::text THEN 'for_rent'::text
+        ELSE 'for_sale'::text
+    END AS listing_type,
     COALESCE("ImageC_113"::integer, 0) as __image_count,
     "ListPr_137" as price,
     CASE
