@@ -66,6 +66,7 @@ qw(
     feature_pets_allowed
     "feature_restrictions[]"
     __geo_neigh
+    listing_type
 );
 
 sub new {
