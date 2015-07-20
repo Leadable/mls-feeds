@@ -80,6 +80,8 @@ sub go {
     print "----Generate Publish Data [$self->{id}]---\n\n";
     $self->{id_lists} = {new => [], updated => []};
 
+    $self->{id} = lc $self->{id};
+
     # This is the name of our local view
     # and also the table in the live db for this data
     $self->{view} = "$MLS::Config::MLS.view_$self->{id}";
@@ -93,7 +95,7 @@ sub go {
     $self->{dbh}->do(qq|
         DROP MATERIALIZED VIEW IF EXISTS $self->{new_data_materialized};
         CREATE MATERIALIZED VIEW $self->{new_data_materialized} as SELECT * from $self->{view};
-        CREATE INDEX "idx_view_$self->{id}_new" ON $self->{new_data_materialized} USING BTREE ("listing_id");
+        CREATE INDEX idx_view_$self->{id}_new ON $self->{new_data_materialized} USING BTREE ("listing_id");
     |);
 
     # is the materialized table empty?
@@ -145,9 +147,6 @@ sub go {
     # dump .sql file to somewhere
     $self->store_diff($gz_filename);
 
-    # add a row to the live publish table
-    $self->insert_publish_table;
-
     print "Refreshing materialized view...\n";
 
     # update the materialized view
@@ -155,9 +154,12 @@ sub go {
         BEGIN;
         DROP MATERIALIZED VIEW IF EXISTS $self->{materialized};
         ALTER MATERIALIZED VIEW $self->{new_data_materialized} RENAME TO view_$self->{id}_materialized;
-        ALTER INDEX $MLS::Config::MLS."idx_view_$self->{id}_new" RENAME TO idx_view_$self->{id};
+        ALTER INDEX $MLS::Config::MLS.idx_view_$self->{id}_new RENAME TO idx_view_$self->{id};
         COMMIT;
     |);
+
+    # add a row to the live publish table
+    $self->insert_publish_table;
 
     $self->finish();
 }
@@ -447,7 +449,7 @@ sub generate_index_sql {
     }
 
     my $index_name = $dbh->quote_identifier(
-      join '_', ('idx', 'view', @table_abbrev, $col->{col_name}, $id++)
+      join '_', ('idx', $MLS::Config::MLS, "view_$self->{id}", $col->{col_name}, $id++)
     );
 
     my $col_name = $dbh->quote_identifier($col->{col_name});
