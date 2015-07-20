@@ -9,7 +9,7 @@ CREATE VIEW beaches.view_openhouse AS
     "OpenHouse"."PHONE0" as agent_phone,
     "OpenHouse"."LIST22" as list_price,
     "OpenHouse"."EVENT8" as hosted_by,
-    "OpenHouse"."EVENT0" as id,
+    "OpenHouse"."EVENT0" as listing_id,
     "OpenHouse"."EVENT9" as event_phone,
     "OpenHouse"."EVENT10" as event_area,
     "OpenHouse"."EVENT100" as event_start,
@@ -31,5 +31,3 @@ CREATE VIEW beaches.view_openhouse AS
     FROM beaches."OpenHouse" JOIN beaches.mutation ON
     beaches."OpenHouse"."EVENT0"::text = beaches.mutation.remote_id::text AND
     beaches.mutation.last_transaction_completed_at is not null;
-
-CREATE MATERIALIZED VIEW beaches.view_openhouse_materialized as SELECT * from beaches.view_openhouse;

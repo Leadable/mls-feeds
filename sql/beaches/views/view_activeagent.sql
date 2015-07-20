@@ -13,11 +13,9 @@ CREATE VIEW beaches.view_activeagent AS
     "ActiveAgent"."MEMBER_21" as phone,
     "ActiveAgent"."MEMBER_20" as board_code,
     "ActiveAgent"."MEMBER_1" as office_id,
-    "ActiveAgent"."MEMBER_0" as id,
+    "ActiveAgent"."MEMBER_0" as listing_id,
     "ActiveAgent"."STATUS" as status
 
     FROM beaches."ActiveAgent" JOIN beaches.mutation ON
     beaches."ActiveAgent"."MEMBER_0"::text = beaches.mutation.remote_id::text AND
     beaches.mutation.last_transaction_completed_at is not null;
-
-CREATE MATERIALIZED VIEW beaches.view_activeagent_materialized as SELECT * from beaches.view_activeagent;

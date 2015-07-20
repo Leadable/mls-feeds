@@ -460,5 +460,3 @@ CREATE OR REPLACE VIEW ragfl.view_property AS
     p."Addre_1488"
    FROM ragfl."Property" p
      JOIN ragfl.mutation m ON p.sysid::text = m.remote_id AND m.last_transaction_completed_at IS NOT NULL;
-
-create materialized view ragfl.view_property_materialized as select * from ragfl.view_property;
