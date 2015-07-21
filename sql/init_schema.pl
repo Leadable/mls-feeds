@@ -2,6 +2,7 @@
 use strict;
 
 use Data::Dumper qw(Dumper);
+use FindBin;
 use DBI;
 
 die "Missing argument [MLS]" unless $ARGV[0];
@@ -97,18 +98,20 @@ $dbh->do('COMMIT');
 $dbh->disconnect;
 print "[DONE]\n\n";
 
-my $psql_cmd = qq|psql -q -h $host -p $port -U $user $dbname|;
+my $psql_cmd = qq|psql -v ON_ERROR_STOP=1 -q -h $host -p $port -U $user $dbname|;
 
 ##############################
 # Create the resource tables #
 ##############################
 print "Creating the resource tables\n";
 
-die "Could not find [$mls/resources.sql]" if (! -e "$mls/resources.sql");
+my $resource_path = "$FindBin::Bin/$mls/resources.sql";
+
+die "Could not find [$resource_path]" if (! -e $resource_path);
 
 $ENV{PGPASSWORD} = $pass;
 
-my $cmd = qq|$psql_cmd < $mls/resources.sql|;
+my $cmd = qq|$psql_cmd < $resource_path|;
 print "$cmd\n";
 system($cmd) == 0 or
   die "There was a problem with the command: [" . ($? >> 8) . "]";
