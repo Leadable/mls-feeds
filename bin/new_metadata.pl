@@ -9,6 +9,7 @@ use Data::Dumper qw(Dumper);
 use Mojo::Template;
 use Mojolicious::Lite;
 use MLS::Resource::Utils;
+use File::Basename;
 
 # have to do this outside of the handlers for some reason
 my $SCRIPT_DIR = $FindBin::Bin;
@@ -237,7 +238,13 @@ get '/:mls' => sub {
 get '/' => sub {
   my $c = shift;
 
-  $c->render(template => 'main');
+  my @mls_list = map {basename $_}
+                 split "\n", `find $SCRIPT_DIR/../lib/MLS/Resource -type d -maxdepth 2 -mindepth 2`;
+
+  $c->render(
+    template => 'main',
+    mls_list => [sort @mls_list]
+  );
 };
 
 app->start;
@@ -248,9 +255,10 @@ __DATA__
 <!DOCTYPE html>
 <html>
 <div>
-  Enter MLS abbreviation:
-  <input type="text" id="mls"/>
-  <input type="Submit" id="mls_submit">
+<h2> Configured MLS boards </h2>
+  % foreach (@$mls_list) {
+    <a href="<%= $_ %>/"><%= $_ %></a><br>
+  % }
 </div>
 </html>
 
