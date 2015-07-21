@@ -1,0 +1,79 @@
+package MLS::Resource::Connectmls::mred::Config::Property;
+use strict;
+
+use MLS::Resource::Connectmls::mred::Config;
+
+# ID of the Rets Property Resource
+$MLS::Config::RESOURCE = 'Property';
+
+@MLS::Config::AREAS = qw();
+
+# Name of the RETS Resource Photo Object
+$MLS::Config::OBJECT = 'HrPhoto';
+
+# RETS Resource Classes
+my $search = '(RECORDMODDATE=2015-07-21+)';
+%MLS::Config::CLASSES = (
+  # INTL                => { StandardName => 'International',        'SearchRequest' => $search },
+  ResidentialProperty => { StandardName => 'Residential Property', 'SearchRequest' => $search },
+  # RentalHome          => { StandardName => 'Rentals',              'SearchRequest' => $search },
+  # LotsAndLand         => { StandardName => 'Lots and Land',        'SearchRequest' => $search },
+  # CommercialProperty  => { StandardName => 'Commercial',           'SearchRequest' => $search },
+  # OffMarket           => { StandardName => 'Off-Market Listings',  'SearchRequest' => $search },
+  # DeletedProperty     => { StandardName => 'Deleted Listings',     'SearchRequest' => $search },
+  
+  # DE => { StandardName => 'Detached Single',                       'SearchRequest' => $search },
+  # AT => { StandardName => 'Attached Single',                       'SearchRequest' => $search },
+  # MH => { StandardName => 'Mobile Homes',                          'SearchRequest' => $search },
+  # MU => { StandardName => 'Two to Four Units',                     'SearchRequest' => $search },
+  # RN => { StandardName => 'Residential Rental',                    'SearchRequest' => $search },
+  # DP => { StandardName => 'Deeded Parking / Boat Slips',           'SearchRequest' => $search },
+  # VL => { StandardName => 'Vacant Land',                           'SearchRequest' => $search },
+  # MF => { StandardName => 'Multi Family',                          'SearchRequest' => $search },
+  # OI => { StandardName => 'Office/Tech',                           'SearchRequest' => $search },
+  # BU => { StandardName => 'Business / Business with Real Estate',  'SearchRequest' => $search },
+  # CO => { StandardName => 'Mixed Use',                             'SearchRequest' => $search },
+  # RS => { StandardName => 'Retail / Stores',                       'SearchRequest' => $search },
+  # OT => { StandardName => 'Instut / To Develop',                   'SearchRequest' => $search },
+  # IN => { StandardName => 'Industrial',                            'SearchRequest' => $search },
+);
+
+# RETS Resource Primary Key
+%MLS::Config::PRIMARY_KEY = ( SystemName => 'LN', DBName => 'LN' );
+
+# RETS Resource column that indicates listing updated
+%MLS::Config::ROW_MOD_TS_COLUMN = ( SystemName => 'RECORDMODDATE', DBName => 'RECORD_MOD_DATE' );
+
+# RETS Resource column that indicates photos updated for a listing
+%MLS::Config::IMG_MOD_TS_COLUMN = ( SystemName => 'PHOTODATE', DBName => 'PHOTODATE' );
+
+# RETS Resource status column
+%MLS::Config::STATUS_COLUMN = ( SystemName => 'ST', DBName => 'ST' );
+
+# RETS Resource price column
+%MLS::Config::PRICE_COLUMN = ( SystemName => 'LP', DBName => 'LP' );
+
+%MLS::Config::ADDR_COLUMNS = (
+  street   => 'STR',
+  number   => 'HSN',
+  suffix   => 'STREETSUFFIX',
+  post_dir => 'POST_DIRECTION',
+  prefix   => 'CP',
+  city     => 'CIT',
+  state    => 'STATE',
+  zip      => 'ZP',
+);
+
+# Make a closure with resource specific addr cols
+$MLS::Config::ADDRESS = sub {
+    my $remote_row = shift;
+
+    my %address;
+    while (my ($col_name, $col_mapping) = each %MLS::Config::ADDR_COLUMNS) {
+      $address{$col_name} = $remote_row->GetString($col_mapping);
+    }
+
+    return $MLS::Config::ADDRESS_PROTO->(\%address);
+};
+
+1;
