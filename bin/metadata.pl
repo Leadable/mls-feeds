@@ -168,6 +168,8 @@ sub get_rets_obj {
 
     $MLS::Config::RETS->SetHttpLogName("/tmp/metadata_$mls.log");
 
+    $MLS::Config::RETS->login;
+
     return $MLS::Config::RETS;
   }
 }
@@ -185,6 +187,8 @@ get '/:mls/:resource/:lookup' => sub {
   my $resource = $metadata->GetResource($resource_name);
 
   my $values = get_lookup($metadata, $resource, $lookup);
+
+  $rets->Logout;
 
   $c->render(
     template => 'mls_lookup',
@@ -215,6 +219,8 @@ get '/:mls/:resource' => sub {
   my $objects = dumpAllObjects($metadata, $resource_id);
   my $classes = dumpAllClasses($metadata, $resource, \%columns, $mls);
 
+  $rets->Logout;
+
   $c->render(
     template => 'mls_resource',
     mls => $mls,
@@ -243,6 +249,8 @@ get '/:mls' => sub {
   foreach (@$resources) {
     push @resource_names, $_->GetResourceID();
   }
+
+  $rets->Logout;
 
   $c->render(
     template => 'mls_info',
@@ -406,6 +414,11 @@ MLS:    <%= $mls %> <br> <br>
       </tr>
   % }
   </table>
+  <pre>
+  % foreach my $class (@$classes) {
+    <%= $class->{id} %> => { StandardName => '<%== $class->{standard_name} ? $class->{standard_name} : $class->{visible_name} =%>', 'SearchRequest' => $search },
+  % }
+  </pre>
 
   <h3>Fields</h3>
   % foreach my $col_id (sort keys %{ $resource->{ALL} }) {
