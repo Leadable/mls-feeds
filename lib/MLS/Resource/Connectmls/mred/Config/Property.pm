@@ -6,7 +6,7 @@ use MLS::Resource::Connectmls::mred::Config;
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
 
-@MLS::Config::AREAS = qw();
+@MLS::Config::AREAS = qw(bomba ebersole kelley mcdonnell);
 
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'HrPhoto';
