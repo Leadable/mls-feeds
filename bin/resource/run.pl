@@ -7,6 +7,7 @@ use DBI;
 use Mojo::UserAgent;
 use Getopt::Long;
 use Pod::Usage;
+use Carp;
 
 use MLS::Storage;
 use MLS::Monitor;
@@ -117,6 +118,7 @@ eval {
 
 if ($@) {
     print "Caught error: $@";
+    Carp::cluck "Call stack follows:\n";
     $monitor->finish({error => 1});
     exit(1);
 }
