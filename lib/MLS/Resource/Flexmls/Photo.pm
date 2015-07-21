@@ -29,7 +29,6 @@ sub search_remote {
       push @urls, $location;
     }
 
-    push(@urls, $location);
     $objectDescriptor = $response->NextObject();
   }
 
