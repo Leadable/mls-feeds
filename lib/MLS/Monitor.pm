@@ -86,6 +86,7 @@ sub start {
     # print from log file until parent goes away
     while (kill(0, $ppid)) {
       print <$FH>;
+      sleep 5;
     }
 
     exit;
