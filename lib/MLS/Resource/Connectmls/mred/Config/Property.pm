@@ -19,8 +19,8 @@ my $search = '(RECORDMODDATE=1900-01-01+)';
   RentalHome          => { StandardName => 'Rentals',              'SearchRequest' => $search },
   LotsAndLand         => { StandardName => 'Lots and Land',        'SearchRequest' => $search },
   CommercialProperty  => { StandardName => 'Commercial',           'SearchRequest' => $search },
-  OffMarket           => { StandardName => 'Off-Market Listings',  'SearchRequest' => $search },
-  DeletedProperty     => { StandardName => 'Deleted Listings',     'SearchRequest' => $search },
+  OffMarket           => { StandardName => 'Off-Market Listings',  'SearchRequest' => $search, ignore => 1 },
+  DeletedProperty     => { StandardName => 'Deleted Listings',     'SearchRequest' => $search, ignore => 1 },
   
   DE => { StandardName => 'Detached Single',                       'SearchRequest' => $search },
   AT => { StandardName => 'Attached Single',                       'SearchRequest' => $search },
