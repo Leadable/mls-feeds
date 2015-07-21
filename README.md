@@ -100,3 +100,19 @@ dependants.
 7. Copy into [board system name]/sql/schema.sql
 8. Switch to psql and run `\i ~/mls-feeds/[board system name]/sql/schema.sql`
 9. Update [board system name]/lib/MLS/Config.pm and the config files for resources in MLS/Config/*
+
+# Automation
+
+Create a directory for your new mls board in mls-feeds/service. The easiest way to do this is to simply copy an existing folder from the region where the board is.
+
+In each board's service folder you will find:
+- run - helper script that runs envdir to set environment variables
+- run2 - actual script that starts docker container and watches for completion/user cancellation
+- env/ - the directory that envdir will executed on in 'run' (see man envdir)
+
+Then to have daemontools watch this directory:
+`sudo ln -s ~/mls-feeds/service/$MLS/ /etc/service/$MLS`
+
+If the daemon detects a file named '.cancel' in the folder, the docker container that is running will be stopped. The daemon will not start again until .cancel is removed from the directory.
+
+Otherwise the daemon will watch the docker container until it completes and then sleep for five minutes before starting it again.
