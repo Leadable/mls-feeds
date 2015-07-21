@@ -39,6 +39,19 @@ SELECT
   "Status" as status,
   "VirtualTourURLUnbranded" as virtual_tour,
   ("Status" IN ('Under Contract-Show', 'Under Contract-No Show')) as under_contract,
+  CASE __class_name
+        WHEN 'Rent'::text THEN
+        CASE "Status"
+            WHEN 'Active'::text THEN 'for_rent'::text
+            WHEN 'Closed'::text THEN 'leased'::text -- currently none of these in data
+            ELSE NULL::text
+        END
+        ELSE
+        CASE "Status"
+            WHEN 'Closed'::text THEN 'sold'::text
+            ELSE 'for_sale'::text
+        END
+  END AS listing_type,
   "Status" as under_contract_description,
   "Matrix_Unique_ID" as listing_id,
   "MLSNumber"::text as mlsnum,

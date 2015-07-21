@@ -1,7 +1,6 @@
 -- View: aarretsx.view_property
 
--- DROP VIEW aarretsx.view_property;
-
+DROP VIEW aarretsx.view_property cascade;
 CREATE OR REPLACE VIEW aarretsx.view_property AS 
  SELECT 'aarretsx'::text AS mls,
     "Property".__removed_at IS NULL AS __active,
@@ -24,6 +23,15 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
             WHEN 'Active'::text THEN NULL::text
             ELSE "Property"."Status"
         END AS under_contract_description,
+    CASE "Status"
+        WHEN 'Rented'::text THEN 'leased'::text
+        WHEN 'Sold'::text   THEN 'sold'::text
+        ELSE
+        CASE __class_name
+            WHEN 'RENT'::text THEN 'for_rent'::text
+            ELSE 'for_sale'::text
+        END
+    END AS listing_type,
     "Property"."VirtualTourURL" AS virtual_tour,
     "Property"."Status" AS status,
     "Property"."ListingRid" AS listing_id,
