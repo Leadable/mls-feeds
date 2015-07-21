@@ -93,7 +93,6 @@ foreach my $params (@params_list) {
             # check for cancel file
             if (-e "$FindBin::Bin/.cancel") {
                 print "Cancel file found while running [$mls]\n";
-                `sudo svc -d $FindBin::Bin`;
                 `sudo docker stop mls-feeds-$mls`;
                 exit;
             }
