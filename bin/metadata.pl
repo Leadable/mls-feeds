@@ -10,12 +10,14 @@ use Mojo::Template;
 use Mojolicious::Lite;
 use MLS::Resource::Utils;
 use File::Basename;
+use MLS::Rets;
 
 # have to do this outside of the handlers for some reason
 my $SCRIPT_DIR = $FindBin::Bin;
 
-# cache of librets objects
-my %RETS_OBJ;
+# an object to hold any creds for logins
+# submitted by the user
+my $RETS_CREDS;
 
 my %DATA_TYPE_FROM_RETS_TO_PG = (
   $librets::MetadataTable::BOOLEAN => 'boolean',
@@ -142,17 +144,32 @@ sub get_lookup {
 }
 
 sub get_rets_obj {
-  my ($vendor, $mls) = @_;
-  
-  my $board_path = "MLS::Resource::${vendor}::${mls}::Config";
-  eval "require $board_path" or die "Could not find [$board_path]: $@\n";
+  my $mls = shift;
 
-  $MLS::Config::RETS->SetHttpLogName("/tmp/metadata_$mls.log");
+  if ($RETS_CREDS->{$mls}) {
+    # RETS session object
+    my $rets = MLS::Rets->new({
+      login_url    => $RETS_CREDS->{$mls}{login_url},
+      username     => $RETS_CREDS->{$mls}{username},
+      password     => $RETS_CREDS->{$mls}{password},
+      user_agent   => $RETS_CREDS->{$mls}{user_agent},
+      rets_version => $RETS_CREDS->{$mls}{rets_version},
+    });
 
-  # cache the object
-  $RETS_OBJ{$mls} = $MLS::Config::RETS;
+    $rets->SetHttpLogName("/tmp/metadata_$mls.log");
 
-  return $MLS::Config::RETS;
+    return $rets;
+  }
+  else {
+    my $vendor = MLS::Resource::Utils::find_vendor($mls, "$SCRIPT_DIR/../lib/MLS/Resource");
+
+    my $board_path = "MLS::Resource::${vendor}::${mls}::Config";
+    eval "require $board_path" or die "Could not find [$board_path]: $@\n";
+
+    $MLS::Config::RETS->SetHttpLogName("/tmp/metadata_$mls.log");
+
+    return $MLS::Config::RETS;
+  }
 }
 
 get '/:mls/:resource/:lookup' => sub {
@@ -161,9 +178,8 @@ get '/:mls/:resource/:lookup' => sub {
   my $mls = $c->param('mls');
   my $resource_name = $c->param('resource');
   my $lookup = $c->param('lookup');
-  my $vendor = MLS::Resource::Utils::find_vendor($mls, "$SCRIPT_DIR/../lib/MLS/Resource");
 
-  my $rets = $RETS_OBJ{$mls} || get_rets_obj($vendor, $mls);
+  my $rets = get_rets_obj($mls);
 
   my $metadata = $rets->GetMetadata;
   my $resource = $metadata->GetResource($resource_name);
@@ -182,9 +198,12 @@ get '/:mls/:resource' => sub {
 
   my $mls = $c->param('mls');
   my $resource_name = $c->param('resource');
-  my $vendor = MLS::Resource::Utils::find_vendor($mls, "$SCRIPT_DIR/../lib/MLS/Resource");
 
-  my $rets = $RETS_OBJ{$mls} || get_rets_obj($vendor, $mls);
+  my $vendor = eval {
+      MLS::Resource::Utils::find_vendor($mls, "$SCRIPT_DIR/../lib/MLS/Resource");
+  };
+
+  my $rets = get_rets_obj($mls);
 
   my $metadata = $rets->GetMetadata;
   my $resource = $metadata->GetResource($resource_name);
@@ -199,7 +218,7 @@ get '/:mls/:resource' => sub {
   $c->render(
     template => 'mls_resource',
     mls => $mls,
-    vendor => $vendor,
+    vendor => $vendor || '(Unknown)',
     columns => \%columns,
     objects => $objects,
     classes => $classes,
@@ -210,9 +229,12 @@ get '/:mls' => sub {
   my $c = shift;
 
   my $mls = $c->param('mls');
-  my $vendor = MLS::Resource::Utils::find_vendor($mls, "$SCRIPT_DIR/../lib/MLS/Resource");
 
-  my $rets = $RETS_OBJ{$mls} || get_rets_obj($vendor, $mls);
+  my $vendor = eval {
+      MLS::Resource::Utils::find_vendor($mls, "$SCRIPT_DIR/../lib/MLS/Resource");
+  };
+
+  my $rets = get_rets_obj($mls);
   my $metadata = $rets->GetMetadata;
   my $system = $metadata->GetSystem();
 
@@ -224,7 +246,7 @@ get '/:mls' => sub {
 
   $c->render(
     template => 'mls_info',
-    vendor   => $vendor,
+    vendor   => $vendor || '(Unknown)',
     mls      => $mls,
     system_id          => $system->GetSystemID(),
     system_description => $system->GetSystemDescription(),
@@ -233,13 +255,39 @@ get '/:mls' => sub {
   );
 };
 
-#
+post '/submit_new_rets' => sub {
+  my $c = shift;
+
+  my $mls       = $c->param('mls_name');
+  my $login_url = $c->param('mls_login_url');
+  my $user      = $c->param('mls_username');
+  my $pass      = $c->param('mls_password');
+  my $ua        = $c->param('mls_useragent');
+  my $version   = $c->param('mls_version');
+
+  die "Missing required parameters" if (!$mls || !$login_url || !$user || !$pass);
+
+  $RETS_CREDS->{$mls} = {
+    login_url    => $login_url,
+    username     => $user,
+    password     => $pass,
+    user_agent   => $ua,
+    rets_version => $version, #TODO add versions
+  };
+
+  print "added [$mls]\n";
+  print Dumper $RETS_CREDS->{$mls};
+
+  $c->redirect_to("/$mls/");
+};
 
 get '/' => sub {
   my $c = shift;
 
   my @mls_list = map {basename $_}
                  split "\n", `find $SCRIPT_DIR/../lib/MLS/Resource -type d -maxdepth 2 -mindepth 2`;
+
+  push @mls_list, keys %$RETS_CREDS;
 
   $c->render(
     template => 'main',
@@ -259,6 +307,20 @@ __DATA__
   % foreach (@$mls_list) {
     <a href="<%= $_ %>/"><%= $_ %></a><br>
   % }
+</div>
+<br>
+<br>
+<div>
+  <h3>Or register new rets credentials</h3>
+  <form action="submit_new_rets" method="POST">
+    MLS Name<br><input type="text" name="mls_name"><br><br>
+    Login URL<br><input type="text" name="mls_login_url" size="100"><br><br>
+    Username<br><input type="text" name="mls_username"><br><br>
+    Password<br><input type="text" name="mls_password"><br><br>
+    User Agent (Optional)<br><input type="text" name="mls_useragent"><br><br>
+    Rets Version (Optional)<br><input type="text" name="mls_version"><br><br>
+    <input type="submit">
+  </form>
 </div>
 </html>
 
