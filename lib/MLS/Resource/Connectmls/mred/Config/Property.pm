@@ -12,30 +12,30 @@ $MLS::Config::RESOURCE = 'Property';
 $MLS::Config::OBJECT = 'HrPhoto';
 
 # RETS Resource Classes
-my $search = '(RECORDMODDATE=2015-07-21+)';
+my $search = '(RECORDMODDATE=1900-01-01+)';
 %MLS::Config::CLASSES = (
-  # INTL                => { StandardName => 'International',        'SearchRequest' => $search },
+  INTL                => { StandardName => 'International',        'SearchRequest' => $search },
   ResidentialProperty => { StandardName => 'Residential Property', 'SearchRequest' => $search },
-  # RentalHome          => { StandardName => 'Rentals',              'SearchRequest' => $search },
-  # LotsAndLand         => { StandardName => 'Lots and Land',        'SearchRequest' => $search },
-  # CommercialProperty  => { StandardName => 'Commercial',           'SearchRequest' => $search },
-  # OffMarket           => { StandardName => 'Off-Market Listings',  'SearchRequest' => $search },
-  # DeletedProperty     => { StandardName => 'Deleted Listings',     'SearchRequest' => $search },
+  RentalHome          => { StandardName => 'Rentals',              'SearchRequest' => $search },
+  LotsAndLand         => { StandardName => 'Lots and Land',        'SearchRequest' => $search },
+  CommercialProperty  => { StandardName => 'Commercial',           'SearchRequest' => $search },
+  OffMarket           => { StandardName => 'Off-Market Listings',  'SearchRequest' => $search },
+  DeletedProperty     => { StandardName => 'Deleted Listings',     'SearchRequest' => $search },
   
-  # DE => { StandardName => 'Detached Single',                       'SearchRequest' => $search },
-  # AT => { StandardName => 'Attached Single',                       'SearchRequest' => $search },
-  # MH => { StandardName => 'Mobile Homes',                          'SearchRequest' => $search },
-  # MU => { StandardName => 'Two to Four Units',                     'SearchRequest' => $search },
-  # RN => { StandardName => 'Residential Rental',                    'SearchRequest' => $search },
-  # DP => { StandardName => 'Deeded Parking / Boat Slips',           'SearchRequest' => $search },
-  # VL => { StandardName => 'Vacant Land',                           'SearchRequest' => $search },
-  # MF => { StandardName => 'Multi Family',                          'SearchRequest' => $search },
-  # OI => { StandardName => 'Office/Tech',                           'SearchRequest' => $search },
-  # BU => { StandardName => 'Business / Business with Real Estate',  'SearchRequest' => $search },
-  # CO => { StandardName => 'Mixed Use',                             'SearchRequest' => $search },
-  # RS => { StandardName => 'Retail / Stores',                       'SearchRequest' => $search },
-  # OT => { StandardName => 'Instut / To Develop',                   'SearchRequest' => $search },
-  # IN => { StandardName => 'Industrial',                            'SearchRequest' => $search },
+  DE => { StandardName => 'Detached Single',                       'SearchRequest' => $search },
+  AT => { StandardName => 'Attached Single',                       'SearchRequest' => $search },
+  MH => { StandardName => 'Mobile Homes',                          'SearchRequest' => $search },
+  MU => { StandardName => 'Two to Four Units',                     'SearchRequest' => $search },
+  RN => { StandardName => 'Residential Rental',                    'SearchRequest' => $search },
+  DP => { StandardName => 'Deeded Parking / Boat Slips',           'SearchRequest' => $search },
+  VL => { StandardName => 'Vacant Land',                           'SearchRequest' => $search },
+  MF => { StandardName => 'Multi Family',                          'SearchRequest' => $search },
+  OI => { StandardName => 'Office/Tech',                           'SearchRequest' => $search },
+  BU => { StandardName => 'Business / Business with Real Estate',  'SearchRequest' => $search },
+  CO => { StandardName => 'Mixed Use',                             'SearchRequest' => $search },
+  RS => { StandardName => 'Retail / Stores',                       'SearchRequest' => $search },
+  OT => { StandardName => 'Instut / To Develop',                   'SearchRequest' => $search },
+  IN => { StandardName => 'Industrial',                            'SearchRequest' => $search },
 );
 
 # RETS Resource Primary Key
