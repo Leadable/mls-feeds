@@ -117,30 +117,27 @@ sub dumpAllTables {
   }
 }
 
-sub dumpAllLookups {
-  my $metadata = shift;
-  my $resource = shift;
-  my $lookups = shift;
+sub get_lookup {
+  my ($metadata, $resource, $value) = @_;
 
-  return if ($resource->GetResourceID() ne 'Property');
+  my @results;
 
   my $lookup_list = $metadata->GetAllLookups($resource->GetResourceID());
   foreach my $lookup (@$lookup_list) {
     my $lookup_key = $lookup->GetLookupName();
-    next if (
-      $lookup_key ne 'ListingStatus' &&
-      $lookup_key ne 'ContingencyType'
-    );
+    next if ($lookup_key ne $value);
 
     my $lookup_types = $metadata->GetAllLookupTypes($lookup);
     foreach my $lookup_type (@$lookup_types) {
 
-       push @{$lookups->{$lookup_key}}, {
+      push @results, {
         long_value => $lookup_type->GetLongValue(),
         value      => $lookup_type->GetValue(),
       };
     }
   }
+
+  return \@results;
 }
 
 sub get_rets_obj {
@@ -156,6 +153,28 @@ sub get_rets_obj {
 
   return $MLS::Config::RETS;
 }
+
+get '/:mls/:resource/:lookup' => sub {
+  my $c = shift;
+
+  my $mls = $c->param('mls');
+  my $resource_name = $c->param('resource');
+  my $lookup = $c->param('lookup');
+  my $vendor = MLS::Resource::Utils::find_vendor($mls, "$SCRIPT_DIR/../lib/MLS/Resource");
+
+  my $rets = $RETS_OBJ{$mls} || get_rets_obj($vendor, $mls);
+
+  my $metadata = $rets->GetMetadata;
+  my $resource = $metadata->GetResource($resource_name);
+
+  my $values = get_lookup($metadata, $resource, $lookup);
+
+  $c->render(
+    template => 'mls_lookup',
+    lookup_name => $lookup,
+    values => $values,
+  );
+};
 
 get '/:mls/:resource' => sub {
   my $c = shift;
@@ -249,8 +268,31 @@ __DATA__
 </div>
 <h2> Resources </h2>
 % foreach (@$resource_names) {
-  <a href="<%= $_ %>"><%= $_ %></a><br>
+  <a href="<%= $_ %>/"><%= $_ %></a><br>
 % }
+</html>
+
+
+@@ mls_lookup.html.ep
+<!DOCTYPE html>
+<html>
+<h3> <%= $lookup_name %> </h3>
+  <table width="100%" cellpadding="2" cellspacing="2" border="1">
+
+    <tr>
+      % foreach my $attr (qw(LongValue Value)) {
+        <th><%= $attr %></th>
+      % }
+    </tr>
+
+      % foreach my $lookup_value (@$values) {
+        <tr>
+        % foreach my $attr (qw(long_value value)) {
+          <td><%= $lookup_value->{$attr} %></td>
+        % }
+        </tr>
+      % }
+    </table>
 </html>
 
 
@@ -319,7 +361,11 @@ MLS:    <%= $mls %> <br> <br>
           <td>&nbsp;</td>
           <td><%= $class_id %></td>
           % foreach my $attr (qw(StandardName DBName ShortName LongName Unique DataType Interpretation LookupName sql)) {
-            <td><%== $info ? $info->{$attr} : '&nbsp;' %></td>
+            % if ($attr eq 'LookupName') {
+                <td><%== $info ? "<a href=\"$info->{$attr}\">$info->{$attr}</a>" : '&nbsp;' %></td>
+            % } else {
+                <td><%== $info ? $info->{$attr} : '&nbsp;' %></td>
+            % }
           % }
         </tr>
       % }
