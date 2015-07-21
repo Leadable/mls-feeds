@@ -1,11 +1,21 @@
 #!/usr/bin/env perl
-use lib "blib/lib", "blib/arch";
+use FindBin;
+use lib "blib/lib", "blib/arch", "$FindBin::Bin/../lib";
+
 use strict;
 use librets;
 
 use Data::Dumper qw(Dumper);
 use Mojo::Template;
 use Mojolicious::Lite;
+use MLS::Resource::Utils;
+use File::Basename;
+
+# have to do this outside of the handlers for some reason
+my $SCRIPT_DIR = $FindBin::Bin;
+
+# cache of librets objects
+my %RETS_OBJ;
 
 my %DATA_TYPE_FROM_RETS_TO_PG = (
   $librets::MetadataTable::BOOLEAN => 'boolean',
@@ -31,48 +41,47 @@ my %INTERPRETATION_TYPE_FROM_RETS_TO_PG = (
   $librets::MetadataTable::NO_INTERPRETATION => 'none',
 );
 
-my %IGNORED_CLASSES = (
-#  5 => 'Industrial',
-#  7 => 'Commercial',
-#  8 => 'Business'
-);
-
 sub dumpAllObjects {
-  my $metadata = shift;
-  my $resource = shift;
-  print "\nOBJECTS\n";
+  my ($metadata, $resource_id) = @_;
 
-  my $objects = $metadata->GetAllObjects($resource->GetResourceID());
+  my @object_info;
+
+  my $objects = $metadata->GetAllObjects($resource_id);
   foreach my $object (@$objects) {
-    print "\tID: " . $object->GetId() . "\n";
-    print "\tType: " . $object->GetObjectType() . "\n";
-    print "\tMime Type: " . $object->GetMIMEType() . "\n";
-    print "\n";
+    push @object_info, {
+      id => $object->GetId(),
+      object_type => $object->GetObjectType(),
+      mime_type => $object->GetMIMEType(),
+    };
   }
+
+  return \@object_info;
 }
 
 sub dumpAllClasses {
-  my $metadata = shift;
-  my $resource = shift;
-  my $columns = shift;
+  my ($metadata, $resource, $columns, $mls) = @_;
+
+  my @class_info;
 
   my $classes = $metadata->GetAllClasses($resource->GetResourceID());
   foreach my $class (@$classes) {
-    next if ($IGNORED_CLASSES{ $class->GetClassName });
-
     $columns->{ $resource->GetResourceID() }->{ $class->GetClassName() } = {};
 
-    print "Class ID: " . $class->GetId() . "\n";
-    print "Class name: " . $class->GetClassName() . " [" .  $class->GetStandardName() . "] " . $class->GetVisibleName . "\n";
-    dumpAllTables($metadata, $resource, $columns, $class);
+    push @class_info, {
+      id            => $class->GetId(),
+      name          => $class->GetClassName(),
+      standard_name => $class->GetStandardName(),
+      visible_name  => $class->GetVisibleName(),
+    };
+
+    dumpAllTables($metadata, $resource, $columns, $class, $mls);
   }
+
+  return \@class_info;
 }
 
 sub dumpAllTables {
-  my $metadata = shift;
-  my $resource = shift;
-  my $columns = shift;
-  my $class = shift;
+  my ($metadata, $resource, $columns, $class, $mls) = @_;
 
   my $tables = $metadata->GetAllTables($class);
   foreach my $table (@$tables) {
@@ -92,8 +101,8 @@ sub dumpAllTables {
     my $longname = $table->GetLongName();
     $longname =~ s/'/''/;
 
-    my $comment = 'COMMENT ON COLUMN aarretsx."' . $resource->GetResourceID() . '"."' . $table->GetSystemName() . '" IS \'' . $longname . "'";
-    my $sql = 'ALTER TABLE aarretsx."' . $resource->GetResourceID() . '" ADD COLUMN "' . $table->GetSystemName() . '" ' . $DATA_TYPE_FROM_RETS_TO_PG{ $table->GetDataType() };
+    my $comment = 'COMMENT ON COLUMN ' . $mls . '."' . $resource->GetResourceID() . '"."' . $table->GetSystemName() . '" IS \'' . $longname . "'";
+    my $sql = 'ALTER TABLE ' . $mls . '."' . $resource->GetResourceID() . '" ADD COLUMN "' . $table->GetSystemName() . '" ' . $DATA_TYPE_FROM_RETS_TO_PG{ $table->GetDataType() };
 
     # LOOKUP MULTI, make column an array
     $sql .= '[]' if ($INTERPRETATION_TYPE_FROM_RETS_TO_PG{ $table->GetInterpretation() } eq 'array');
@@ -109,99 +118,234 @@ sub dumpAllTables {
   }
 }
 
-sub dumpAllLookups {
-  my $metadata = shift;
-  my $resource = shift;
-  my $lookups = shift;
+sub get_lookup {
+  my ($metadata, $resource, $value) = @_;
 
-  return if ($resource->GetResourceID() ne 'Property');
+  my @results;
 
   my $lookup_list = $metadata->GetAllLookups($resource->GetResourceID());
   foreach my $lookup (@$lookup_list) {
     my $lookup_key = $lookup->GetLookupName();
-    next if (
-      $lookup_key ne 'Status'
-    );
+    next if ($lookup_key ne $value);
 
     my $lookup_types = $metadata->GetAllLookupTypes($lookup);
     foreach my $lookup_type (@$lookup_types) {
 
-       push @{$lookups->{$lookup_key}}, {
+      push @results, {
         long_value => $lookup_type->GetLongValue(),
         value      => $lookup_type->GetValue(),
       };
     }
   }
+
+  return \@results;
 }
 
-#my $mt = Mojo::Template->new;
-#my $sql = $mt->render_file('./tables.mt', 'aarretsx', $metadata);
-#print $sql;
+sub get_rets_obj {
+  my ($vendor, $mls) = @_;
+  
+  my $board_path = "MLS::Resource::${vendor}::${mls}::Config";
+  eval "require $board_path" or die "Could not find [$board_path]: $@\n";
 
-#print Dumper(\%columns);
+  $MLS::Config::RETS->SetHttpLogName("/tmp/metadata_$mls.log");
+
+  # cache the object
+  $RETS_OBJ{$mls} = $MLS::Config::RETS;
+
+  return $MLS::Config::RETS;
+}
+
+get '/:mls/:resource/:lookup' => sub {
+  my $c = shift;
+
+  my $mls = $c->param('mls');
+  my $resource_name = $c->param('resource');
+  my $lookup = $c->param('lookup');
+  my $vendor = MLS::Resource::Utils::find_vendor($mls, "$SCRIPT_DIR/../lib/MLS/Resource");
+
+  my $rets = $RETS_OBJ{$mls} || get_rets_obj($vendor, $mls);
+
+  my $metadata = $rets->GetMetadata;
+  my $resource = $metadata->GetResource($resource_name);
+
+  my $values = get_lookup($metadata, $resource, $lookup);
+
+  $c->render(
+    template => 'mls_lookup',
+    lookup_name => $lookup,
+    values => $values,
+  );
+};
+
+get '/:mls/:resource' => sub {
+  my $c = shift;
+
+  my $mls = $c->param('mls');
+  my $resource_name = $c->param('resource');
+  my $vendor = MLS::Resource::Utils::find_vendor($mls, "$SCRIPT_DIR/../lib/MLS/Resource");
+
+  my $rets = $RETS_OBJ{$mls} || get_rets_obj($vendor, $mls);
+
+  my $metadata = $rets->GetMetadata;
+  my $resource = $metadata->GetResource($resource_name);
+  my $resource_id = $resource->GetResourceID();
+
+  my %columns;
+  $columns{ $resource_id } = { 'ALL' => {} };
+
+  my $objects = dumpAllObjects($metadata, $resource_id);
+  my $classes = dumpAllClasses($metadata, $resource, \%columns, $mls);
+
+  $c->render(
+    template => 'mls_resource',
+    mls => $mls,
+    vendor => $vendor,
+    columns => \%columns,
+    objects => $objects,
+    classes => $classes,
+  );
+};
+
+get '/:mls' => sub {
+  my $c = shift;
+
+  my $mls = $c->param('mls');
+  my $vendor = MLS::Resource::Utils::find_vendor($mls, "$SCRIPT_DIR/../lib/MLS/Resource");
+
+  my $rets = $RETS_OBJ{$mls} || get_rets_obj($vendor, $mls);
+  my $metadata = $rets->GetMetadata;
+  my $system = $metadata->GetSystem();
+
+  my @resource_names;
+  my $resources = $metadata->GetAllResources();
+  foreach (@$resources) {
+    push @resource_names, $_->GetResourceID();
+  }
+
+  $c->render(
+    template => 'mls_info',
+    vendor   => $vendor,
+    mls      => $mls,
+    system_id          => $system->GetSystemID(),
+    system_description => $system->GetSystemDescription(),
+    system_comment     => $system->GetComments(),
+    resource_names     => \@resource_names,
+  );
+};
+
+#
 
 get '/' => sub {
   my $c = shift;
 
-  my $rets = new librets::RetsSession( "http://rets172lax.raprets.com:6103/Annarbor/ANNA/login.aspx");
-  $rets->SetHttpLogName("/tmp/rets.log");
+  my @mls_list = map {basename $_}
+                 split "\n", `find $SCRIPT_DIR/../lib/MLS/Resource -type d -maxdepth 2 -mindepth 2`;
 
-  $rets->SetRetsVersion($librets::RETS_1_7_2);
-
-  $rets->SetUserAgent('IDXIO-1.0');
-  #$rets->SetUserAgentPassword('xio');
-  #$rets->SetUserAgentAuthType($librets::UserAgentAuthType::USER_AGENT_AUTH_INTEREALTY);
-  #$rets->SetUserAgentAuthType( $librets::UserAgentAuthType::USER_AGENT_AUTH_RETS_1_7);
-
-  if (!$rets->Login("IDXAnn", "xio")) {
-      $c->render( text => "Invalid login" );
-      return;
-  }
-
-  # Very useful for determining differences between RETS servers
-  # and understanding the metadata
-  #$rets->SetHttpLogName("/tmp/rets.log");
-
-  # Get metadata
-  my $metadata = $rets->GetMetadata;
-  my $system = $metadata->GetSystem();
-  print "System ID: " . $system->GetSystemID() . "\n";
-  print "Desription: " . $system->GetSystemDescription() . "\n";
-  print "Comment : " . $system->GetComments() . "\n\n";
-
-  my $resources = $metadata->GetAllResources();
-  my %columns;
-  my %lookups;
-
-  foreach my $resource (@$resources) {
-    $columns{ $resource->GetResourceID() } = { 'ALL' => {} };
-
-    print "Resource name: " . $resource->GetResourceID() . " [" .  $resource->GetStandardName() . "]\n";
-    print "Key Field: " . $resource->GetKeyField() . "\n";
-
-    print join(', ', @{ $resource->GetAttributeNames() });
-    dumpAllObjects($metadata, $resource);
-    dumpAllClasses($metadata, $resource, \%columns);
-    dumpAllLookups($metadata, $resource, \%lookups);
-
-    #print Dumper \%lookups;
-  }
-
-  $rets->Logout();
-
-  $c->render(template => 'columns', mls => 'aarretsx', columns => \%columns, lookups => \%lookups);
+  $c->render(
+    template => 'main',
+    mls_list => [sort @mls_list]
+  );
 };
 
 app->start;
 
 __DATA__
 
-@@ columns.html.ep
-% use Data::Dumper qw(Dumper);
+@@ main.html.ep
+<!DOCTYPE html>
+<html>
+<div>
+<h2> Configured MLS boards </h2>
+  % foreach (@$mls_list) {
+    <a href="<%= $_ %>/"><%= $_ %></a><br>
+  % }
+</div>
+</html>
+
+
+@@ mls_info.html.ep
+<!DOCTYPE html>
+<html>
+<div>
+  Vendor: <%= $vendor %> <br>
+  MLS:    <%= $mls %> <br> <br>
+
+  System ID: <%= $system_id %> <br>
+  System Description: <%= $system_description %> <br>
+  System Comment: <%= $system_comment %> <br>
+</div>
+<h2> Resources </h2>
+% foreach (@$resource_names) {
+  <a href="<%= $_ %>/"><%= $_ %></a><br>
+% }
+</html>
+
+
+@@ mls_lookup.html.ep
+<!DOCTYPE html>
+<html>
+<h3> <%= $lookup_name %> </h3>
+  <table width="100%" cellpadding="2" cellspacing="2" border="1">
+
+    <tr>
+      % foreach my $attr (qw(LongValue Value)) {
+        <th><%= $attr %></th>
+      % }
+    </tr>
+
+      % foreach my $lookup_value (@$values) {
+        <tr>
+        % foreach my $attr (qw(long_value value)) {
+          <td><%= $lookup_value->{$attr} %></td>
+        % }
+        </tr>
+      % }
+    </table>
+</html>
+
+
+@@ mls_resource.html.ep
+Vendor: <%= $vendor %> <br>
+MLS:    <%= $mls %> <br> <br>
 % foreach my $resource_id (sort keys %$columns) {
   % my $resource = $columns->{$resource_id};
-
   <h2><%= $resource_id %></h2>
+
+  <h3>Objects</h3>
+  <table width="100%" cellpadding="2" cellspacing="2" border="1">
+    <tr>
+      <th>ID</th>
+      <th>Object Type</th>
+      <th>Mime Type</th>
+    </tr>
+  % foreach my $object (@$objects) {
+      <tr>
+        <td><%= $object->{id} %></td>
+        <td><%= $object->{object_type} %></td>
+        <td><%= $object->{mime_type} %></td>
+      </tr>
+  % }
+  </table>
+
+  <h3>Classes</h3>
+  <table width="100%" cellpadding="2" cellspacing="2" border="1">
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Standard Name</th>
+      <th>Visibile Name</th>
+    </tr>
+  % foreach my $class (@$classes) {
+      <tr>
+        <td><%= $class->{id} %></td>
+        <td><%= $class->{name} %></td>
+        <td><%= $class->{standard_name} %></td>
+        <td><%= $class->{visible_name} %></td>
+      </tr>
+  % }
+  </table>
+
+  <h3>Fields</h3>
   % foreach my $col_id (sort keys %{ $resource->{ALL} }) {
     <table width="100%" cellpadding="2" cellspacing="2" border="1">
 
@@ -225,7 +369,11 @@ __DATA__
           <td>&nbsp;</td>
           <td><%= $class_id %></td>
           % foreach my $attr (qw(StandardName DBName ShortName LongName Unique DataType Interpretation LookupName sql)) {
-            <td><%== $info ? $info->{$attr} : '&nbsp;' %></td>
+            % if ($attr eq 'LookupName') {
+                <td><%== $info ? "<a href=\"$info->{$attr}\">$info->{$attr}</a>" : '&nbsp;' %></td>
+            % } else {
+                <td><%== $info ? $info->{$attr} : '&nbsp;' %></td>
+            % }
           % }
         </tr>
       % }
@@ -235,30 +383,6 @@ __DATA__
     </table>
     <br><br>
   % }
-
-    <h3>Lookups</h3>
-  % foreach my $lookup_name (sort keys %$lookups) {
-    <table width="100%" cellpadding="2" cellspacing="2" border="1">
-
-      <tr>
-        <td colspan="2"><%= $lookup_name %></td>
-      </tr>
-
-      <tr>
-        % foreach my $attr (qw(LongValue Value)) {
-          <th><%= $attr %></th>
-        % }
-      </tr>
-
-        % foreach my $lookup (@{$lookups->{$lookup_name}}) {
-          <tr>
-          % foreach my $attr (qw(long_value value)) {
-            <td><%= $lookup->{$attr} %></td>
-          % }
-          </tr>
-        % }
-    </table>
-  % }
 % }
 
 <pre>
@@ -267,7 +391,7 @@ BEGIN;
 % foreach my $resource_id (sort keys %$columns) {
   % my $resource = $columns->{$resource_id};
   CREATE TABLE <%= $mls %>."<%= $resource_id %>"() <%= lc($resource_id) eq 'property' ? 'INHERITS (property)' : '' %>;
-  % foreach my $col_id (sort { $a <=> $b } keys %{ $resource->{ALL} }) {
+  % foreach my $col_id (sort { $a cmp $b } keys %{ $resource->{ALL} }) {
     <%== $resource->{ALL}->{ $col_id }->{column} %>;
     <%== $resource->{ALL}->{ $col_id }->{comment} %>;
     <%= ' ' %>
