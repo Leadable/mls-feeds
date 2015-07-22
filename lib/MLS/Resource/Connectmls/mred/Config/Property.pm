@@ -12,7 +12,7 @@ $MLS::Config::RESOURCE = 'Property';
 $MLS::Config::OBJECT = 'HrPhoto';
 
 # RETS Resource Classes
-my $search = '(RECORDMODDATE=2015-07-01+)';
+my $search = '(RECORDMODDATE=1900-01-01+)';
 %MLS::Config::CLASSES = (
   INTL                => { StandardName => 'International',        'SearchRequest' => $search },
   ResidentialProperty => { StandardName => 'Residential Property', 'SearchRequest' => $search },
