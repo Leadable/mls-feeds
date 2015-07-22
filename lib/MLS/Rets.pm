@@ -57,6 +57,7 @@ sub login {
         }
         else {
             $self->{rets} = $rets;
+            $self->SetHttpLogName($self->{log_path}) if ($self->{log_path});
             last;
         }
     }
@@ -71,6 +72,8 @@ sub SetHttpLogName {
     # make sure the directory is created
     my $dir = File::Basename::dirname($path);
     File::Path::mkpath($dir) if (! -d $dir);
+
+    $self->{log_path} = $path;
 
     return $self->{rets}->SetHttpLogName($path);
 }
@@ -150,7 +153,7 @@ sub retryable_method {
                 print "RetsError: " . $@->GetFullReport . "\n";
             }
             else {
-                print $@;
+                print "An error occured in retryable_method: $@";
             }
 
             if ($retries_left) {
