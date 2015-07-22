@@ -85,7 +85,7 @@ sub AUTOLOAD {
 
     my $return;
 
-    if ($method eq 'Search' || $method eq 'GetObject') {
+    if ($method eq 'Search' || $method eq 'GetObject' || $method eq 'GetMetadata') {
         $return = $self->retryable_method($method, $arg1);
     }
     else {
@@ -120,10 +120,17 @@ sub retryable_method {
         my $results = eval {
             local $SIG{ALRM} = sub { die "alarm\n" };
 
+            my $return;
+
             # increase timeout value in 5 minute increments
             my $timeout = (($self->{NumRetry} + 1) - $retries_left)*5*60;
             alarm $timeout;
-            my $return = $rets->$method($request);
+            if (defined $request) {
+                $return = $rets->$method($request);
+            }
+            else {
+                $return = $rets->$method;
+            }
             alarm 0;
 
             die if ($method eq 'Search' && $return->GetCount() == -1);
