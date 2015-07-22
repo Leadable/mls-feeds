@@ -51,7 +51,7 @@ my $search = '(RECORDMODDATE=1900-01-01+)';
 %MLS::Config::STATUS_COLUMN = ( SystemName => 'ST', DBName => 'ST' );
 
 # RETS Resource price column
-%MLS::Config::PRICE_COLUMN = ( SystemName => 'LP', DBName => 'LP' );
+%MLS::Config::PRICE_COLUMN = ( SystemName => 'LP', DBName => 'LP', RN => 'RP', RentalHome => 'RP', );
 
 %MLS::Config::ADDR_COLUMNS = (
   street   => 'STR',
