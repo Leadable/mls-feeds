@@ -140,6 +140,9 @@ sub retryable_method {
 
         # login and try again
         if ($@) {
+            # disable the alarm in case some other error occurred
+            alarm 0;
+
             if ($@ eq "alarm\n") {
                 print "TIMEOUT\n";
             }
@@ -184,6 +187,8 @@ sub HasNext {
         die "Timeout in HasNext()";
     }
     elsif ($@) {
+        # disable the alarm in case some other error occurred
+        alarm 0;
         die $@;
     }
 
