@@ -19,7 +19,7 @@ sub go {
   my ($self) = @_;
 
   print "----Syncing listing rows----\n\n";
-  $self->{totals} = { new => 0, updated => 0, dupes => 0 };
+  $self->{totals} = { new => 0, updated => 0, dupes => 0, error => 0, };
   $self->fetch_pg_col_info();
 
   my $chunk_size;
@@ -97,25 +97,44 @@ sub fetch_rets_table_info {
   print "Fetching rets table info for [$class_id]\n";
   my $rets = $self->{rets};
 
-  my $metadata = $rets->GetMetadata;
-  my $class = $metadata->GetClass($MLS::Config::RESOURCE, $class_id);
- 
-  my %rets_table_info;
-  
-  foreach my $table (@{ $metadata->GetAllTables($class) }) {
-    my %info = (
-      SystemName => $table->GetSystemName(),
-      StandardName => $table->GetStandardName(),
-      DBName => $table->GetDBName(),
-      ShortName => $table->GetShortName(),
-      LongName => $table->GetLongName(),
-      Unique => $table->IsUnique(),
-    );
+  my $retries_left = 4;
 
-    $rets_table_info{ $table->GetSystemName() } = \%info;
+  while ($retries_left--) {
+    $self->{rets_table_info} = eval {
+      my $metadata = $rets->GetMetadata;
+      my $class = $metadata->GetClass($MLS::Config::RESOURCE, $class_id);
+
+      my $return;
+
+      foreach my $table (@{ $metadata->GetAllTables($class) }) {
+        my %info = (
+          SystemName => $table->GetSystemName(),
+          StandardName => $table->GetStandardName(),
+          DBName => $table->GetDBName(),
+          ShortName => $table->GetShortName(),
+          LongName => $table->GetLongName(),
+          Unique => $table->IsUnique(),
+        );
+
+        $return->{ $table->GetSystemName() } = \%info;
+      }
+
+      return $return;
+    };
+
+    if ($@) {
+      print "error in fetch_rets_table_info: $@";
+
+      if ($retries_left) {
+        print "retrying [$retries_left] more times\n";
+        sleep 10;
+        $rets->login;
+      }
+      else {
+        die $@;
+      }
+    }
   }
-
-  $self->{rets_table_info} = \%rets_table_info;
 }
 
 sub mutated {
@@ -200,40 +219,54 @@ sub fetch_remote {
 
     my $i = 0;
     while (MLS::Rets::HasNext($results)) {
+      eval {
+        my $rets_columns = $results->GetColumns();
 
-      my $rets_columns = $results->GetColumns();
+        my %data = ( __class_name => $dbh->quote($class_id), __modified_at => 'NOW()', __removed_at => 'NULL' );
 
-      my %data = ( __class_name => $dbh->quote($class_id), __modified_at => 'NOW()', __removed_at => 'NULL' );
+        foreach my $column (@$rets_columns) {
+          my $value = $results->GetString($column);
 
-      foreach my $column (@$rets_columns) {
-        my $value = $results->GetString($column);
+          my $pg_col_name = $rets_table_info->{ $column }->{$self->{column_identifier}};
+          my $pg_col_type = $pg_col_info->{ $pg_col_name }->{type};
 
-        my $pg_col_name = $rets_table_info->{ $column }->{$self->{column_identifier}};
-        my $pg_col_type = $pg_col_info->{ $pg_col_name }->{type};
+          unless ($value) {
+            $data{ $pg_col_name } = 'NULL';
+            next;
+          }
 
-        unless ($value) {
-          $data{ $pg_col_name } = 'NULL';
-          next;
+          if ($pg_col_type eq 'text[]') {
+            my @vals = split(',', $value);
+            $data{ $pg_col_name } = 'ARRAY[' . join(',', map( $dbh->quote($_), @vals)) . ']';
+          }
+          elsif (($pg_col_type eq 'integer' || $pg_col_type eq 'numeric') && $value eq '.') {
+            $data{ $pg_col_name } = $dbh->quote(0);
+          }
+          else {
+            $data{ $pg_col_name } = $dbh->quote($value);
+          }
         }
 
-        if ($pg_col_type eq 'text[]') {
-          my @vals = split(',', $value);
-          $data{ $pg_col_name } = 'ARRAY[' . join(',', map( $dbh->quote($_), @vals)) . ']';
+        my $pkey_val = $results->GetString($MLS::Config::PRIMARY_KEY{SystemName});
+        my $local_row = $local_rows->{ $pkey_val };
+
+        $local_row ? $self->update($results, \%data, $local_row) : $self->insert($results, \%data);
+
+        $self->update_mutation_table($pkey_val, $results, $class_id);
+      };
+
+      if ($@) {
+        print "Error while parsing results:\n";
+        $self->{totals}{error}++;
+
+        if (ref $@ eq 'librets::RetsReplyException') {
+          print "librets::RetsException: " . $@->GetFullReport();
         }
-        elsif (($pg_col_type eq 'integer' || $pg_col_type eq 'numeric') && $value eq '.') {
-          $data{ $pg_col_name } = $dbh->quote(0);
-        }
-        else {
-          $data{ $pg_col_name } = $dbh->quote($value);
+        elsif ($@) {
+          print $@;
         }
       }
 
-      my $pkey_val = $results->GetString($MLS::Config::PRIMARY_KEY{SystemName});
-      my $local_row = $local_rows->{ $pkey_val };
-
-      $local_row ? $self->update($results, \%data, $local_row) : $self->insert($results, \%data);
-
-      $self->update_mutation_table($pkey_val, $results, $class_id);
       print '.';
       print "[$i]\n" if (++$i % 100 == 0);
     }
@@ -252,6 +285,7 @@ sub fetch_remote {
   $self->monitor('new', $self->{totals}{new});
   $self->monitor('updated', $self->{totals}{updated});
   $self->monitor('dupes', $self->{totals}{dupes});
+  $self->monitor('error', $self->{totals}{error});
 }
 
 sub update {
@@ -360,9 +394,7 @@ sub insert {
     $dbh->do($sql);
   };
 
-  # known issue with this MLS board:
-  # ActiveAgent primary keys are not unique
-  if ($MLS::Config::RESOURCE eq 'ActiveAgent' && $@ =~ /unique constraint/) {
+  if ($@ =~ /unique constraint/) {
     warn "Duplicate primary key found\n";
     warn Dumper $data;
     $self->{totals}{dupes}++;
