@@ -22,11 +22,30 @@ SELECT
   "LN" as mlsnum,
   "ST" as status,
   ("ST" = 'Pending' or "ST" = 'Contingent') as under_contract,
+  CASE "Property".__class_name
+      WHEN 'RentalHome'::text THEN
+      CASE "ST"
+          WHEN 'Rented'    THEN 'leased'::text
+          WHEN 'Expired'   THEN NULL::text
+          WHEN 'Cancelled' THEN NULL::text
+          ELSE 'for_rent'::text
+      END
+      ELSE
+      CASE "ST"
+          WHEN 'Rented'    THEN 'leased'::text
+          WHEN 'Closed'    THEN 'sold'::text
+          WHEN 'Expired'   THEN NULL::text
+          WHEN 'Cancelled' THEN NULL::text
+          ELSE 'for_sale'::text
+      END
+  END AS listing_type,
   CASE "ST"
     WHEN 'Pending' THEN 'Under Contract'
     WHEN 'Contingent' THEN 'Under Contract'
     ELSE NULL::text
   END as under_contract_description,
+  "SP" as sold_price,
+  "CLOSEDDATE" as sold_date,
   coalesce(__image_count, "PHOTOCOUNT", 0) as image_count,
   coalesce("LP", "RP") as price,
   "BR" as beds,
@@ -82,7 +101,6 @@ SELECT
   "ZP" as zip,
   "CNY" as county,
   initcap("TWN") as township,
-  __geo_modified_at,
   __geo_latitude as latitude,
   __geo_longitude as longitude,
   "ASF" as square_feet,
