@@ -57,20 +57,25 @@ my $search = '(RECORDMODDATE=2015-07-01+)';
   street   => 'STR',
   number   => 'HSN',
   suffix   => 'STREETSUFFIX',
-  post_dir => 'POST_DIRECTION',
+  post_dir => {default => 'POST_DIRECTION', DP => ''},
   prefix   => 'CP',
   city     => 'CIT',
-  state    => 'STATE',
+  state    => {default => 'STATE', INTL => 'INTLSTATE'},
   zip      => 'ZP',
 );
 
 # Make a closure with resource specific addr cols
 $MLS::Config::ADDRESS = sub {
-    my $remote_row = shift;
+    my ($remote_row, $class) = @_;
 
     my %address;
     while (my ($col_name, $col_mapping) = each %MLS::Config::ADDR_COLUMNS) {
-      $address{$col_name} = $remote_row->GetString($col_mapping);
+
+      if (ref $col_mapping eq 'HASH') {
+        $col_mapping = defined $col_mapping->{$class} ? $col_mapping->{$class} : $col_mapping->{default};
+      }
+
+      $address{$col_name} = $remote_row->GetString($col_mapping) if ($col_mapping);
     }
 
     return $MLS::Config::ADDRESS_PROTO->(\%address);

@@ -520,7 +520,7 @@ BEGIN;
     ALTER TABLE mred."Property" ADD COLUMN "CAA" text[];
     COMMENT ON COLUMN mred."Property"."CAA" IS 'Common Area Amenities';
      
-    ALTER TABLE mred."Property" ADD COLUMN "CARS" integer;
+    ALTER TABLE mred."Property" ADD COLUMN "CARS" numeric;
     COMMENT ON COLUMN mred."Property"."CARS" IS '# Of Cars';
      
     ALTER TABLE mred."Property" ADD COLUMN "CC" text;
@@ -592,7 +592,7 @@ BEGIN;
     ALTER TABLE mred."Property" ADD COLUMN "CP" text;
     COMMENT ON COLUMN mred."Property"."CP" IS 'Compass Point';
      
-    ALTER TABLE mred."Property" ADD COLUMN "CPR" integer;
+    ALTER TABLE mred."Property" ADD COLUMN "CPR" numeric;
     COMMENT ON COLUMN mred."Property"."CPR" IS 'Cap Rate (%)';
      
     ALTER TABLE mred."Property" ADD COLUMN "CRP" text;
@@ -901,7 +901,7 @@ BEGIN;
     ALTER TABLE mred."Property" ADD COLUMN "GRID" integer;
     COMMENT ON COLUMN mred."Property"."GRID" IS 'Grid';
      
-    ALTER TABLE mred."Property" ADD COLUMN "GRM" integer;
+    ALTER TABLE mred."Property" ADD COLUMN "GRM" numeric;
     COMMENT ON COLUMN mred."Property"."GRM" IS 'Gross Rent Multiplier';
      
     ALTER TABLE mred."Property" ADD COLUMN "GS" text;

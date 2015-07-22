@@ -229,7 +229,7 @@ sub fetch_remote {
 
       $local_row ? $self->update($results, \%data, $local_row) : $self->insert($results, \%data);
 
-      $self->update_mutation_table($pkey_val, $results);
+      $self->update_mutation_table($pkey_val, $results, $class_id);
       print '.';
       print "[$i]\n" if (++$i % 100 == 0);
     }
@@ -373,7 +373,7 @@ sub insert {
 }
 
 sub update_mutation_table {
-  my ($self, $remote_id, $remote_row) = @_;
+  my ($self, $remote_id, $remote_row, $class) = @_;
 
   my $dbh = $self->{dbh};
 
@@ -383,7 +383,7 @@ sub update_mutation_table {
     my $address_sql;
     if ($MLS::Config::ADDRESS) {
       # be aware: this can sometimes die silently
-      my $address = $MLS::Config::ADDRESS->($remote_row);
+      my $address = $MLS::Config::ADDRESS->($remote_row, $class);
       $address_sql = ', remote_address = ' . $dbh->quote($address);
     }
 
