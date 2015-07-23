@@ -120,25 +120,30 @@ sub retryable_method {
     while ($retries_left--) {
         my $rets = $self->{rets};
 
+        # For some unknown reason, this requires two eval blocks
+        # to trap the die from alarm. Otherwise the eval does not
+        # trap the die and the process exits.
         my $results = eval {
-            local $SIG{ALRM} = sub { die "alarm\n" };
+            eval {
+                local $SIG{ALRM} = sub { die "alarm\n" };
 
-            my $return;
+                my $return;
 
-            # increase timeout value in 5 minute increments
-            my $timeout = (($self->{NumRetry} + 1) - $retries_left)*5*60;
-            alarm $timeout;
-            if (defined $request) {
-                $return = $rets->$method($request);
-            }
-            else {
-                $return = $rets->$method;
-            }
-            alarm 0;
+                # increase timeout value in 5 minute increments
+                my $timeout = (($self->{NumRetry} + 1) - $retries_left)*5*60;
+                alarm $timeout;
+                if (defined $request) {
+                    $return = $rets->$method($request);
+                }
+                else {
+                    $return = $rets->$method;
+                }
+                alarm 0;
 
-            die if ($method eq 'Search' && $return->GetCount() == -1);
+                die if ($method eq 'Search' && $return->GetCount() == -1);
 
-            return $return;
+                return $return;
+            };
         };
 
         # login and try again
