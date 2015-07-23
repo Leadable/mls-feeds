@@ -206,6 +206,7 @@ sub http_request {
     }
     else {
       http_fail($tx, $ua);
+      sleep 10;
       die if (!$attempts);
     }
   }
