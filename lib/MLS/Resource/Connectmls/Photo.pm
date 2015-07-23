@@ -59,7 +59,6 @@ sub search_remote {
       dest_filename   => $dest_filename,
       content_type    => $contentType,
     });
-    print "$url\n";
     push @urls, $url;
 
     $objectDescriptor = $response->NextObject();
