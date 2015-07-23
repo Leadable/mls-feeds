@@ -9,7 +9,7 @@ RUN wget --no-check-certificate --quiet -O - https://www.postgresql.org/media/ke
 RUN apt-get update \
   && apt-get install -y --no-install-recommends aptitude \
   && aptitude safe-upgrade -y \
-  && apt-get install -y --no-install-recommends postgresql-client-9.4 build-essential libboost-all-dev libcurl4-openssl-dev autoconf antlr swig libmojolicious-perl libpq-dev libclass-dbi-pg-perl libnet-amazon-s3-perl cpanminus screen \
+  && apt-get install -y --no-install-recommends postgresql-client-9.4 build-essential libboost-all-dev libcurl4-openssl-dev autoconf antlr swig libmojolicious-perl libpq-dev libclass-dbi-pg-perl libnet-amazon-s3-perl cpanminus screen strace \
   && rm -rf /var/lib/apt/lists/*
 RUN cpanm install Geo::StreetAddress::US Text::LevenshteinXS Net::Azure::StorageClient
 
