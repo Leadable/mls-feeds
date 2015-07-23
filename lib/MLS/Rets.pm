@@ -124,7 +124,7 @@ sub retryable_method {
         # to trap the die from alarm. Otherwise the eval does not
         # trap the die and the process exits.
         my $results = eval {
-            eval {
+            my $results = eval {
                 local $SIG{ALRM} = sub { die "alarm\n" };
 
                 my $return;
@@ -144,13 +144,19 @@ sub retryable_method {
 
                 return $return;
             };
+
+            if ($@) {
+                # disable the alarm in case some other error occurred
+                alarm 0;
+                die $@;
+            }
+            else {
+                return $results;
+            }
         };
 
         # login and try again
         if ($@) {
-            # disable the alarm in case some other error occurred
-            alarm 0;
-
             if ($@ eq "alarm\n") {
                 print "TIMEOUT\n";
             }
