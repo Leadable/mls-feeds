@@ -69,6 +69,10 @@ qw(
     listing_type
 );
 
+my @partial_idx = (
+    q|WHERE listing_type IN ('for_sale', 'for_rent')|
+);
+
 sub new {
   my ($class, $opts) = @_;
 
@@ -450,13 +454,25 @@ sub generate_index_sql {
     }
 
     my $index_name = $dbh->quote_identifier(
-      join '_', ('idx', $MLS::Config::MLS, "view_$self->{id}", $col->{col_name}, $id++)
+      join '_', ('idx', $MLS::Config::MLS, "view_$self->{id}", $col->{col_name}, $id)
     );
 
     my $col_name = $dbh->quote_identifier($col->{col_name});
 
     my $index = qq|CREATE INDEX $index_name ON $self->{view} USING $idx_type ($col_name);|;
     push @indexes, $index;
+
+    my $partial_id = 1;
+    foreach my $partial_where (@partial_idx) {
+        my $partial_index_name = $dbh->quote_identifier(
+          join '_', ('idx', $MLS::Config::MLS, "view_$self->{id}", $col->{col_name}, $id, 'partial', $partial_id++)
+        );
+
+        my $index = qq|CREATE INDEX $partial_index_name ON $self->{view} USING $idx_type ($col_name) $partial_where;|;
+        push @indexes, $index;
+    }
+
+    $id++;
   }
 
   my $sql = join "\n", @indexes;
