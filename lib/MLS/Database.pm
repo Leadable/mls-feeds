@@ -24,7 +24,7 @@ sub new {
 
 # proxy all DBI functions here
 sub AUTOLOAD {
-  my ($self, $arg1, $arg2) = @_;
+  my ($self, $arg1, $arg2, $arg3, $arg4) = @_;
 
   (my $method = $AUTOLOAD) =~ s{.*::}{};
   my $retries_left = $self->{NumRetry} + 1;
@@ -41,7 +41,13 @@ sub AUTOLOAD {
       my $return;
 
       # DBI is very strict about how many arguments are passed in
-      if (defined $arg2) {
+      if (defined $arg4) {
+        $return = $dbh->$method($arg1, $arg2, $arg3, $arg4);
+      }
+      elsif (defined $arg3) {
+        $return = $dbh->$method($arg1, $arg2, $arg3);
+      }
+      elsif (defined $arg2) {
         $return = $dbh->$method($arg1, $arg2);
       }
       elsif (defined $arg1) {
