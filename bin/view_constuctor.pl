@@ -15,6 +15,141 @@ my $SCRIPT_DIR = $FindBin::Bin;
 
 my $dbh = MLS::Database->new({db => 'feeds'});
 
+my @view_cols = qw(
+  listing_id
+  listing_type
+  sold_price
+  sold_date
+  __geo_geom
+  __geo_modified_at
+  __inserted_at
+  __percent_reduced
+  __price_history_times
+  __price_history_vals
+  __price_updated_at
+  __removed_at
+  __status_history_times
+  __status_history_vals
+  __status_updated_at
+  garage
+  under_contract
+  under_contract_description
+  __active
+  __geo_outlier
+  __modified_at
+  acres
+  address_line1
+  address_line2
+  age
+  baths_total
+  beds
+  city
+  county
+  display_address
+  fireplace
+  image_count
+  latitude
+  longitude
+  mls
+  mlsnum
+  patio_deck_porch
+  price
+  remarks
+  state
+  status
+  type
+  year_built
+  zip
+  basement
+  fenced_yard
+  modification_timestamp
+  square_feet
+  waterfront
+  pool
+  subdivision
+  office_name
+  virtual_tour
+  elementary_school
+  high_school
+  middle_school
+  city_st
+  walk_in_closets
+  feature_exterior_features[]
+  feature_interior_features[]
+  ranch_style
+  double_vanity
+  feature_appliances[]
+  school_district
+  feature_heating[]
+  __major_area
+  __minor_area
+  feature_style[]
+  feature_cooling[]
+  feature_roof[]
+  feature_baths_half
+  feature_water[]
+  feature_basement[]
+  feature_fireplace[]
+  feature_parking[]
+  complex
+  feature_pool[]
+  one_story
+  feature_amenities[]
+  township
+  feature_improvements[]
+  feature_garage[]
+  feature_lot_description[]
+  feature_construction[]
+  feature_directions
+  feature_floors[]
+  feature_furnished
+  feature_tax_year
+  feature_area
+  feature_new_construction
+  feature_pets_allowed
+  feature_sewer[]
+  lake
+  __class_name
+  feature_utilities[]
+  feature_accessibility_features[]
+  feature_lot_dimensions
+  feature_security_deposit
+  feature_topography[]
+  feature_zoning
+  feature_air_conditioning[]
+  feature_flooring[]
+  feature_pet_deposit
+  feature_rooms[]
+  feature_style
+  feature_view[]
+);
+
+get '/:mls/get_view' => sub {
+  my $c = shift;
+
+  my $mls = $c->param('mls');
+  my $table = 'Property';
+
+  my $boiler_plate_cols = join ",\n", @view_cols;
+
+  my $sql = qq|
+    DROP VIEW IF EXISTS $mls.view_property CASCADE;
+    CREATE VIEW $mls.view_property AS
+    SELECT '$mls'::text AS mls,
+
+    $boiler_plate_cols
+
+    FROM $mls."$table"
+    JOIN $mls.mutation ON $mls."$table"."__<PRIMARY_KEY_COL>__"::text = $mls.mutation.remote_id::text AND
+         $mls.mutation.last_transaction_completed_at is not null
+  |;
+
+  $c->render(
+    template => 'get_view',
+    sql => $sql,
+  );
+};
+
 get '/:mls/view_data/:col' => sub {
   my $c = shift;
 
@@ -112,8 +247,9 @@ get '/:mls' => sub {
   my @cols = sort {$a->{name} cmp $b->{name}} @$rs;
 
   $c->render(
-    template => 'create_view',
+    template => 'view_columns',
     mls => $mls,
+    table => $table,
     columns => \@cols,
   );
 };
@@ -147,13 +283,21 @@ __DATA__
 </div>
 </html>
 
-@@ create_view.html.ep
+@@ get_view.html.ep
 <!DOCTYPE html>
 <html>
-<h3> Setup view for <%= $mls %> </h3>
+<pre>
+  <%= $sql %>
+</pre>
+</html>
+
+@@ view_columns.html.ep
+<!DOCTYPE html>
+<html>
+<h3> Columns for <%= $mls %>.<%= $table %> </h3>
 <div>
   % foreach (@$columns) {
-    <a href="view_data/<%= $_->{name} %>"><%= $_->{name} %></a> <%= defined $_->{comment} ? "($_->{comment})" : '' %><br>
+    <a href="view_data/<%= $_->{name} %>" target="_blank"><%= $_->{name} %></a> <%= defined $_->{comment} ? "($_->{comment})" : '' %><br>
   % }
 </div>
 </html>
