@@ -85,15 +85,28 @@ get '/:mls' => sub {
   my $c = shift;
 
   my $mls = $c->param('mls');
-  my $table = 'Property'; 
+  my $table = 'Property';
 
   my $rs = $dbh->selectall_arrayref(qq|
-    SELECT c.column_name as name,pgd.description as comment
-    FROM pg_catalog.pg_statio_all_tables as st
-    inner join pg_catalog.pg_description pgd on (pgd.objoid=st.relid)
-    inner join information_schema.columns c on (pgd.objsubid=c.ordinal_position
-    and  c.table_schema=st.schemaname and c.table_name=st.relname)
-    WHERE table_schema = '$mls' and table_name = '$table';
+    SELECT a.attname as name, b.comment from
+    (
+      SELECT attname
+      FROM   pg_attribute
+      WHERE  attrelid = 'beaches."Property"'::regclass
+      AND    attnum > 0
+      AND    NOT attisdropped
+    ) a
+    left join
+    (
+        SELECT c.column_name as name,pgd.description as comment
+        FROM pg_catalog.pg_statio_all_tables as st
+        inner join pg_catalog.pg_description pgd on (pgd.objoid=st.relid)
+        inner join information_schema.columns c on (pgd.objsubid=c.ordinal_position
+        and  c.table_schema=st.schemaname and c.table_name=st.relname)
+        WHERE table_schema = 'beaches' and table_name = 'Property'
+    ) b
+    on a.attname = b.name
+    ORDER BY name asc;
   |, { Slice => {} });
 
   my @cols = sort {$a->{name} cmp $b->{name}} @$rs;
@@ -140,7 +153,7 @@ __DATA__
 <h3> Setup view for <%= $mls %> </h3>
 <div>
   % foreach (@$columns) {
-    <a href="view_data/<%= $_->{name} %>"><%= $_->{name} %></a> (<%= $_->{comment} %>)<br>
+    <a href="view_data/<%= $_->{name} %>"><%= $_->{name} %></a> <%= defined $_->{comment} ? "($_->{comment})" : '' %><br>
   % }
 </div>
 </html>
