@@ -142,6 +142,9 @@ sub go {
     if ($self->{rebuild}) {
         $sql_to_write = $self->add_rebuild_sql($sql_to_write);
     }
+    else {
+        $sql_to_write .= "REFRESH MATERIALIZED VIEW CONCURRENTLY $self->{view}_mv_active;\n";
+    }
 
     my $gz_filename = $self->compress_sql($sql_to_write);
 
@@ -433,7 +436,7 @@ sub generate_view_sql {
     my $self = shift;
 
     return qq|
-        CREATE MATERIALIZED VIEW $self->{view}_mv AS SELECT * FROM $self->{view};
+        CREATE VIEW $self->{view}_mv AS SELECT * FROM $self->{view};
 
         CREATE MATERIALIZED VIEW $self->{view}_mv_active AS SELECT * FROM $self->{view} WHERE
         $self->{view}.__active AND (
@@ -476,7 +479,9 @@ sub generate_index_sql {
 
         my $col_name = $dbh->quote_identifier($col->{col_name});
 
-        my $index = qq|CREATE INDEX $index_name ON $table USING $idx_type ($col_name);|;
+        my $unique = $col_name eq 'listing_id' ? 'UNIQUE' : '';
+
+        my $index = qq|CREATE $unique INDEX $index_name ON $table USING $idx_type ($col_name);|;
         push @indexes, $index;
       }
     }
