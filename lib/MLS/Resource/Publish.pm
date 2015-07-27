@@ -69,10 +69,6 @@ qw(
     listing_type
 );
 
-my @partial_idx = (
-    q|WHERE listing_type IN ('for_sale', 'for_rent')|
-);
-
 sub new {
   my ($class, $opts) = @_;
 
@@ -411,8 +407,9 @@ sub add_rebuild_sql {
     # build new table to house the data
     # later it will atomically replace current table
     my $schema = $self->{new_schema};
-    my $index_sql = generate_index_sql($self, $schema, "view_$self->{id}");
+    my $index_sql = $self->generate_index_sql($schema, "view_$self->{id}");
     my $extra_sql = get_extra_sql("view_$self->{id}");
+    my $create_view_sql = $self->generate_view_sql;
 
     my $cols = join ',',
                map {$self->{dbh}->quote_identifier($_->{col_name}) . ' ' . $_->{col_type}} @$schema;
@@ -426,54 +423,63 @@ sub add_rebuild_sql {
       $sql
       $mv_table_sql
       $extra_sql
+      $create_view_sql
       $index_sql
       COMMIT;
     |;
 }
 
+sub generate_view_sql {
+    my $self = shift;
+
+    return qq|
+        CREATE MATERIALIZED VIEW $self->{view}_mv AS SELECT * FROM $self->{view};
+
+        CREATE MATERIALIZED VIEW $self->{view}_mv_active AS SELECT * FROM $self->{view} WHERE
+        $self->{view}.__active AND (
+            ($self->{view}.listing_type = ANY (ARRAY['for_sale'::text, 'for_rent'::text])) OR
+
+            (($self->{view}.listing_type = ANY (ARRAY['sold'::text, 'leased'::text])) AND
+            $self->{view}.sold_date::timestamp without time zone >= (now() - '6 mons'::interval))
+        );
+    |;
+}
+
 sub generate_index_sql {
-  my ($self, $schema, $table) = @_;
+  my ($self, $schema) = @_;
 
   my $dbh = $self->{dbh};
   my @indexes;
-  my @table_abbrev = ($table =~ /_(\S)/g);
   my $id = 1;
 
-  foreach my $col (@$schema) {
-    next if (!$INDEXABLE_COLUMNS{$col->{col_name}});
+  # create indexes on the full table and the active view
+  my @tables = ($self->{view}, "$self->{view}_mv_active");
 
-    my $idx_type;
-    if ($col->{col_type} eq 'geometry') {
-      $idx_type = 'GIST';
-    }
-    elsif ($col->{col_type} =~ /\[\]/) {
-      $idx_type = 'GIN'
-    }
-    else {
-      $idx_type = 'BTREE';
-    }
+  foreach my $table (@tables) {
+      foreach my $col (@$schema) {
+        next if (!$INDEXABLE_COLUMNS{$col->{col_name}});
 
-    my $index_name = $dbh->quote_identifier(
-      join '_', ('idx', $MLS::Config::MLS, "view_$self->{id}", $col->{col_name}, $id)
-    );
+        my $idx_type;
+        if ($col->{col_type} eq 'geometry') {
+          $idx_type = 'GIST';
+        }
+        elsif ($col->{col_type} =~ /\[\]/) {
+          $idx_type = 'GIN'
+        }
+        else {
+          $idx_type = 'BTREE';
+        }
 
-    my $col_name = $dbh->quote_identifier($col->{col_name});
-
-    my $index = qq|CREATE INDEX $index_name ON $self->{view} USING $idx_type ($col_name);|;
-    push @indexes, $index;
-
-    my $partial_id = 1;
-    foreach my $partial_where (@partial_idx) {
-        my $partial_index_name = $dbh->quote_identifier(
-          join '_', ('idx', $MLS::Config::MLS, "view_$self->{id}", $col->{col_name}, $id, 'partial', $partial_id++)
+        my $index_name = $dbh->quote_identifier(
+          join '_', ('idx', $table, $col->{col_name}, $id++)
         );
 
-        my $index = qq|CREATE INDEX $partial_index_name ON $self->{view} USING $idx_type ($col_name) $partial_where;|;
-        push @indexes, $index;
-    }
+        my $col_name = $dbh->quote_identifier($col->{col_name});
 
-    $id++;
-  }
+        my $index = qq|CREATE INDEX $index_name ON $table USING $idx_type ($col_name);|;
+        push @indexes, $index;
+      }
+    }
 
   my $sql = join "\n", @indexes;
   return $sql;
