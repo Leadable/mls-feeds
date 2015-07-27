@@ -100,11 +100,14 @@ sub dumpAllTables {
       LookupName => $table->GetLookupName(),
     );
 
+    # always assume lookups are text since we only care about storing the long value
+    my $long_data_type = $table->GetLookupName() ? 'text' : $DATA_TYPE_FROM_RETS_TO_PG{ $table->GetDataType() };
+
     my $longname = $table->GetLongName();
     $longname =~ s/'/''/;
 
     my $comment = 'COMMENT ON COLUMN ' . $mls . '."' . $resource->GetResourceID() . '"."' . $table->GetSystemName() . '" IS \'' . $longname . "'";
-    my $sql = 'ALTER TABLE ' . $mls . '."' . $resource->GetResourceID() . '" ADD COLUMN "' . $table->GetSystemName() . '" ' . $DATA_TYPE_FROM_RETS_TO_PG{ $table->GetDataType() };
+    my $sql = 'ALTER TABLE ' . $mls . '."' . $resource->GetResourceID() . '" ADD COLUMN "' . $table->GetSystemName() . '" ' . $long_data_type;
 
     # LOOKUP MULTI, make column an array
     $sql .= '[]' if ($INTERPRETATION_TYPE_FROM_RETS_TO_PG{ $table->GetInterpretation() } eq 'array');
@@ -125,19 +128,15 @@ sub get_lookup {
 
   my @results;
 
-  my $lookup_list = $metadata->GetAllLookups($resource->GetResourceID());
-  foreach my $lookup (@$lookup_list) {
-    my $lookup_key = $lookup->GetLookupName();
-    next if ($lookup_key ne $value);
+  my $lookup = $metadata->GetLookup($resource->GetResourceID(), $value);
 
-    my $lookup_types = $metadata->GetAllLookupTypes($lookup);
-    foreach my $lookup_type (@$lookup_types) {
+  my $lookup_types = $metadata->GetAllLookupTypes($lookup);
+  foreach my $lookup_type (@$lookup_types) {
 
-      push @results, {
-        long_value => $lookup_type->GetLongValue(),
-        value      => $lookup_type->GetValue(),
-      };
-    }
+    push @results, {
+      long_value => $lookup_type->GetLongValue(),
+      value      => $lookup_type->GetValue(),
+    };
   }
 
   return \@results;
