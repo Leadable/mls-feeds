@@ -41,6 +41,3 @@ COMMENT ON COLUMN ppmls.view_clement."feature_amenities[]"
   IS '{ "advanced": true, "label": "Complex Amenities", "input": "checkbox-group", "rank": 45 }';
 COMMENT ON COLUMN ppmls.view_clement."feature_structure[]"
   IS '{ "advanced": true, "label": "Structure", "input": "checkbox-group", "rank": 50 }';
-
-CREATE VIEW ppmls.view_clement_mv AS SELECT * FROM ppmls.view_clement;
-CREATE VIEW ppmls.view_clement_mv_active as SELECT * FROM ppmls.view_clement WHERE __active;
