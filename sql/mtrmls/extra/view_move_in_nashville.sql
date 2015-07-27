@@ -62,6 +62,3 @@ COMMENT ON COLUMN mtrmls.view_move_in_nashville."feature_misc_other_features[]"
   IS '{ "advanced": true, "label": "Misc", "input": "checkbox-group", "rank": 150 }';
 COMMENT ON COLUMN mtrmls.view_move_in_nashville.feature_num_stories
   IS '{ "advanced": true, "label": "Number of Stories", "input": "checkbox-group", "rank": 160 }';
-
-CREATE VIEW mtrmls.view_move_in_nashville_mv AS SELECT * FROM mtrmls.view_move_in_nashville;
-CREATE VIEW mtrmls.view_move_in_nashville_mv_active as SELECT * FROM mtrmls.view_move_in_nashville WHERE __active;
