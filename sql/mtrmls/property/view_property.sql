@@ -14,6 +14,7 @@ SELECT
   __geo_modified_at,
   __price_history_times,
   __price_history_vals,
+  __photo_urls,
   (__inserted_at - '1 hour'::interval) as age,
   __status_updated_at,
   __status_history_times,
@@ -35,6 +36,8 @@ SELECT
             ELSE NULL::text
         END
   END AS listing_type,
+  "ClosedDate" as sold_date,
+  "SalesPrice" as sold_price,
   ("ContingencyType" is not null and "ContingencyType" <> 'None')
     as under_contract,
   "ContingencyType"::text || ' Contingency' as under_contract_description,
