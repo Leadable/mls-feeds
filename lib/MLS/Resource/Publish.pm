@@ -9,6 +9,7 @@ use Mojo::JSON qw(j);
 use File::Temp qw(tempfile);
 use File::Basename;
 use Compress::Zlib qw(gzopen Z_BEST_COMPRESSION);
+use Encode qw(encode_utf8);
 
 $| = 1;
 
@@ -99,29 +100,23 @@ sub go {
         CREATE INDEX idx_view_$self->{id}_new ON $self->{new_data_materialized} USING BTREE ("listing_id");
     |);
 
-    # is the materialized table empty?
-    if (!$self->{force_rebuild}) {
-        if ($self->is_materialized_empty) {
-            print "Materialized table is empty, forcing rebuild\n";
-            $self->{force_rebuild} = 1;
-        }
+    $self->{prev_version} = $self->get_prev_version || '0';
+    if (!$self->{prev_version}) {
+        print "Materialized table does not exist, forcing rebuild\n";
+        $self->{force_rebuild} = 1;
     }
 
-    # determine if there is a schema change
-    # if so, must rebuild the entire table on live
-    print "Checking for schema differences...\n";
-    if ($self->is_schema_change) {
-        print "Full rebuild required\n";
-
-        $self->{rebuild} = 1;
-
-        # live table is the name of the table on the live db where the data will be stored
-        # for rebuilds, store in a temporary table which is later replaced
+    # live table is the name of the table on the live db where the data will be stored
+    # for rebuilds, store in a temporary table which is later replaced
+    if ($self->{force_rebuild}) {
         $self->{live_table} = $self->{view} . '_new';
     }
     else {
         $self->{live_table} = $self->{view};
     }
+
+    # schema needed for build_id_lists and add_rebuild_sql
+    $self->get_schema;
 
     # compare md5 of data from both tables to see if this should proceed
     print "Checking for data differences...\n";
@@ -136,16 +131,20 @@ sub go {
 
     # compile list of instructions based on this
     my $sql_to_write = $self->generate_row_data;
-    $sql_to_write .= qq|COMMENT ON table $self->{live_table} is '$self->{new_data_md5}';|;
 
     # add to our SQL diff if doing a full rebuild
-    if ($self->{rebuild}) {
+    if ($self->{force_rebuild}) {
         $sql_to_write = $self->add_rebuild_sql($sql_to_write);
     }
     else {
         $sql_to_write .= "REFRESH MATERIALIZED VIEW CONCURRENTLY $self->{view}_mv_active;\n";
     }
 
+    # use time as a version string
+    my $version = $self->{version} = time;
+    $sql_to_write .= qq|COMMENT ON table $self->{view} is '$version';\n|;
+
+    $sql_to_write = encode_utf8($sql_to_write);
     my $gz_filename = $self->compress_sql($sql_to_write);
 
     # dump .sql file to somewhere
@@ -158,6 +157,7 @@ sub go {
         BEGIN;
         DROP MATERIALIZED VIEW IF EXISTS $self->{materialized};
         ALTER MATERIALIZED VIEW $self->{new_data_materialized} RENAME TO view_$self->{id}_materialized;
+        COMMENT ON MATERIALIZED VIEW $self->{materialized} IS '$version';
         ALTER INDEX $MLS::Config::MLS.idx_view_$self->{id}_new RENAME TO idx_view_$self->{id};
         COMMIT;
     |);
@@ -191,26 +191,24 @@ sub monitor {
     $monitor->status({ namespace => ['Publish'], key => $key, value => $value });
 }
 
-sub is_materialized_empty {
+# gets the comment on the materialized table
+sub get_prev_version {
     my $self = shift;
 
     my $dbh = $self->{dbh};
 
-    # this can fail if the materialized table hasnt been created
-    # in which case just return true
-    my $count = eval {
-        $dbh->selectcol_arrayref("select count(*) from $self->{materialized}")->[0];
-    };
+    my $sth = $dbh->table_info('', $MLS::Config::MLS, "view_$self->{id}_materialized");
+    $sth->execute;
+    my $result = $sth->fetchrow_hashref;
 
-    if ($@) {
-        return 1;
+    if ($result) {
+        return $result->{REMARKS};
     }
-    else {
-        return $count == 0;
-    }
+
+    return;
 }
 
-sub is_schema_change {
+sub get_schema {
     my $self = shift;
 
     my $dbh = $self->{dbh};
@@ -224,32 +222,12 @@ sub is_schema_change {
         ORDER BY attname asc;|
     );
 
-    $self->{new_schema_md5} = do_md5sum_schema($new_schema);
-
     # format schema for publish later
     $self->{new_schema} = [
         map {
             { col_name => $_->[0], col_type => $_->[1] }
         } @$new_schema
     ];
-
-    if (!$self->{force_rebuild}) {
-        my $old_schema = $dbh->selectall_arrayref(qq|
-            SELECT attname, format_type(atttypid, atttypmod)
-            FROM   pg_attribute
-            WHERE  attrelid = '$self->{materialized}'::regclass
-            AND    attnum > 0
-            AND    NOT attisdropped
-            ORDER BY attname asc;|
-        );
-
-        $self->{old_schema_md5} = do_md5sum_schema($old_schema);
-
-        return $self->{new_schema_md5} ne $self->{old_schema_md5};
-    }
-    else {
-        return 1;
-    }
 }
 
 sub is_data_change {
@@ -265,7 +243,7 @@ sub is_data_change {
     my $new_rs = $self->{new_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $self->{new_data_materialized}", 'listing_id');
 
     my $old_rs = {};
-    if (!$self->{rebuild}) {
+    if (!$self->{force_rebuild}) {
         $old_rs = $self->{old_rs} = $dbh->selectall_hashref("SELECT $cols_str,listing_id from $self->{materialized}", 'listing_id');
     }
 
@@ -304,16 +282,6 @@ sub build_id_lists {
             }
         }
     }
-}
-
-sub do_md5sum_schema {
-    my $table_schema = shift;
-
-    return md5_hex(
-        map {
-            join '', @$_
-        } @$table_schema
-    );
 }
 
 sub do_md5sum_data {
@@ -479,7 +447,7 @@ sub generate_index_sql {
 
         my $col_name = $dbh->quote_identifier($col->{col_name});
 
-        my $unique = $col_name eq 'listing_id' ? 'UNIQUE' : '';
+        my $unique = $col->{col_name} eq 'listing_id' ? 'UNIQUE' : '';
 
         my $index = qq|CREATE $unique INDEX $index_name ON $table USING $idx_type ($col_name);|;
         push @indexes, $index;
@@ -521,6 +489,7 @@ sub compress_sql {
         SUFFIX   => '.sql.gz',
         UNLINK   => 1,
     );
+
     # write file with max compression
     my $gz = gzopen($fh, 'wb9') or
         die "Could not open gzip file for write";
@@ -578,10 +547,10 @@ sub insert_publish_table {
         mls               => $MLS::Config::MLS,
         resource          => $MLS::Config::RESOURCE,
         area              => $self->{id},
-        full              => $self->{rebuild} || '0',
+        full              => $self->{force_rebuild} || '0',
         data_file_url     => $self->{data_file_url},
-        data_md5          => $self->{new_data_md5},
-        previous_data_md5 => $self->{old_data_md5},
+        data_md5          => $self->{version},
+        previous_data_md5 => $self->{prev_version},
     );
 
     my @cols = map {$dbh->quote_identifier($_)} keys %row_data;
