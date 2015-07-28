@@ -405,7 +405,7 @@ sub generate_view_sql {
 
     my $mv_active = '';
     if ($MLS::Config::RESOURCE eq 'Property') {
-        my $mv_active = qq|
+        $mv_active = qq|
             CREATE MATERIALIZED VIEW $self->{view}_mv_active AS SELECT * FROM $self->{view} WHERE
             $self->{view}.__active AND (
                 ($self->{view}.listing_type = ANY (ARRAY['for_sale'::text, 'for_rent'::text])) OR
