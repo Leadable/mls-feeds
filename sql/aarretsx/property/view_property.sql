@@ -32,6 +32,8 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
             ELSE 'for_sale'::text
         END
     END AS listing_type,
+    "Property"."SellingDate" as sold_date,
+    "Property"."SellingPrice" as sold_price,
     "Property"."VirtualTourURL" AS virtual_tour,
     "Property"."Status" AS status,
     "Property"."ListingRid" AS listing_id,
