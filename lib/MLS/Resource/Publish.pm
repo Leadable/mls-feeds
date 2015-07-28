@@ -430,7 +430,11 @@ sub generate_index_sql {
   my $id = 1;
 
   # create indexes on the full table and the active view
-  my @tables = ($self->{view}, "$self->{view}_mv_active");
+  my @tables = ($self->{view});
+
+  if ($MLS::Config::RESOURCE eq 'Property') {
+    push @tables, "$self->{view}_mv_active";
+  }
 
   foreach my $table (@tables) {
       foreach my $col (@$schema) {
