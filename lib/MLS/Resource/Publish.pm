@@ -403,16 +403,22 @@ sub add_rebuild_sql {
 sub generate_view_sql {
     my $self = shift;
 
+    my $mv_active = '';
+    if ($MLS::Config::RESOURCE eq 'Property') {
+        my $mv_active = qq|
+            CREATE MATERIALIZED VIEW $self->{view}_mv_active AS SELECT * FROM $self->{view} WHERE
+            $self->{view}.__active AND (
+                ($self->{view}.listing_type = ANY (ARRAY['for_sale'::text, 'for_rent'::text])) OR
+
+                (($self->{view}.listing_type = ANY (ARRAY['sold'::text, 'leased'::text])) AND
+                $self->{view}.sold_date::timestamp without time zone >= (now() - '6 mons'::interval))
+            );
+        |;
+    }
+
     return qq|
         CREATE VIEW $self->{view}_mv AS SELECT * FROM $self->{view};
-
-        CREATE MATERIALIZED VIEW $self->{view}_mv_active AS SELECT * FROM $self->{view} WHERE
-        $self->{view}.__active AND (
-            ($self->{view}.listing_type = ANY (ARRAY['for_sale'::text, 'for_rent'::text])) OR
-
-            (($self->{view}.listing_type = ANY (ARRAY['sold'::text, 'leased'::text])) AND
-            $self->{view}.sold_date::timestamp without time zone >= (now() - '6 mons'::interval))
-        );
+        $mv_active
     |;
 }
 
