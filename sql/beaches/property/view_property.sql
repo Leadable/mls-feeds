@@ -19,6 +19,7 @@ CREATE VIEW beaches.view_property AS
     "Property".__geo_geom,
     "Property".__geo_outlier,
     __photo_urls,
+    "Property"."LIST_132"::timestamp as __list_date,
     "Property"."LIST_1" AS id,
     "Property"."LIST_1" AS listing_id,
     "Property"."LIST_105" AS mlsnum,
@@ -233,7 +234,7 @@ UNION
     __geo_geom,
     __geo_outlier,
     __photo_urls,
-
+    __inserted_at AS __list_date,
     sysid::text as id,
     sysid::text as listing_id,
     "MLNumb_157" as mlsnum,
@@ -258,18 +259,9 @@ UNION
     "Bedroom_25" as beds,
     CASE "Property_1"
       WHEN 'Single Family' THEN 'Single Family'
-      WHEN 'Condo/Co-Op/Villa/Townhouse' THEN
-        CASE "TYPE_370"
-          WHEN 'Townhouse' THEN 'Townhouse'
-          WHEN 'Villa' THEN 'Villa'
-          ELSE 'Condo'
-        END
+      WHEN 'Condo/Co-Op/Villa/Townhouse' THEN "TYPE_370"
       WHEN 'Residential Land/Boat Docks' THEN 'Lots & Land'
-      WHEN 'Residential Rental' THEN
-        CASE "TYPE_588"
-          WHEN 'Single' THEN 'Rental Single Family'
-          ELSE 'Rental Condo/Townhouse'
-        END
+      WHEN 'Residential Rental' THEN "TYPE_588"
     END as type,
     "FBTH_92" as baths_total,
     "REM_214" as remarks,
