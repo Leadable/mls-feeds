@@ -39,6 +39,9 @@ $MLS::Config::OBJECT = 'Photo';
 # RETS Resource price column
 %MLS::Config::PRICE_COLUMN = ( SystemName => 'ListPrice', RNT => 'LeasePerMonth');
 
+# Used by some modules to prioritize active listings
+@MLS::Config::STATUS_ACTIVE_DEFINITION = ( 'Active' );
+
 %MLS::Config::ADDR_COLUMNS = (
   street   => 'StreetName',
   number   => 'StreetNumber',

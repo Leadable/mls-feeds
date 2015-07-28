@@ -14,6 +14,8 @@ our %extensions = (
 sub new {
   my ($class, $opts) = @_;
 
+  $opts->{column_identifier} = $MLS::Config::Row::COLUMN_IDENTIFIER || 'SystemName';
+
   return bless $opts, $class;
 }
 
@@ -22,6 +24,9 @@ sub go {
 
   print "----Fetching photos----\n\n";
   $self->{totals} = {listings_complete => 0, photo_urls_fetched => 0};
+
+  $self->{primary_key} = $MLS::Config::PRIMARY_KEY{$self->{column_identifier}};
+  $self->{status_col}  = $MLS::Config::STATUS_COLUMN{$self->{column_identifier}};
 
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
@@ -64,18 +69,33 @@ sub mutated {
   my $dbh = $self->{dbh};
 
   my @conditions = (
-    'resource = ' . $dbh->quote($MLS::Config::RESOURCE),
-    "remote_img_mod_ts <> COALESCE(local_img_mod_ts, '')",
-    "remote_removed_at IS NULL"
+    'm.resource = ' . $dbh->quote($MLS::Config::RESOURCE),
+    "m.remote_img_mod_ts <> COALESCE(local_img_mod_ts, '')",
+    "m.remote_removed_at IS NULL",
+    'm.remote_id = p.' . $dbh->quote_identifier($self->{primary_key}) . '::text',
   );
 
-  my $sql = "SELECT remote_id, remote_img_mod_ts, local_img_mod_ts FROM $MLS::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id";
-  $self->{temp_error} = "$sql\n";
+  my $cols = 'm.remote_id, m.remote_img_mod_ts, m.local_img_mod_ts';
+  my $mutation_table = "$MLS::Config::MLS.mutation as m";
+  my $resource_table = "$MLS::Config::MLS." . $dbh->quote_identifier($MLS::Config::RESOURCE) . ' as p';
 
+  my $order_by;
+  if (@MLS::Config::STATUS_ACTIVE_DEFINITION) {
+    # sort by active listings
+    my $active_str = join ',',
+                     map {$dbh->quote($_)} @MLS::Config::STATUS_ACTIVE_DEFINITION;
+    $order_by = 'p.' . $dbh->quote_identifier($self->{status_col}) . " IN ($active_str) desc";
+  }
+  else {
+    $order_by = 'm.remote_id';
+  }
+
+  my $sql = "SELECT $cols FROM $mutation_table, $resource_table WHERE " . join(' AND ', @conditions) . " ORDER BY $order_by";
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
 
   print "Going to fetch for [" . scalar(@$rs) . "] listings\n";
-  return @$rs ? $rs : 0;
+
+  return $rs;
 }
 
 sub fetch_remote {
@@ -98,7 +118,9 @@ sub update {
 
   my $dbh = $self->{dbh};
 
-  my $sql = "UPDATE $MLS::Config::MLS." . $dbh->quote_identifier($MLS::Config::RESOURCE) . " SET __photo_urls = ARRAY[" . join(',', map($dbh->quote($_), @$urls)) . "] WHERE " . $dbh->quote_identifier($MLS::Config::PRIMARY_KEY{SystemName}) . " = " . $dbh->quote($row->{remote_id});
+  my $sql = "UPDATE $MLS::Config::MLS." . $dbh->quote_identifier($MLS::Config::RESOURCE) .
+            " SET __photo_urls = ARRAY[" . join(',', map($dbh->quote($_), @$urls)) . "] WHERE " .
+            $dbh->quote_identifier($self->{primary_key}) . " = " . $dbh->quote($row->{remote_id});
 
   $self->{temp_error} = "$sql\n";
   $dbh->do($sql);
