@@ -452,7 +452,7 @@ sub generate_index_sql {
         }
 
         my $index_name = $dbh->quote_identifier(
-          join '_', ('idx', $table, $col->{col_name}, $id++)
+          join '_', ('idx', $col->{col_name}, $id++)
         );
 
         my $col_name = $dbh->quote_identifier($col->{col_name});
