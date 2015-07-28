@@ -136,7 +136,7 @@ sub go {
     if ($self->{force_rebuild}) {
         $sql_to_write = $self->add_rebuild_sql($sql_to_write);
     }
-    else {
+    elsif ($MLS::Config::RESOURCE eq 'Property') {
         $sql_to_write .= "REFRESH MATERIALIZED VIEW CONCURRENTLY $self->{view}_mv_active;\n";
     }
 
@@ -453,7 +453,7 @@ sub generate_index_sql {
 
         my $col_name = $dbh->quote_identifier($col->{col_name});
 
-        my $unique = $col->{col_name} eq 'listing_id' ? 'UNIQUE' : '';
+        my $unique = ($col->{col_name} eq 'listing_id' && $MLS::Config::RESOURCE eq 'Property') ? 'UNIQUE' : '';
 
         my $index = qq|CREATE $unique INDEX $index_name ON $table USING $idx_type ($col_name);|;
         push @indexes, $index;
