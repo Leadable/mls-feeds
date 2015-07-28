@@ -25,12 +25,11 @@ CREATE VIEW beaches.view_property AS
     "Property"."LIST_15" AS status,
     "Property"."LIST_12" AS sold_date,
     "Property"."LIST_23" AS sold_price,
-    "Property"."LIST_15" = 'Active Contingent'::text OR "Property"."LIST_15" = 'Pending'::text OR "Property"."LIST_15" = 'Closed'::text OR "Property"."LIST_15" = 'Contingent'::text AS under_contract,
+    "Property"."LIST_15" = 'Active Contingent'::text OR "Property"."LIST_15" = 'Pending'::text OR "Property"."LIST_15" = 'Contingent'::text AS under_contract,
     CASE "Property"."LIST_15"
         WHEN 'Pending'::text THEN 'Pending'::text
         WHEN 'Active Contingent'::text THEN 'Active Contingent'::text
         WHEN 'Contingent'::text THEN 'Contingent'::text
-        WHEN 'Closed'::text THEN 'Closed'::text
         ELSE NULL::text
     END AS under_contract_description,
     CASE "Property".__class_name
@@ -62,8 +61,8 @@ CREATE VIEW beaches.view_property AS
       WHEN 'C' THEN 0
     END as price_per_sqft,
     "Property"."LIST_66" AS beds,
-        CASE "Property".__class_name
-            WHEN 'A'::text THEN
+        CASE
+            WHEN "Property".__class_name IN ('A'::text, 'F'::text) THEN
             CASE "Property"."LIST_9"
                 WHEN 'Condo Hotel'::text THEN 'Condo'::text
                 WHEN 'Condo/Coop'::text THEN 'Condo'::text
@@ -73,19 +72,8 @@ CREATE VIEW beaches.view_property AS
                 WHEN 'Villa'::text THEN 'Villa'::text
                 ELSE 'Single Family'::text
             END
-            WHEN 'F'::text THEN
-            CASE "Property"."LIST_9"
-                WHEN 'Apartment'::text THEN 'Rental Condo/Townhouse'::text
-                WHEN 'Condo/Coop'::text THEN 'Rental Condo/Townhouse'::text
-                WHEN 'Duplex/Triplex/Quadplex'::text THEN 'Rental Condo/Townhouse'::text
-                WHEN 'Efficiency'::text THEN 'Rental Condo/Townhouse'::text
-                WHEN 'Townhouse'::text THEN 'Rental Condo/Townhouse'::text
-                WHEN 'Villa'::text THEN 'Rental Condo/Townhouse'::text
-                WHEN 'Single Family Detached'::text THEN 'Rental Single Family'::text
-                ELSE 'Rental Single Family'::text
-            END
-            WHEN 'C'::text THEN 'Lots & Land'::text
-            WHEN 'B'::text THEN 'Multi-Family'::text
+            WHEN "Property".__class_name = 'C'::text THEN 'Lots & Land'::text
+            WHEN "Property".__class_name = 'B'::text THEN 'Multi-Family'::text
             ELSE 'Single Family'::text
         END AS type,
     "Property"."LIST_68" AS baths_total,
