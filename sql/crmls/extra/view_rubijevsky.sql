@@ -68,6 +68,3 @@ COMMENT ON COLUMN crmls.view_rubijevsky."feature_style[]"
   IS '{ "advanced": true, "label": "Style", "input": "checkbox-group", "rank": 85 }';
 COMMENT ON COLUMN crmls.view_rubijevsky."feature_view[]" 
   IS '{ "advanced": true, "label": "View", "input": "checkbox-group", "rank": 90 }';
-
-CREATE VIEW crmls.view_rubijevsky_mv AS SELECT * FROM crmls.view_rubijevsky;
-CREATE VIEW crmls.view_rubijevsky_mv_active as SELECT * FROM crmls.view_rubijevsky WHERE __active;
