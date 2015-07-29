@@ -18,6 +18,7 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
     "Property".__status_updated_at,
     "Property".__status_history_times,
     "Property".__status_history_vals,
+    __photo_urls,
     CASE "Property"."Status"
         WHEN 'Active-Contingent'::text THEN 't'::boolean
         WHEN 'Active-LTC'::text        THEN 't'::boolean

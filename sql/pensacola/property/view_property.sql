@@ -17,6 +17,7 @@ SELECT
   __status_updated_at,
   __status_history_times,
   __status_history_vals,
+  __photo_urls,
   "L_ListingID" as listing_id,
   "L_ListingID" as mlsnum,
   "L_Status" as status,

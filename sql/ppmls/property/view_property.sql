@@ -18,6 +18,7 @@ SELECT
   __status_updated_at,
   __status_history_times,
   __status_history_vals,
+  __photo_urls,
   "Status" as status,
   "VirtualTourURLUnbranded" as virtual_tour,
   ("Status" IN ('Under Contract - Showing', 'UC Short Sale - Showing')) as under_contract,

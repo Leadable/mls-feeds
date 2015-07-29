@@ -1,7 +1,4 @@
--- View: crmls.view_listings
-
--- DROP VIEW crmls.view_listings;
-
+DROP VIEW crmls.view_property CASCADE;
 CREATE OR REPLACE VIEW crmls.view_property AS
  SELECT 'crmls'::text AS mls,
     p.__removed_at,
@@ -20,6 +17,7 @@ CREATE OR REPLACE VIEW crmls.view_property AS
     p.__status_updated_at,
     p.__status_history_times,
     p.__status_history_vals,
+    __photo_urls,
     -- ( SELECT array_agg("Media"."MediaURL" ORDER BY "Media"."MediaOrder") AS array_agg
     --        FROM crmls."Media"
     --       WHERE "Media"."ClassSourceKey" = p."SourceKey" AND "Media"."MediaType" = 'Image'::text AND NOT (EXISTS ( SELECT 1
