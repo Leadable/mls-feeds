@@ -259,9 +259,18 @@ UNION
     "Bedroom_25" as beds,
     CASE "Property_1"
       WHEN 'Single Family' THEN 'Single Family'
-      WHEN 'Condo/Co-Op/Villa/Townhouse' THEN "TYPE_370"
+      WHEN 'Condo/Co-Op/Villa/Townhouse' THEN
+        CASE "TYPE_370"
+          WHEN 'Townhouse' THEN 'Townhouse'
+          WHEN 'Villa' THEN 'Villa'
+          ELSE 'Condo'
+        END
       WHEN 'Residential Land/Boat Docks' THEN 'Lots & Land'
-      WHEN 'Residential Rental' THEN "TYPE_588"
+      WHEN 'Residential Rental' THEN
+        CASE "TYPE_588"
+          WHEN 'Single' THEN 'Rental Single Family'
+          ELSE 'Rental Condo/Townhouse'
+        END
     END as type,
     "FBTH_92" as baths_total,
     "REM_214" as remarks,
