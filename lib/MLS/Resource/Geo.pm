@@ -7,6 +7,7 @@ use Text::LevenshteinXS qw(distance);
 use Geo::StreetAddress::US;
 use Mojo::JSON qw(j);
 use File::Path qw(mkpath);
+use Encode qw(encode_utf8);
 
 $| = 1;
 
@@ -226,9 +227,13 @@ sub request {
   my $row = $dbh->selectrow_hashref($sql);
 
   if ($row && !($row->{expired})) {
-    return {
-      json => j($row->{response}),
-    };
+    my $json = j(encode_utf8($row->{response}));
+
+    if ($json) {
+      return {
+        json => $json,
+      };
+    }
   }
 
   my $res = $self->http_request($service, $url);
