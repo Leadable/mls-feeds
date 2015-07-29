@@ -227,7 +227,7 @@ get '/:mls' => sub {
     (
       SELECT attname
       FROM   pg_attribute
-      WHERE  attrelid = 'beaches."Property"'::regclass
+      WHERE  attrelid = '$mls."Property"'::regclass
       AND    attnum > 0
       AND    NOT attisdropped
     ) a
@@ -238,7 +238,7 @@ get '/:mls' => sub {
         inner join pg_catalog.pg_description pgd on (pgd.objoid=st.relid)
         inner join information_schema.columns c on (pgd.objsubid=c.ordinal_position
         and  c.table_schema=st.schemaname and c.table_name=st.relname)
-        WHERE table_schema = 'beaches' and table_name = 'Property'
+        WHERE table_schema = '$mls' and table_name = 'Property'
     ) b
     on a.attname = b.name
     ORDER BY name asc;
