@@ -38,7 +38,7 @@ SELECT
   END AS listing_type,
   "ClosedDate" as sold_date,
   "SalesPrice" as sold_price,
-  ("ContingencyType" is not null and "ContingencyType" <> 'None')
+  ("ContingencyType" is not null and "ContingencyType" <> 'None' and "ListingStatusID" IN ('Pending', 'Active'))
     as under_contract,
   "ContingencyType"::text || ' Contingency' as under_contract_description,
   "MlsNum" as listing_id,
@@ -47,7 +47,17 @@ SELECT
   COALESCE("ListPrice", "LeasePerMonth") as price,
   "TotalBedrooms" as beds,
   "TotalFullBaths" as baths_total,
-  "PropertyClassID" as "type",
+  CASE "PropertyClassID"
+    WHEN 'Residential'::text     THEN 'Residential'::text
+    WHEN 'Land-Lots-Farms'::text THEN 'Lots & Land'::text
+    WHEN 'Condominium'::text     THEN 'Condo'::text
+    WHEN 'Rental'::text          THEN
+      CASE "PropertySubType"
+        WHEN 'Site Built'::text         THEN 'Residential'::text
+        WHEN 'Condominium'::text        THEN 'Condo'::text
+        ELSE 'Apartment'::text
+      END
+  END as type,
   COALESCE("Remarks", '') as remarks,
   "StreetAddressDisplay" as address_line1,
   COALESCE(trim(initcap("City")), '') || ', TN ' || COALESCE("ZipCode", '') as address_line2,
