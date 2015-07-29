@@ -42,6 +42,31 @@ $MLS::Config::OBJECT = 'Photo';
 # Used by some modules to prioritize active listings
 @MLS::Config::STATUS_ACTIVE_DEFINITION = ( 'Active' );
 
+# Three columns needed to make mv_active, listing_type, sold_date, __active
+# These should be identical to the definitions in view_property
+$MLS::Config::MV_ACTIVE_COLS = q|
+  SELECT CASE __class_name
+        WHEN 'RNT'::text THEN
+        CASE "ListingStatusID"
+            WHEN 'Active'::text            THEN 'for_rent'::text
+            WHEN 'Pending'::text           THEN 'for_rent'::text
+            WHEN 'Closed'::text            THEN 'leased'::text
+            ELSE NULL::text
+        END
+        ELSE
+        CASE "ListingStatusID"
+            WHEN 'Active'::text            THEN 'for_sale'::text
+            WHEN 'Pending'::text           THEN 'for_sale'::text
+            WHEN 'Closed'::text            THEN 'sold'::text
+            ELSE NULL::text
+        END
+  END AS listing_type,
+  (__removed_at is null) as __active,
+  "ClosedDate" as sold_date,
+  "MlsNum" as listing_id
+  FROM mtrmls."Property"
+|;
+
 %MLS::Config::ADDR_COLUMNS = (
   street   => 'StreetName',
   number   => 'StreetNumber',

@@ -2,6 +2,7 @@ package MLS::Resource::Photo;
 use strict;
 
 use Data::Dumper qw(Dumper);
+use MLS::Resource::Utils;
 
 $| = 1;
 
@@ -68,11 +69,13 @@ sub mutated {
   
   my $dbh = $self->{dbh};
 
+  my $primary_key = 'p.' . $dbh->quote_identifier($self->{primary_key}) . '::text';
+
   my @conditions = (
     'm.resource = ' . $dbh->quote($MLS::Config::RESOURCE),
     "m.remote_img_mod_ts <> COALESCE(local_img_mod_ts, '')",
     "m.remote_removed_at IS NULL",
-    'm.remote_id = p.' . $dbh->quote_identifier($self->{primary_key}) . '::text',
+    "m.remote_id = $primary_key",
   );
 
   my $cols = 'm.remote_id, m.remote_img_mod_ts, m.local_img_mod_ts';
@@ -80,17 +83,15 @@ sub mutated {
   my $resource_table = "$MLS::Config::MLS." . $dbh->quote_identifier($MLS::Config::RESOURCE) . ' as p';
 
   my $order_by;
-  if (@MLS::Config::STATUS_ACTIVE_DEFINITION) {
-    # sort by active listings
-    my $active_str = join ',',
-                     map {$dbh->quote($_)} @MLS::Config::STATUS_ACTIVE_DEFINITION;
-    $order_by = 'p.' . $dbh->quote_identifier($self->{status_col}) . " IN ($active_str) desc";
+  if ($MLS::Config::MV_ACTIVE_COLS) {
+    my $select_subquery = MLS::Resource::Utils::get_mv_active_select_sql;
+    $order_by =  qq|ORDER BY $primary_key IN ($select_subquery) desc|;
   }
   else {
-    $order_by = 'm.remote_id';
+    $order_by = 'ORDER BY m.remote_id desc';
   }
 
-  my $sql = "SELECT $cols FROM $mutation_table, $resource_table WHERE " . join(' AND ', @conditions) . " ORDER BY $order_by";
+  my $sql = "SELECT $cols FROM $mutation_table, $resource_table WHERE " . join(' AND ', @conditions) . " $order_by;";
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
 
   print "Going to fetch for [" . scalar(@$rs) . "] listings\n";
