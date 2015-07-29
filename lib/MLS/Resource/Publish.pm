@@ -10,6 +10,7 @@ use File::Temp qw(tempfile);
 use File::Basename;
 use Compress::Zlib qw(gzopen Z_BEST_COMPRESSION);
 use Encode qw(encode_utf8);
+use MLS::Resource::Utils;
 
 $| = 1;
 
@@ -405,15 +406,9 @@ sub generate_view_sql {
 
     my $mv_active = '';
     if ($MLS::Config::RESOURCE eq 'Property') {
-        $mv_active = qq|
-            CREATE MATERIALIZED VIEW $self->{view}_mv_active AS SELECT * FROM $self->{view} WHERE
-            $self->{view}.__active AND (
-                ($self->{view}.listing_type = ANY (ARRAY['for_sale'::text, 'for_rent'::text])) OR
-
-                (($self->{view}.listing_type = ANY (ARRAY['sold'::text, 'leased'::text])) AND
-                $self->{view}.sold_date::timestamp without time zone >= (now() - '6 mons'::interval))
-            );
-        |;
+        $mv_active =
+            qq|CREATE MATERIALIZED VIEW $self->{view}_mv_active AS SELECT * FROM $self->{view} WHERE | .
+            MLS::Resource::Utils::get_mv_active_def($self->{view}) . ';';
     }
 
     return qq|
