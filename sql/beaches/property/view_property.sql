@@ -268,8 +268,8 @@ UNION
       WHEN 'Residential Land/Boat Docks' THEN 'Lots & Land'
       WHEN 'Residential Rental' THEN
         CASE "TYPE_588"
-          WHEN 'Single' THEN 'Rental Single Family'
-          ELSE 'Rental Condo/Townhouse'
+          WHEN 'Single' THEN 'Single Family'
+          ELSE 'Condo/Townhouse'
         END
     END as type,
     "FBTH_92" as baths_total,
