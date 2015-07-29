@@ -51,11 +51,11 @@ SELECT
   "BR" as beds,
   CASE "TYP"
     WHEN 'Land' THEN 'Lots & Land'
-    WHEN 'Residential Rental' THEN 'Rental'
---      CASE "RENTAL_PROPERTY_TYPE"
---        WHEN 'Attached' THEN 'Rental - Attached'
---        WHEN 'Detached' THEN 'Rental - Detached'
---      END
+    WHEN 'Residential Rental' THEN
+     CASE "RENTAL_PROPERTY_TYPE"
+       WHEN 'Attached' THEN 'Apartment'
+       WHEN 'Detached' THEN 'Single Family'
+     END
     ELSE
       CASE "OWN"
         WHEN 'Fee Simple' THEN 'Single Family'

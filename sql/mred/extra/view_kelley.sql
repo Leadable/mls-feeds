@@ -70,6 +70,3 @@ COMMENT ON COLUMN mred.view_kelley."feature_land_description[]"
   IS '{ "advanced": true, "label": "Land Description", "input": "checkbox-group", "rank": 160 }';
 COMMENT ON COLUMN mred.view_kelley."feature_laundry_level[]"
   IS '{ "advanced": true, "label": "Laundry Level", "input": "checkbox-group", "rank": 170 }';
-
-CREATE VIEW mred.view_kelley_mv AS SELECT * FROM beaches.view_kelley;
-CREATE VIEW mred.view_kelley_mv_active as SELECT * FROM beaches.view_kelley WHERE __active;
