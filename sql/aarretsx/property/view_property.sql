@@ -18,17 +18,30 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
     "Property".__status_updated_at,
     "Property".__status_history_times,
     "Property".__status_history_vals,
-    "Property"."Status" <> 'Active'::text AS under_contract,
-        CASE "Property"."Status"
-            WHEN 'Active'::text THEN NULL::text
-            ELSE "Property"."Status"
-        END AS under_contract_description,
+    CASE "Property"."Status"
+        WHEN 'Active-Contingent'::text THEN 't'::boolean
+        WHEN 'Active-LTC'::text        THEN 't'::boolean
+        WHEN 'Pending'::text           THEN 't'::boolean
+        ELSE 'f'::boolean
+    END AS under_contract,
+    CASE "Property"."Status"
+        WHEN 'Active-Contingent'::text THEN "Property"."Status"
+        WHEN 'Active-LTC'::text        THEN "Property"."Status"
+        WHEN 'Pending'::text           THEN "Property"."Status"
+        ELSE NULL::text
+    END AS under_contract_description,
     CASE "Status"
         WHEN 'Rented'::text THEN 'leased'::text
         WHEN 'Sold'::text   THEN 'sold'::text
         ELSE
         CASE __class_name
             WHEN 'RENT'::text THEN 'for_rent'::text
+            WHEN 'COMM'::text THEN
+                CASE 'PropertyType'::text
+                    WHEN 'Residential Lease'::text THEN 'for_rent'::text
+                    WHEN 'Commercial Lease'::text  THEN 'for_rent'::text
+                    ELSE 'for_sale'::text
+                END
             ELSE 'for_sale'::text
         END
     END AS listing_type,
@@ -48,6 +61,7 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
     "Property"."FullBathrooms" AS baths_total,
         CASE "Property"."PropertyType"
             WHEN 'Residential'::text THEN "Property"."PropertySubtype1"
+            WHEN 'Rental'::text      THEN "Property"."PropertySubtype1"
             ELSE "Property"."PropertyType"
         END AS type,
     COALESCE("Property"."MarketingRemarks", ''::text) AS remarks,
