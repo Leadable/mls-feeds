@@ -54,6 +54,32 @@ my $search = '(RECORDMODDATE=' . MLS::Resource::Utils::get_search_interval . ')'
 # RETS Resource price column
 %MLS::Config::PRICE_COLUMN = ( SystemName => 'LP', DBName => 'LP', RN => 'RP', RentalHome => 'RP', );
 
+# Three columns needed to make mv_active, listing_type, sold_date, __active
+# These should be identical to the definitions in view_property
+$MLS::Config::MV_ACTIVE_COLS = q|
+  SELECT CASE "Property".__class_name
+      WHEN 'RentalHome'::text THEN
+      CASE "ST"
+          WHEN 'Rented'    THEN 'leased'::text
+          WHEN 'Expired'   THEN NULL::text
+          WHEN 'Cancelled' THEN NULL::text
+          ELSE 'for_rent'::text
+      END
+      ELSE
+      CASE "ST"
+          WHEN 'Rented'    THEN 'leased'::text
+          WHEN 'Closed'    THEN 'sold'::text
+          WHEN 'Expired'   THEN NULL::text
+          WHEN 'Cancelled' THEN NULL::text
+          ELSE 'for_sale'::text
+      END
+  END AS listing_type,
+  (__removed_at is null) as __active,
+  "LN" as listing_id,
+  "CLOSEDDATE" as sold_date
+  FROM mred."Property"
+|;
+
 %MLS::Config::ADDR_COLUMNS = (
   street   => 'STR',
   number   => 'HSN',
