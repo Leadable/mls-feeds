@@ -27,7 +27,6 @@ sub go {
   $self->{totals} = {listings_complete => 0, photo_urls_fetched => 0};
 
   $self->{primary_key} = $MLS::Config::PRIMARY_KEY{$self->{column_identifier}};
-  $self->{status_col}  = $MLS::Config::STATUS_COLUMN{$self->{column_identifier}};
 
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
@@ -82,19 +81,15 @@ sub mutated {
   my $mutation_table = "$MLS::Config::MLS.mutation as m";
   my $resource_table = "$MLS::Config::MLS." . $dbh->quote_identifier($MLS::Config::RESOURCE) . ' as p';
 
-  my $order_by;
-  if ($MLS::Config::MV_ACTIVE_COLS) {
+  if ($MLS::Config::PEAK_TIME && $MLS::Config::MV_ACTIVE_COLS) {
     my $select_subquery = MLS::Resource::Utils::get_mv_active_select_sql;
-    $order_by =  qq|ORDER BY $primary_key IN ($select_subquery) desc|;
-  }
-  else {
-    $order_by = 'ORDER BY m.remote_id desc';
+    push @conditions, "$primary_key IN ($select_subquery)";
   }
 
-  my $sql = "SELECT $cols FROM $mutation_table, $resource_table WHERE " . join(' AND ', @conditions) . " $order_by;";
+  my $sql = "SELECT $cols FROM $mutation_table, $resource_table WHERE " . join(' AND ', @conditions);
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
 
-  print "Going to fetch for [" . scalar(@$rs) . "] listings\n";
+  print "Going to fetch photos for [" . scalar(@$rs) . "] listings\n";
 
   return $rs;
 }

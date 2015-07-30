@@ -2,6 +2,7 @@ package MLS::Resource::RealTracs::mtrmls::Config::Property;
 use strict;
 
 use MLS::Resource::RealTracs::mtrmls::Config;
+use MLS::Resource::Utils;
 
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
@@ -11,13 +12,14 @@ $MLS::Config::RESOURCE = 'Property';
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'Photo';
 
+my $search = '(ModDate=' . MLS::Resource::Utils::get_search_interval . ')';
+
 # RETS Resource Classes
-# active, pending, closed, backup, contingent
 %MLS::Config::CLASSES = (
-  CND => { StandardName => 'Condominium',     'SearchRequest' => "(ModDate=1900-01-01T00:00:00+)" },
-  RES => { StandardName => 'Residential',     'SearchRequest' => "(ModDate=1900-01-01T00:00:00+)" },
-  LLF => { StandardName => 'Land-Lots-Farms', 'SearchRequest' => "(ModDate=1900-01-01T00:00:00+)" },
-  RNT => { StandardName => 'Rental',          'SearchRequest' => "(ModDate=1900-01-01T00:00:00+)",},
+  CND => { StandardName => 'Condominium',     'SearchRequest' => $search },
+  RES => { StandardName => 'Residential',     'SearchRequest' => $search },
+  LLF => { StandardName => 'Land-Lots-Farms', 'SearchRequest' => $search },
+  RNT => { StandardName => 'Rental',          'SearchRequest' => $search },
   MLS => { StandardName => 'Cross-Class',     'SearchRequest' => "", ignore => 1 },
   COM => { StandardName => 'Commercial',      'SearchRequest' => "", ignore => 1 },
   MUL => { StandardName => 'Multi-Family',    'SearchRequest' => "", ignore => 1 },

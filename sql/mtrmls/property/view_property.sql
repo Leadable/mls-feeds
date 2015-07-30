@@ -226,7 +226,11 @@ SELECT
   "ModDate" as modification_timestamp,
   "OfficeListOfficeName" as office_name,
   true as display_address
-FROM mtrmls."Property" 
+FROM mtrmls."Property" as p, mtrmls.mutation as m
   WHERE
-    ("PropertyClassID" IN ('Condominium', 'Land-Lots-Farms', 'Rental', 'Residential') and "PropertySubType" <> 'Manufactured-Mobile' and "State" = 'Tennessee')
+    p."MlsNum" = m.remote_id and
+    m.last_transaction_completed_at is not null and (
+     p."PropertyClassID" IN ('Condominium', 'Land-Lots-Farms', 'Rental', 'Residential') and
+     p."PropertySubType" <> 'Manufactured-Mobile' and p."State" = 'Tennessee'
+    )
 ;

@@ -216,7 +216,13 @@ sub updated_remote_rows {
 sub deleted_remote_rows {
   my ($self) = @_;
 
-  print "Looking for removed rows.\n";
+  if ($MLS::Config::PEAK_TIME) {
+    print "Skipping looking for removed rows\n";
+    return;
+  }
+  else {
+    print "Looking for removed rows.\n";
+  }
 
   my $dbh = $self->{dbh};
   my ($local, $remote) = ($self->{local}, $self->{remote});

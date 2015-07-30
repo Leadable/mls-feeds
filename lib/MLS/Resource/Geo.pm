@@ -14,6 +14,8 @@ $| = 1;
 sub new {
   my ($class, $opts) = @_;
 
+  $opts->{column_identifier} = $MLS::Config::Row::COLUMN_IDENTIFIER || 'SystemName';
+
   return bless $opts, $class;
 }
 
@@ -45,6 +47,8 @@ sub go {
       total => 0,
     },
   };
+
+  $self->{primary_key} = $MLS::Config::PRIMARY_KEY{$self->{column_identifier}};
 
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
@@ -105,17 +109,19 @@ sub monitor {
   $monitor->status({ namespace => ['Geo'], key => $key, value => $value });
 }
 
-
 sub mutated {
   my ($self) = @_;
 
   my $dbh = $self->{dbh};
 
+  my $primary_key = 'p.' . $dbh->quote_identifier($self->{primary_key}) . '::text';
+
   my @conditions = (
-    'resource = ' . $dbh->quote($MLS::Config::RESOURCE),
-    "remote_address IS NOT NULL",
-    "remote_address <> COALESCE(local_address, '')",
-    "remote_removed_at IS NULL"
+    'm.resource = ' . $dbh->quote($MLS::Config::RESOURCE),
+    "m.remote_address IS NOT NULL",
+    "m.remote_address <> COALESCE(m.local_address, '')",
+    "m.remote_removed_at IS NULL",
+    "m.remote_id = $primary_key",
   );
 
   # partition should be an arrayref with digits
@@ -124,17 +130,26 @@ sub mutated {
     my $digits_sql =  join ',',
                       map {$dbh->quote($_)} @{$self->{partition}};
 
-    push @conditions, "RIGHT(remote_id, 1)" . " IN (" . $digits_sql . ")";
+    push @conditions, "RIGHT(m.remote_id, 1)" . " IN (" . $digits_sql . ")";
   }
 
-  my $sql = "SELECT remote_id, remote_address, local_address FROM $MLS::Config::MLS.mutation WHERE " . join(' AND ', @conditions) . " ORDER BY remote_id DESC";
-  $self->{temp_error} = "$sql\n";
+  my $cols = 'm.remote_id, m.remote_address, m.local_address';
+  my $mutation_table = "$MLS::Config::MLS.mutation as m";
+  my $resource_table = "$MLS::Config::MLS." . $dbh->quote_identifier($MLS::Config::RESOURCE) . ' as p';
 
+  if ($MLS::Config::PEAK_TIME && $MLS::Config::MV_ACTIVE_COLS) {
+    my $select_subquery = MLS::Resource::Utils::get_mv_active_select_sql;
+    push @conditions, "$primary_key IN ($select_subquery)";
+  }
+
+  my $sql = "SELECT $cols FROM $mutation_table, $resource_table WHERE " . join(' AND ', @conditions);
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
 
-  print "Geocoding [" . scalar(@$rs) . "] records\n";
-  return @$rs ? $rs : 0;
+  print "Going to geocode [" . scalar(@$rs) . "] listings\n";
+
+  return $rs;
 }
+
 
 sub http_fail {
   my ($tx, $ua) = @_;
