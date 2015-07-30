@@ -237,6 +237,12 @@ BEGIN;
      
     ALTER TABLE cmls."Property" ADD COLUMN "SecondLivingQuarters" text[];
     COMMENT ON COLUMN cmls."Property"."SecondLivingQuarters" IS 'Second Living Quarters';
+
+    ALTER TABLE cmls."Property" ADD COLUMN "SecondLivingQuartersHLA" integer;
+    COMMENT ON COLUMN cmls."Property"."SecondLivingQuartersHLA" IS 'Second Living Quarters HLA';
+
+    ALTER TABLE cmls."Property" ADD COLUMN "SecondLivingQuartersSqFt" integer;
+    COMMENT ON COLUMN cmls."Property"."SecondLivingQuartersSqFt" IS 'Second Living Quarters Sq Ft';
      
     ALTER TABLE cmls."Property" ADD COLUMN "AssociationFee" decimal;
     COMMENT ON COLUMN cmls."Property"."AssociationFee" IS 'Association Fee';
