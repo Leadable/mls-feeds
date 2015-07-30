@@ -48,7 +48,7 @@ my $tools_dbh = DBI->connect($connstr, $tools_user, $tools_pass, { AutoCommit =>
 my $sql = 'SELECT status FROM monitor_feeds where mls = ' . $tools_dbh->quote($mls);
 my $status = $tools_dbh->selectcol_arrayref($sql, { Slice => {} })->[0];
 
-die "[$mls] is running. Run this script with the -f option if you really want to replace the views\n" if ($status eq 'RUNNING');
+die "[$mls] is running. Run this script with the -f option if you really want to replace the views\n" if ($status eq 'RUNNING' && !$force);
 
 my $view_property = "$FindBin::Bin/$mls/property/view_property.sql";
 die "Could not find [$view_property]" if (! -e $view_property);
