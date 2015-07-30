@@ -38,6 +38,10 @@ my $config_path = "${board_path}::Config::$resource";
 
 eval "require $config_path" or die "Could not find [$config_path]: $@\n";
 
+# Should be called when requiring the MLS config anyway
+# but call here just in case it is forgotten to avoid instant exits
+MLS::Resource::Utils::is_peak_time();
+
 my $dbh       = MLS::Database->new({db => 'feeds'});
 my $tools_dbh = MLS::Database->new({db => 'tools'});
 

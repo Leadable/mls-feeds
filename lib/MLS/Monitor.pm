@@ -5,6 +5,7 @@ use Data::Dumper qw(Dumper);
 use File::Path qw(mkpath);
 use Mojo::JSON qw(j);
 use POSIX;
+use MLS::Resource::Utils;
 
 $| = 1;
 
@@ -86,12 +87,24 @@ sub start {
     # print from log file until parent goes away
     while (kill(0, $ppid)) {
       print <$FH>;
+
+      # check if we've changed from off peak to peak
+      if (!$MLS::Config::PEAK_TIME && MLS::Resource::Utils::is_peak_time()) {
+        print "Switch from off peak to peak, exiting...\n";
+        exit;
+      }
+
       sleep 5;
     }
 
     exit;
   }
   else {
+    $SIG{CHLD} = sub {
+      print "Child died, exiting...\n";
+      exit;
+    };
+
     # capture STDOUT, STDIN to log file
     open(STDOUT, '>', $self->{log_file}) or
       die "Cannot redirect STDOUT to [$self->{log_file}]: $!";
