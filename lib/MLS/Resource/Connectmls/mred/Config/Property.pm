@@ -2,6 +2,7 @@ package MLS::Resource::Connectmls::mred::Config::Property;
 use strict;
 
 use MLS::Resource::Connectmls::mred::Config;
+use MLS::Resource::Utils;
 
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
@@ -12,7 +13,7 @@ $MLS::Config::RESOURCE = 'Property';
 $MLS::Config::OBJECT = 'HrPhoto';
 
 # RETS Resource Classes
-my $search = '(RECORDMODDATE=1900-01-01+)';
+my $search = '(RECORDMODDATE=' . MLS::Resource::Utils::get_search_interval . ')';
 %MLS::Config::CLASSES = (
   INTL                => { StandardName => 'International',        'SearchRequest' => $search },
   ResidentialProperty => { StandardName => 'Residential Property', 'SearchRequest' => $search },
