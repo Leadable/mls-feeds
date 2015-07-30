@@ -23,7 +23,7 @@ SELECT
   "LN" as mlsnum,
   "ST" as status,
   ("ST" = 'Pending' or "ST" = 'Contingent') as under_contract,
-  CASE "Property".__class_name
+  CASE __class_name
       WHEN 'RentalHome'::text THEN
       CASE "ST"
           WHEN 'Rented'    THEN 'leased'::text
@@ -187,5 +187,8 @@ SELECT
   "MRI" as "feature_rent_includes[]",
   "LAUNDRYL" as "feature_laundry_level[]",
   "STY" as "feature_style"
-FROM mred."Property"
+FROM mred."Property" as p, mred.mutation as m
+  WHERE
+    p."LN" = m.remote_id and
+    m.last_transaction_completed_at is not null
 ;
