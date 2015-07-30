@@ -44,7 +44,7 @@ my $env_vars = $db_vars_hash->{$ENV{MLS_DB_HOST}};
 die "[$env_vars] not found in db_vars_hash" if (!$env_vars);
 
 my @tools_env = map {"-e $_='$tools->{$_}'"} keys %$tools;
-my @live_env  = map {"-e $_='$env_vars->{$_}'"} (keys %$env_vars, $ENV{MLS_DB_HOST});
+my @live_env  = map {"-e $_='$env_vars->{$_}'"} keys %$env_vars;
 
 my @params_list;
 if (-e "$FindBin::Bin/params") {
@@ -73,6 +73,7 @@ foreach my $params (@params_list) {
             q|sudo docker run|,
             @tools_env,
             @live_env,
+            qq|-e MLS_DB_HOST='$ENV{MLS_DB_HOST}'|,
             q|--privileged|,
             q|-v /home/joe/mls-feeds/:/opt/mls-feeds|,
             qq|--name=mls-feeds-$mls|,
