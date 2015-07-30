@@ -81,8 +81,7 @@ sub get_search_interval {
       print "Peak Hours\n";
 
       # during peak hours, get from last 24hrs
-      # TODO: change to 24hrs (3 days for testing this patch)
-      my $dt = DateTime->from_epoch( epoch => time - (3 * 86400));
+      my $dt = DateTime->from_epoch( epoch => time - 86400);
       $search = "$dt+";
     }
     else {
