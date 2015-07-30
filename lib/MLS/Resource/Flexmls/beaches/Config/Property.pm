@@ -2,6 +2,7 @@ package MLS::Resource::Flexmls::beaches::Config::Property;
 use strict;
 
 use MLS::Resource::Flexmls::beaches::Config;
+use MLS::Resource::Utils;
 
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
@@ -12,14 +13,14 @@ $MLS::Config::RESOURCE = 'Property';
 $MLS::Config::OBJECT = 'HiRes';
 
 # RETS Resource Classes
-# active, pending, closed, backup, contingent
+my $search = '(LIST_87=' . MLS::Resource::Utils::get_search_interval . ')';
 %MLS::Config::CLASSES = (
-  A => { StandardName => 'ResidentialProperty',   'SearchRequest' => "(LIST_87=1900-01-01T00:00:00+)" },  # Single Family
-  B => { StandardName => 'MultiFamily',           'SearchRequest' => "(LIST_87=1900-01-01T00:00:00+)"  }, # Income
-  C => { StandardName => 'LotsAndLand',           'SearchRequest' => "(LIST_87=1900-01-01T00:00:00+)" },  # Land
-  D => { StandardName => 'CommonInterest',        'SearchRequest' => "", ignore => 1 },                   # Business
-  E => { StandardName => '',                      'SearchRequest' => "", ignore => 1 },                   # Commercial
-  F => { StandardName => '',                      'SearchRequest' => "(LIST_87=1900-01-01T00:00:00+)" },  # Rentals
+  A => { StandardName => 'ResidentialProperty',   'SearchRequest' => $search },
+  B => { StandardName => 'MultiFamily',           'SearchRequest' => $search },
+  C => { StandardName => 'LotsAndLand',           'SearchRequest' => $search },
+  D => { StandardName => 'CommonInterest',        'SearchRequest' => "", ignore => 1 },
+  E => { StandardName => '',                      'SearchRequest' => "", ignore => 1 },
+  F => { StandardName => '',                      'SearchRequest' => $search },
 );
 
 # RETS Resource Primary Key
