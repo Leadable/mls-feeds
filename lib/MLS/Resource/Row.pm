@@ -2,6 +2,7 @@ package MLS::Resource::Row;
 use strict;
 
 use Data::Dumper qw(Dumper);
+use MLS::Resource::Utils
 
 $| = 1;
 
@@ -433,25 +434,7 @@ sub update_mutation_table {
     $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
 
-    my $sql = "SELECT * FROM $MLS::Config::MLS.mutation WHERE " . join(' AND ', @conditions);
-    $self->{temp_error} = "$sql\n";
-    my $row = $dbh->selectrow_hashref($sql);
-
-    my $transaction_complete = 1;
-
-    # photos are still out of sync
-    $transaction_complete = 0 if ($row->{remote_img_mod_ts} ne $row->{local_img_mod_ts});
-
-    # address hasn't been geocoded
-    $transaction_complete = 0 if ($row->{remote_address} ne $row->{local_address});
-
-    # if there are no more differences between remote and local in the mutation table then set the last_transaction_completed at = NOW() so that the row can be published
-    # The publisher job will detect the change and publish the row to the materialized (live) tables
-    if ($transaction_complete) {
-      my $sql = "UPDATE $MLS::Config::MLS.mutation SET last_transaction_completed_at = NOW() WHERE " . join(' AND ', @conditions);
-      $self->{temp_error} = "$sql\n";
-      $dbh->do($sql);
-    }
+    MLS::Resource::Utils::check_transaction_complete($dbh, \@conditions);
   };
 
   if ($@) {

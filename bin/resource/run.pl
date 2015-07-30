@@ -91,18 +91,22 @@ eval {
         monitor => $monitor,
     })->go();
 
-    $photo_module->new({
-        dbh => $dbh,
-        rets => $rets,
-        monitor => $monitor,
-        storage_client => $photo_storage
-    })->go();
+    if ($MLS::Config::IMG_MOD_TS_COLUMN) {
+        $photo_module->new({
+            dbh => $dbh,
+            rets => $rets,
+            monitor => $monitor,
+            storage_client => $photo_storage
+        })->go();
+    }
 
-    MLS::Resource::Geo->new({
-        dbh => $dbh,
-        dbh_tools => $tools_dbh,
-        monitor => $monitor,
-    })->go();
+    if ($MLS::Config::ADDRESS) {
+        MLS::Resource::Geo->new({
+            dbh => $dbh,
+            dbh_tools => $tools_dbh,
+            monitor => $monitor,
+        })->go();
+    }
 
     unless ($no_publish) {
         my @areas = @MLS::Config::AREAS ? @MLS::Config::AREAS : ($resource);

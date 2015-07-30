@@ -2,6 +2,7 @@ package MLS::Resource::Utils;
 
 use strict;
 use DateTime;
+use Data::Dumper;
 
 sub find_vendor {
     my ($board_name, $vendor_dir) = @_;
@@ -87,6 +88,32 @@ sub get_search_interval {
     else {
       print "Off-Peak Hours\n";
       $search = '1900-01-01T00:00:00+';
+    }
+}
+
+sub check_transaction_complete {
+    my ($dbh, $conditions) = @_;
+
+    my $sql = "SELECT * FROM $MLS::Config::MLS.mutation WHERE " . join(' AND ', @$conditions);
+    my $row = $dbh->selectrow_hashref($sql);
+    die "Could not get row with [$sql]\n" if (!$row);
+
+    my $transaction_complete = 1;
+
+    # row is still out of sync
+    $transaction_complete = 0 if ($row->{remote_row_mod_ts} ne $row->{local_row_mod_ts});
+
+    # photos still need to be synced
+    $transaction_complete = 0 if (($row->{remote_img_mod_ts} ne $row->{local_img_mod_ts}) && $MLS::Config::IMG_MOD_TS_COLUMN);
+
+    # geocoding still needs to be performed
+    $transaction_complete = 0 if (($row->{remote_address} ne $row->{local_address}) && $MLS::Config::ADDRESS);
+
+    # if there are no more differences between remote and local in the mutation table then set the last_transaction_completed at = NOW() so that the row can be published
+    # The publisher job will detect the change and publish the row to the materialized (live) tables
+    if ($transaction_complete) {
+      my $sql = "UPDATE $MLS::Config::MLS.mutation SET last_transaction_completed_at = NOW() WHERE " . join(' AND ', @$conditions);
+      $dbh->do($sql);
     }
 }
 

@@ -2,6 +2,7 @@ package MLS::Resource::Matrix::cmls::Config::Property;
 use strict;
 
 use MLS::Resource::Matrix::cmls::Config;
+use MLS::Resource::Utils;
 
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
@@ -12,14 +13,13 @@ $MLS::Config::RESOURCE = 'Property';
 $MLS::Config::OBJECT = 'LargePhoto';
 
 # RETS Resource Classes
-# active, backup, leased, pending sale, closed sale
-my $status = '(Status=|ACT,UCNS,UCS,CLOSD)';
+my $search = '(MatrixModifiedDT=' . MLS::Resource::Utils::get_search_interval() . ')';
 %MLS::Config::CLASSES = (
-  Resi   => { StandardName => 'Residential', 'SearchRequest' => "((MatrixModifiedDT=1900-01-01+),$status)" },
-  Comm   => { StandardName => 'Commercial',  'SearchRequest' => "((MatrixModifiedDT=1900-01-01+),$status)", ignore => 1 },
-  Land   => { StandardName => 'Land',        'SearchRequest' => "((MatrixModifiedDT=1900-01-01+),$status)" },
-  MF     => { StandardName => 'MultiFamily', 'SearchRequest' => "((MatrixModifiedDT=1900-01-01+),$status)" },
-  Rent   => { StandardName => 'Rental',      'SearchRequest' => "((MatrixModifiedDT=1900-01-01+),$status)" },
+  Resi   => { StandardName => 'Residential', 'SearchRequest' => $search },
+  Comm   => { StandardName => 'Commercial',  'SearchRequest' => $search, ignore => 1 },
+  Land   => { StandardName => 'Land',        'SearchRequest' => $search },
+  MF     => { StandardName => 'MultiFamily', 'SearchRequest' => $search },
+  Rent   => { StandardName => 'Rental',      'SearchRequest' => $search },
 );
 
 # RETS Resource Primary Key
