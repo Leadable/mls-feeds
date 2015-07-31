@@ -91,7 +91,7 @@ eval {
         monitor => $monitor,
     })->go();
 
-    if ($MLS::Config::IMG_MOD_TS_COLUMN) {
+    if (%MLS::Config::IMG_MOD_TS_COLUMN) {
         $photo_module->new({
             dbh => $dbh,
             rets => $rets,

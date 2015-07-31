@@ -104,7 +104,7 @@ sub check_transaction_complete {
     $transaction_complete = 0 if ($row->{remote_row_mod_ts} ne $row->{local_row_mod_ts});
 
     # photos still need to be synced
-    $transaction_complete = 0 if (($row->{remote_img_mod_ts} ne $row->{local_img_mod_ts}) && $MLS::Config::IMG_MOD_TS_COLUMN);
+    $transaction_complete = 0 if (($row->{remote_img_mod_ts} ne $row->{local_img_mod_ts}) && %MLS::Config::IMG_MOD_TS_COLUMN);
 
     # geocoding still needs to be performed
     $transaction_complete = 0 if (($row->{remote_address} ne $row->{local_address}) && $MLS::Config::ADDRESS);
