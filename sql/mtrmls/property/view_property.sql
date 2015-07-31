@@ -38,8 +38,7 @@ SELECT
   END AS listing_type,
   "ClosedDate" as sold_date,
   "SalesPrice" as sold_price,
-  ("ContingencyType" is not null and "ContingencyType" <> 'None' and "ListingStatusID" IN ('Pending', 'Active'))
-    as under_contract,
+  ("ListingStatusID" = 'Pending' OR ("ListingStatusID" = 'Active' AND "ContingencyType" is not null and "ContingencyType" <> 'None')) as under_contract,
   "ContingencyType"::text || ' Contingency' as under_contract_description,
   "MlsNum" as listing_id,
   "MlsNum" as mlsnum,
