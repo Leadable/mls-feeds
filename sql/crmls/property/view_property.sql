@@ -24,9 +24,11 @@ CREATE OR REPLACE VIEW crmls.view_property AS
     --                FROM crmls."Media" m
     --               WHERE m."ClassKey" = "Media"."ClassKey" AND m."MediaType" = "Media"."MediaType" AND m."MediaOrder" = "Media"."MediaOrder" AND m."TimestampModified" > "Media"."TimestampModified"))
     --       GROUP BY "Media"."ClassSourceKey") AS __photo_urls,
-    p."SourceKey" AS listing_id,
+    p."ListingKey"::text AS listing_id,
     p."MLnumber" AS mlsnum,
     p."Status" AS status,
+    p."DateClosedSale" as sold_date,
+    p."SellingPrice" as sold_price,
     p."Status" = 'Backup Offer'::text OR p."Status" = 'Pending Sale'::text OR p."Status" = 'Leased'::text AS under_contract,
         CASE p."Status"
             WHEN 'Backup Offer'::text THEN 'Under Contract'::text

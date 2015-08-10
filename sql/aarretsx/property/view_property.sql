@@ -53,7 +53,7 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
     "Property"."SellingPrice" as sold_price,
     "Property"."VirtualTourURL" AS virtual_tour,
     "Property"."Status" AS status,
-    "Property"."ListingRid" AS listing_id,
+    "Property"."ListingRid"::text AS listing_id,
     "Property"."MLNumber"::text AS mlsnum,
     COALESCE("Property".__image_count, "Property"."PictureCount", 0) AS image_count,
     "Property"."ListingPrice" AS price,

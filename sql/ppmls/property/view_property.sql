@@ -23,7 +23,7 @@ SELECT
   "VirtualTourURLUnbranded" as virtual_tour,
   ("Status" IN ('Under Contract - Showing', 'UC Short Sale - Showing')) as under_contract,
   "Status" as under_contract_description,
-  "Matrix_Unique_ID" as listing_id,
+  "Matrix_Unique_ID"::text as listing_id,
   NULL::text as sold_date, -- note sold data is not present in this board yet
   NULL::text as sold_price,
   CASE "Property".__class_name
