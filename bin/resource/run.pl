@@ -110,14 +110,14 @@ eval {
 
     unless ($no_publish) {
         my @areas = @MLS::Config::AREAS ? @MLS::Config::AREAS : ($resource);
+        my $dbh_live  = MLS::Database->new({db => 'live'});
+        $dbh->set_autocommit(0);
         foreach my $id (@areas) {
             MLS::Resource::Publish->new({
                 id             => $id,
                 dbh            => $dbh,
+                dbh_live       => $dbh_live,
                 monitor        => $monitor,
-                tools_dbh      => $tools_dbh,
-                force_rebuild  => $force_rebuild,
-                storage_client => $publish_storage,
             })->go();
         }
     }
