@@ -115,7 +115,7 @@ eval {
         foreach my $id (@areas) {
             MLS::Resource::Publish->new({
                 id             => $id,
-                dbh            => $dbh,
+                dbh_feeds      => $dbh,
                 dbh_live       => $dbh_live,
                 monitor        => $monitor,
             })->go();
