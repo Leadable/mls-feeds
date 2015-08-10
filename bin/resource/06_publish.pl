@@ -33,10 +33,8 @@ my $config_path = "${board_path}::Config::$resource";
 
 eval "require $config_path" or die "Could not find [$config_path]: $@\n";
 
-my $feeds_dbh = MLS::Database->new({db => 'feeds'});
-my $tools_dbh = MLS::Database->new({db => 'tools'});
-
-my $storage = MLS::Storage->new({ use_s3 => 0, bucket => $MLS::Config::PUBLISH_STORAGE_BUCKET });
+my $dbh_feeds = MLS::Database->new({db => 'feeds', AutoCommit => 0});
+my $dbh_live  = MLS::Database->new({db => 'live'});
 
 require MLS::Resource::Publish;
 
@@ -47,10 +45,8 @@ my @areas = @MLS::Config::AREAS ? @MLS::Config::AREAS : ($resource);
 foreach my $id (@areas) {
     MLS::Resource::Publish->new({
       id             => $id,
-      dbh            => $feeds_dbh,
-      tools_dbh      => $tools_dbh,
-      storage_client => $storage,
-      force_rebuild  => $force_rebuild,
+      dbh_feeds      => $dbh_feeds,
+      dbh_live       => $dbh_live,
     })->go();
 }
 

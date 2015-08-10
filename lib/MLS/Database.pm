@@ -9,10 +9,13 @@ use vars qw{$AUTOLOAD};
 sub new {
   my ($class, $opts) = @_;
 
-  die "specify either feeds or tools in db argument" if ($opts->{db} ne 'feeds' && $opts->{db} ne 'tools');
+  die "specify either feeds or tools in db argument" if ($opts->{db} ne 'feeds' && $opts->{db} ne 'tools' && $opts->{db} ne 'live');
 
   $opts->{NumRetry} ||= 3;
-  $opts->{AutoCommit} ||= 1;
+
+  if (! defined $opts->{AutoCommit}) {
+    $opts->{AutoCommit} = 1;
+  }
 
   bless $opts, $class;
 
@@ -102,6 +105,12 @@ sub set_dbh {
   elsif ($self->{db} eq 'tools') {
     $self->{dbh} = $self->get_tools_dbh;
   }
+  elsif ($self->{db} eq 'live') {
+    $self->{dbh} = $self->get_live_dbh;
+  }
+  else {
+    die "No handler set for [$self->{db}]\n";
+  }
 }
 
 sub get_feeds_dbh {
@@ -126,6 +135,20 @@ sub get_tools_dbh {
   my $port = $ENV{POSTGRES_TOOLS_TCP_PORT};
   my $user = $ENV{POSTGRES_TOOLS_USER};
   my $pass = $ENV{POSTGRES_TOOLS_PASS};
+
+  my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
+
+  return DBI->connect($connstr, $user, $pass, { AutoCommit => $self->{AutoCommit}, RaiseError => 1, pg_server_prepare => 0 }) or die $DBI::errstr;
+};
+
+sub get_live_dbh {
+  my $self = shift;
+
+  my $dbname = 'mls-feeds-live';
+  my $host = $ENV{POSTGRES_LIVE_TCP_ADDR};
+  my $port = $ENV{POSTGRES_LIVE_TCP_PORT};
+  my $user = $ENV{POSTGRES_LIVE_USER};
+  my $pass = $ENV{POSTGRES_LIVE_PASS};
 
   my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
 

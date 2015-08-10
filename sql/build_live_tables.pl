@@ -6,6 +6,7 @@ use lib "$FindBin::Bin/../lib";
 
 use MLS::Database;
 use MLS::Resource::Utils;
+use Data::Dumper;
 
 my $dbh_feeds = MLS::Database->new({db => 'feeds'});
 my $dbh_live  = MLS::Database->new({db => 'live'});
@@ -78,19 +79,44 @@ my @areas = grep {!/^\./} readdir($DH);
 foreach my $area (@areas) {
     $area =~ s/\.sql$//;
 
-    my $table_sql = generate_table_sql($area);
-    my $extra_sql = get_extra_sql($area);
-    my $index_sql = generate_index_sql($area);
+    next if ($area eq 'view_office' || $area eq 'view_openhouse' || $area eq 'view_activeagent');
 
-    print "Building [$area]\n";
+    # check if this area exists on live
+    my $sth = $dbh_live->table_info('', $MLS, $area);
+    $sth->execute;
+    my $result = $sth->fetchrow_hashref;
 
-    $dbh_live->do(qq|
-        BEGIN;
-        $table_sql
-        $extra_sql
-        $index_sql
-        END;
-    |);
+    if ($result) {
+      print "[$area] already exists on live\n";
+    }
+    else {
+      print "Building [$area] on live\n";
+
+      my $table_sql = generate_table_sql($area);
+      my $extra_sql = get_extra_sql($area);
+      my $index_sql = generate_index_sql($area);
+
+      $dbh_live->do(qq|
+          BEGIN;
+          $table_sql
+          $extra_sql
+          $index_sql
+          END;
+      |);
+    }
+
+    # check if this area needs a foreign table
+    my $result = eval {
+      $dbh_feeds->selectall_arrayref("SELECT listing_id from $MLS.ft_$area");
+    };
+
+    if ($@) {
+      print "Building [ft_$area]\n";
+      $dbh_feeds->do(generate_ft_sql($area));
+    }
+    else {
+      print "[ft_$area] already exists\n";
+    }
 }
 
 print "\n[DONE]\n\n";
@@ -112,6 +138,20 @@ sub get_table_schema {
             { col_name => $_->[0], col_type => $_->[1] }
         } @$schema
     ];
+}
+
+sub generate_ft_sql {
+  my $area = shift;
+
+  my $schema = get_table_schema($area);
+
+  my $cols = join ',',
+               map {$dbh_feeds->quote_identifier($_->{col_name}) . ' ' . $_->{col_type}} @$schema;
+  my $table_sql = qq|
+    CREATE FOREIGN TABLE $MLS.ft_$area ($cols)
+    SERVER main
+    OPTIONS (table_name '$area')
+  ;|;
 }
 
 sub generate_table_sql {
