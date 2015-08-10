@@ -9,7 +9,7 @@ sub remote_search {
   my $rets = $self->{rets};
   my $remote = $self->{remote};
 
-  my $record_count = 0;
+  my $record_count;
   my $sanity_count = 0;
   my $chunk_size;
 
@@ -28,14 +28,14 @@ sub remote_search {
   while (1) {
     my $offset = ($chunk_size * $i++) + 1;
 
-    last if ($record_count && $record_count < $offset);
+    last if (defined $record_count && $record_count < $offset);
 
     print "Searching with offset: [" . $offset . "]\n\n";
 
     $request->SetOffset($offset);
     my $results = $rets->Search($request);
 
-    if (!$record_count) {
+    if (! defined $record_count) {
       $record_count = $results->GetCount();
       print "Results found: [" . $record_count . "]\n";
     }
