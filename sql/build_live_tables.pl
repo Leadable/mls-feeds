@@ -20,6 +20,7 @@ qw(
     age
     __inserted_at
     __modified_at
+    last_transaction_completed_at
     __price_updated_at
     __percent_reduced
     __geo_geom
@@ -107,7 +108,7 @@ foreach my $area (@areas) {
 
     # check if this area needs a foreign table
     my $result = eval {
-      $dbh_feeds->selectall_arrayref("SELECT listing_id from $MLS.ft_$area");
+      $dbh_feeds->selectall_arrayref("SELECT 1 from $MLS.ft_$area");
     };
 
     if ($@) {
