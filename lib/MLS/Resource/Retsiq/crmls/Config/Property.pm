@@ -12,17 +12,15 @@ $MLS::Config::RESOURCE = 'Property';
 $MLS::Config::OBJECT = 'LargePhoto';
 
 # RETS Resource Classes
-# active, backup, leased, pending sale, closed sale
-#my $status = '(Status=|A,B,L,P,S)';
-my $status = '(Status=|A,B)';
+my $search = '(TimestampModified=' . MLS::Resource::Utils::get_search_interval . ')';
 %MLS::Config::CLASSES = (
-  Residential       => { StandardName => 'Residential',       'SearchRequest' => "(TimestampModified=1900-01-01+)" },
-  Commercial        => { StandardName => 'Commercial',        'SearchRequest' => "(TimestampModified=1900-01-01+)" },
-  Land              => { StandardName => 'Land',              'SearchRequest' => "(TimestampModified=1900-01-01+)" },
+  Residential       => { StandardName => 'Residential',       'SearchRequest' => $search },
+  Commercial        => { StandardName => 'Commercial',        'SearchRequest' => $search },
+  Land              => { StandardName => 'Land',              'SearchRequest' => $search },
   Mobile            => { StandardName => 'Mobile',            'SearchRequest' => "", ignore => 1 },
   CrossProperty     => { StandardName => 'CrossProperty',     'SearchRequest' => "", ignore => 1 },
-  ResidentialIncome => { StandardName => 'ResidentialIncome', 'SearchRequest' => "(TimestampModified=1900-01-01+)" },
-  ResidentialLease  => { StandardName => 'ResidentialLease',  'SearchRequest' => "(TimestampModified=1900-01-01+)" },
+  ResidentialIncome => { StandardName => 'ResidentialIncome', 'SearchRequest' => $search },
+  ResidentialLease  => { StandardName => 'ResidentialLease',  'SearchRequest' => $search },
 );
 
 # RETS Resource Primary Key
