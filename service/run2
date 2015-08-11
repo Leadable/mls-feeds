@@ -72,6 +72,8 @@ else {
     push @params_list, '-r Property';
 }
 
+my $start_time = time;
+
 foreach my $params (@params_list) {
     my $pid = fork;
     if (! defined $pid) {
@@ -116,6 +118,9 @@ foreach my $params (@params_list) {
     }
 }
 
-sleep 300;
+# sleep until this script has been running for at least 5 minutes total
+while (time - $start_time < 300) {
+    sleep 1;
+}
 
 exit 0;
