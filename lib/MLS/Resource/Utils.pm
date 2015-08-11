@@ -48,29 +48,24 @@ sub is_peak_time {
     my $dt = DateTime->now;
     my $hour = $dt->hour;
 
-    # the VMs have no sense of timezone, so calculate it ourself
+    # off peak hours are 12am-6am
     if ($ENV{MLS_DB_HOST} =~ /^east/) {
-        $dt->set_time_zone('America/New_York');
+        # 4am-10am utc
+        if ($hour >= 4 && $hour < 10) {
+            $MLS::Config::PEAK_TIME = 0;
+            return;
+        }
     }
     elsif ($ENV{MLS_DB_HOST} =~ /^west/) {
-        $dt->set_time_zone('America/Los_Angeles');
+        # 7am-1pm utc
+        if ($hour >= 7 && $hour < 13) {
+            $MLS::Config::PEAK_TIME = 0;
+            return;
+        }
     }
 
-    # offset() comes in seconds with an operator in the front (when in america)
-    my $offset_hour = $dt->offset / 3600;
-    $offset_hour =~ s/^-//;
-
-    my $local_hour = $hour - $offset_hour;
-
-    # consider peak hours between 6am and 8pm
-    if ($local_hour > 6 and $local_hour < 20) {
-        $MLS::Config::PEAK_TIME = 1;
-        return 1;
-    }
-    else {
-        $MLS::Config::PEAK_TIME = 0;
-        return 0;
-    }
+    $MLS::Config::PEAK_TIME = 1;
+    return 1;
 }
 
 # returns a timestamp suitable for running a rets query with
