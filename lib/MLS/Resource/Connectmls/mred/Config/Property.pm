@@ -91,21 +91,4 @@ $MLS::Config::MV_ACTIVE_COLS = q|
   zip      => 'ZP',
 );
 
-# Make a closure with resource specific addr cols
-$MLS::Config::ADDRESS = sub {
-    my ($remote_row, $class) = @_;
-
-    my %address;
-    while (my ($col_name, $col_mapping) = each %MLS::Config::ADDR_COLUMNS) {
-
-      if (ref $col_mapping eq 'HASH') {
-        $col_mapping = defined $col_mapping->{$class} ? $col_mapping->{$class} : $col_mapping->{default};
-      }
-
-      $address{$col_name} = $remote_row->GetString($col_mapping) if ($col_mapping);
-    }
-
-    return $MLS::Config::ADDRESS_PROTO->(\%address);
-};
-
 1;

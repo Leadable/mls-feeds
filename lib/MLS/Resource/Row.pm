@@ -2,7 +2,7 @@ package MLS::Resource::Row;
 use strict;
 
 use Data::Dumper qw(Dumper);
-use MLS::Resource::Utils
+use MLS::Resource::Utils;
 
 $| = 1;
 
@@ -418,9 +418,9 @@ sub update_mutation_table {
 
   eval {
     my $address_sql;
-    if ($MLS::Config::ADDRESS) {
+    if (%MLS::Config::ADDR_COLUMNS) {
       # be aware: this can sometimes die silently
-      my $address = $MLS::Config::ADDRESS->($remote_row, $class);
+      my $address = MLS::Resource::Utils::parse_address($remote_row, $class);
       $address_sql = ', remote_address = ' . $dbh->quote($address);
     }
 

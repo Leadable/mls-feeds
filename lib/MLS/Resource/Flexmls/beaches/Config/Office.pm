@@ -25,18 +25,11 @@ $MLS::Config::RESOURCE = 'Office';
 
 $MLS::Config::OBJECT = 'Photo';
 
-# Make a closure with resource specific addr cols
-$MLS::Config::ADDRESS = sub {
-    my $remote_row = shift;
-
-    my $address_cols = {
-      street   => 'OFFICE_10',
-      city     => 'OFFICE_12',
-      state    => 'OFFICE_13',
-      zip      => 'OFFICE_14',
-    };
-
-    return $MLS::Config::ADDRESS_PROTO->($remote_row, $address_cols);
-};
+%MLS::Config::ADDR_COLUMNS = (
+  street   => 'OFFICE_10',
+  city     => 'OFFICE_12',
+  state    => 'OFFICE_13',
+  zip      => 'OFFICE_14',
+);
 
 1;

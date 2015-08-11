@@ -47,16 +47,4 @@ my $search = '((ListingRid=1+),(LastModifiedDateTime=' . MLS::Resource::Utils::g
   zip      => 'ZipCode',
 );
 
-# Make a closure with resource specific addr cols
-$MLS::Config::ADDRESS = sub {
-    my $remote_row = shift;
-
-    my %address;
-    while (my ($col_name, $col_mapping) = each %MLS::Config::ADDR_COLUMNS) {
-      $address{$col_name} = $remote_row->GetString($col_mapping);
-    }
-
-    return $MLS::Config::ADDRESS_PROTO->(\%address);
-};
-
 1;

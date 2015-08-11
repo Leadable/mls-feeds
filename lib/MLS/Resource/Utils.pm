@@ -102,7 +102,7 @@ sub check_transaction_complete {
     $transaction_complete = 0 if (($row->{remote_img_mod_ts} ne $row->{local_img_mod_ts}) && %MLS::Config::IMG_MOD_TS_COLUMN);
 
     # geocoding still needs to be performed
-    $transaction_complete = 0 if (($row->{remote_address} ne $row->{local_address}) && $MLS::Config::ADDRESS);
+    $transaction_complete = 0 if (($row->{remote_address} ne $row->{local_address}) && %MLS::Config::ADDR_COLUMNS);
 
     # if there are no more differences between remote and local in the mutation table then set the last_transaction_completed at = NOW() so that the row can be published
     # The publisher job will detect the change and publish the row to the materialized (live) tables
@@ -110,6 +110,59 @@ sub check_transaction_complete {
       my $sql = "UPDATE $MLS::Config::MLS.mutation SET last_transaction_completed_at = NOW() WHERE " . join(' AND ', @$conditions);
       $dbh->do($sql);
     }
+}
+
+# Format the listing address from the raw RETS row
+sub parse_address {
+    my ($remote_row, $class) = @_;
+
+    # MLS boards may override this method
+    return $MLS::Config::ADDRESS->($remote_row, $class) if ($MLS::Config::ADDRESS);
+
+    my %address;
+    while (my ($col_name, $col_mapping) = each %MLS::Config::ADDR_COLUMNS) {
+
+      if (ref $col_mapping eq 'HASH') {
+        $col_mapping = defined $col_mapping->{$class} ? $col_mapping->{$class} : $col_mapping->{default};
+      }
+
+      $address{$col_name} = $remote_row->GetString($col_mapping) if ($col_mapping);
+    }
+
+    my (@line1, @full);
+
+    push(@line1, $address{number}) if $address{number};
+    push(@line1, $address{prefix}) if $address{prefix};
+    push(@line1, $address{street}) if $address{street};
+    push(@line1, $address{suffix}) if $address{suffix};
+    push(@line1, $address{post_dir}) if $address{post_dir};
+
+    $address{line1} = join(' ', @line1);
+
+    $address{line2} = sprintf('%s, %s %s', $address{city}, $address{state}, $address{zip})  if ($address{city} && $address{state} && $address{zip});
+    $address{line2} = sprintf('%s, %s', $address{city}, $address{state})                    if ($address{city} && $address{state} && !($address{zip}));
+
+    push(@full, $address{line1}) if $address{line1};
+    push(@full, $address{line2}) if $address{line2};
+    $address{full} = join(', ', @full);
+
+    my $spec = Geo::StreetAddress::US->parse_address($address{full});
+
+    @line1 = ();
+    my @line2 = ();
+
+    push(@line1, $spec->{number}) if $spec->{number};
+    push(@line1, $spec->{prefix}) if $spec->{prefix};
+    push(@line1, $spec->{street}) if $spec->{street};
+    push(@line1, $spec->{type}) if $spec->{type};
+    push(@line1, $spec->{suffix}) if $spec->{suffix};
+
+    push(@line2, $spec->{city} . ', ' . $spec->{state}) if ($spec->{city} && $spec->{state});
+    push(@line2, $spec->{zip}) if $spec->{zip};
+
+    return 'INVALID' unless (scalar(@line1) && scalar(@line2));
+
+    return join(' ', @line1) . ', ' . join(' ', @line2);
 }
 
 1;

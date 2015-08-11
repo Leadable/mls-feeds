@@ -20,17 +20,10 @@ $MLS::Config::RESOURCE = 'OpenHouse';
 # RETS Resource price column
 %MLS::Config::PRICE_COLUMN = ( SystemName => 'LIST22', DBName => 'listprice' );
 
-# Make a closure with resource specific addr cols
-$MLS::Config::ADDRESS = sub {
-    my $remote_row = shift;
-
-    my $address_cols = {
-      street   => 'ADD0',
-      city     => 'ADD5',
-      state    => 'ADD10',
-    };
-
-    return $MLS::Config::ADDRESS_PROTO->($remote_row, $address_cols);
-};
+%MLS::Config::ADDR_COLUMNS = (
+    street   => 'ADD0',
+    city     => 'ADD5',
+    state    => 'ADD10',
+);
 
 1;

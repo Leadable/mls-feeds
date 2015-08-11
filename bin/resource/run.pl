@@ -100,7 +100,7 @@ eval {
         })->go();
     }
 
-    if ($MLS::Config::ADDRESS) {
+    if (%MLS::Config::ADDR_COLUMNS) {
         MLS::Resource::Geo->new({
             dbh => $dbh,
             dbh_tools => $tools_dbh,

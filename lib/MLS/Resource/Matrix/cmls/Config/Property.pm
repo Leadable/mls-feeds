@@ -48,16 +48,4 @@ my $search = '(MatrixModifiedDT=' . MLS::Resource::Utils::get_search_interval() 
   zip      => 'PostalCode',
 );
 
-# Make a closure with resource specific addr cols
-$MLS::Config::ADDRESS = sub {
-    my $remote_row = shift;
-
-    my %address;
-    while (my ($col_name, $col_mapping) = each %MLS::Config::ADDR_COLUMNS) {
-      $address{$col_name} = $remote_row->GetString($col_mapping);
-    }
-
-    return $MLS::Config::ADDRESS_PROTO->(\%address);
-};
-
 1;
