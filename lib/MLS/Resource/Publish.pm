@@ -39,7 +39,7 @@ sub go {
     eval {
         my $delete_sql = qq|
             delete from $remote_table as m using $local_table as v
-                where v.listing_id = m.listing_id and v.__modified_at != m.__modified_at;
+                where v.listing_id = m.listing_id and v.last_transaction_completed_at != m.last_transaction_completed_at;
         |;
 
         my $insert_sql = qq|
