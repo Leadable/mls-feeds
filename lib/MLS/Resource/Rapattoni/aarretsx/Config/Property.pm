@@ -12,13 +12,13 @@ $MLS::Config::RESOURCE = 'Property';
 $MLS::Config::OBJECT = 'Photo';
 
 # RETS Resource Classes
-# active, pending, closed, backup, contingent
+my $search = '((ListingRid=1+),(LastModifiedDateTime=' . MLS::Resource::Utils::get_search_interval . '))';
 %MLS::Config::CLASSES = (
-  COMM => { StandardName => '',                     'SearchRequest' => "((OnMarket=|1,0),(ListingRid=1+))" },  # Commercial
-  INCP => { StandardName => '',                     'SearchRequest' => "(ListingRid=1+)"  }, # Income Property
-  LOTL => { StandardName => 'LotsAndLand',          'SearchRequest' => "(ListingRid=1+)" },  # Land
-  RENT => { StandardName => 'ResidentialProperty',  'SearchRequest' => "(ListingRid=1+)" },  # Rental
-  RESI => { StandardName => 'ResidentialProperty',  'SearchRequest' => "(ListingRid=1+)" },  # Residential
+  COMM => { StandardName => '',                     'SearchRequest' => $search },  # Commercial
+  INCP => { StandardName => '',                     'SearchRequest' => $search },  # Income Property
+  LOTL => { StandardName => 'LotsAndLand',          'SearchRequest' => $search },  # Land
+  RENT => { StandardName => 'ResidentialProperty',  'SearchRequest' => $search },  # Rental
+  RESI => { StandardName => 'ResidentialProperty',  'SearchRequest' => $search },  # Residential
 );
 
 # RETS Resource Primary Key

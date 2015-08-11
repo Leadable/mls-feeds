@@ -12,7 +12,7 @@ $MLS::Config::RESOURCE = 'Property';
 $MLS::Config::OBJECT = 'Photo';
 
 # RETS Resource Classes
-my $search = '(L_ListingID=1+)';
+my $search = '(L_UpdateDate=' . MLS::Resource::Utils::get_search_interval . ')';
 %MLS::Config::CLASSES = (
   RE_1 => { StandardName => 'ResidentialProperty', 'SearchRequest' => $search },
   LD_2 => { StandardName => 'LotsAndLand',         'SearchRequest' => $search },

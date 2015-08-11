@@ -12,7 +12,7 @@ $MLS::Config::RESOURCE = 'Property';
 $MLS::Config::OBJECT = 'LargePhoto';
 
 # RETS Resource Classes
-my $search = '(MatrixModifiedDT=1900-01-01+)';
+my $search = '(MatrixModifiedDT=' . MLS::Resource::Utils::get_search_interval . ')';
 %MLS::Config::CLASSES = (
   Resi       => { StandardName => 'Residential Property', 'SearchRequest' => $search },
   Business   => { StandardName => 'Business Property',    'SearchRequest' => $search },
