@@ -25,6 +25,7 @@ SELECT
   (__removed_at is null AND "Status" <> 'Under Contract-No Show') as __active,
   __inserted_at,
   __modified_at,
+  last_transaction_completed_at,
   __geo_modified_at,
   __price_updated_at,
   __percent_reduced,
@@ -196,6 +197,7 @@ SELECT
   "FireplaceDescription" as "feature_fireplace[]"
   
 FROM
+  cmls.mutation,
   cmls."Property" p
 LEFT OUTER JOIN rooms r ON p."Matrix_Unique_ID" = r.listing_id
 ;

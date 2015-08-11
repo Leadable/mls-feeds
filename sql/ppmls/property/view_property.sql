@@ -7,6 +7,7 @@ SELECT
   (__removed_at is null) as __active,
   __inserted_at,
   __modified_at,
+  last_transaction_completed_at,
   __geo_modified_at,
   __price_updated_at,
   __percent_reduced,
@@ -180,5 +181,5 @@ SELECT
   "EarnestMoney" as feature_earnest_money,
   "LeaseTermMin" as feature_lease_term_min
 FROM
-  ppmls."Property"
+  ppmls."Property", ppmls.mutation
 ;

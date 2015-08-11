@@ -6,6 +6,7 @@ SELECT
   __removed_at,
   (__removed_at is null) as __active,
   __inserted_at,
+  last_transaction_completed_at,
   __modified_at,
   __price_updated_at,
   __percent_reduced,

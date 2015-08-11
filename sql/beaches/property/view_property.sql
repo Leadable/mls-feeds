@@ -3,39 +3,40 @@
 DROP VIEW IF EXISTS beaches.view_property CASCADE;
 CREATE VIEW beaches.view_property AS 
  SELECT 'beaches'::text AS mls,
-    "Property".__removed_at,
-    "Property".__removed_at IS NULL AS __active,
-    "Property".__inserted_at AS age,
-    "Property".__inserted_at,
-    "Property".__modified_at,
-    "Property".__price_updated_at,
-    "Property"."UNBRANDEDIDXVIRTUALTOUR" AS virtual_tour,
-    "Property".__price_history_times,
-    "Property".__price_history_vals,
-    "Property".__percent_reduced,
-    "Property".__status_updated_at,
-    "Property".__status_history_times,
-    "Property".__status_history_vals,
-    "Property".__geo_geom,
-    "Property".__geo_outlier,
+    __removed_at,
+    __removed_at IS NULL AS __active,
+    __inserted_at AS age,
+    __inserted_at,
+    __modified_at,
+    last_transaction_completed_at,
+    __price_updated_at,
+    "UNBRANDEDIDXVIRTUALTOUR" AS virtual_tour,
+    __price_history_times,
+    __price_history_vals,
+    __percent_reduced,
+    __status_updated_at,
+    __status_history_times,
+    __status_history_vals,
+    __geo_geom,
+    __geo_outlier,
     __photo_urls,
-    "Property"."LIST_132"::timestamp as __list_date,
-    "Property"."LIST_1" AS id,
-    "Property"."LIST_1" AS listing_id,
-    "Property"."LIST_105" AS mlsnum,
-    "Property"."LIST_15" AS status,
-    "Property"."LIST_12" AS sold_date,
-    "Property"."LIST_23" AS sold_price,
-    "Property"."LIST_15" = 'Active Contingent'::text OR "Property"."LIST_15" = 'Pending'::text OR "Property"."LIST_15" = 'Contingent'::text AS under_contract,
-    CASE "Property"."LIST_15"
+    "LIST_132"::timestamp as __list_date,
+    "LIST_1" AS id,
+    "LIST_1" AS listing_id,
+    "LIST_105" AS mlsnum,
+    "LIST_15" AS status,
+    "LIST_12" AS sold_date,
+    "LIST_23" AS sold_price,
+    "LIST_15" = 'Active Contingent'::text OR "LIST_15" = 'Pending'::text OR "LIST_15" = 'Contingent'::text AS under_contract,
+    CASE "LIST_15"
         WHEN 'Pending'::text THEN 'Pending'::text
         WHEN 'Active Contingent'::text THEN 'Active Contingent'::text
         WHEN 'Contingent'::text THEN 'Contingent'::text
         ELSE NULL::text
     END AS under_contract_description,
-    CASE "Property".__class_name
+    CASE __class_name
         WHEN 'F'::text THEN
-        CASE "Property"."LIST_15"
+        CASE "LIST_15"
             WHEN 'Pending'::text           THEN 'for_rent'::text
             WHEN 'Active Contingent'::text THEN 'for_rent'::text
             WHEN 'Contingent'::text        THEN 'for_rent'::text
@@ -44,7 +45,7 @@ CREATE VIEW beaches.view_property AS
             ELSE NULL::text
         END
         ELSE
-        CASE "Property"."LIST_15"
+        CASE "LIST_15"
             WHEN 'Pending'::text           THEN 'for_sale'::text
             WHEN 'Active Contingent'::text THEN 'for_sale'::text
             WHEN 'Contingent'::text        THEN 'for_sale'::text
@@ -53,18 +54,18 @@ CREATE VIEW beaches.view_property AS
             ELSE NULL::text
         END
     END AS listing_type,
-    COALESCE("Property".__image_count, "Property"."LIST_133", 0) AS image_count,
-    "Property"."LIST_22" AS price,
+    COALESCE(__image_count, "LIST_133", 0) AS image_count,
+    "LIST_22" AS price,
     CASE __class_name
       WHEN 'A' THEN "LIST_125"
       WHEN 'F' THEN "LIST_125"
       WHEN 'B' THEN "LIST_125"
       WHEN 'C' THEN 0
     END as price_per_sqft,
-    "Property"."LIST_66" AS beds,
+    "LIST_66" AS beds,
         CASE
-            WHEN "Property".__class_name IN ('A'::text, 'F'::text) THEN
-            CASE "Property"."LIST_9"
+            WHEN __class_name IN ('A'::text, 'F'::text) THEN
+            CASE "LIST_9"
                 WHEN 'Condo Hotel'::text THEN 'Condo'::text
                 WHEN 'Condo/Coop'::text THEN 'Condo'::text
                 WHEN 'Mobile/Manufactured'::text THEN 'Single Family'::text
@@ -73,65 +74,65 @@ CREATE VIEW beaches.view_property AS
                 WHEN 'Villa'::text THEN 'Villa'::text
                 ELSE 'Single Family'::text
             END
-            WHEN "Property".__class_name = 'C'::text THEN 'Lots & Land'::text
-            WHEN "Property".__class_name = 'B'::text THEN 'Multi-Family'::text
+            WHEN __class_name = 'C'::text THEN 'Lots & Land'::text
+            WHEN __class_name = 'B'::text THEN 'Multi-Family'::text
             ELSE 'Single Family'::text
         END AS type,
-    "Property"."LIST_68" AS baths_total,
-    "Property"."LIST_78" AS remarks,
-    ((("Property"."LIST_31" || ' '::text) ||
+    "LIST_68" AS baths_total,
+    "LIST_78" AS remarks,
+    ((("LIST_31" || ' '::text) ||
         CASE
-            WHEN "Property"."LIST_33" IS NULL THEN ''::text
-            ELSE "Property"."LIST_33" || ' '::text
-        END) || "Property"."LIST_34") ||
+            WHEN "LIST_33" IS NULL THEN ''::text
+            ELSE "LIST_33" || ' '::text
+        END) || "LIST_34") ||
         CASE
-            WHEN "Property"."LIST_37" IS NULL THEN ''::text
-            ELSE ' '::text || "Property"."LIST_37"
+            WHEN "LIST_37" IS NULL THEN ''::text
+            ELSE ' '::text || "LIST_37"
         END AS address_line1,
     'FL'::text AS state,
-    ((initcap("Property"."LIST_39") || ', FL'::text) || ' '::text) || "substring"("Property"."LIST_43", 1, 5) AS address_line2,
-    initcap("Property"."LIST_39") AS city,
-    initcap("Property"."LIST_39") || ', FL'::text AS city_st,
-    "substring"("Property"."LIST_43", 1, 5) AS zip,
-    "Property"."LIST_41" AS county,
-    "Property".__geo_modified_at,
-    "Property".__geo_latitude AS latitude,
-    "Property".__geo_longitude AS longitude,
-    "Property"."LIST_48" AS square_feet,
-    "Property"."LIST_53" AS year_built,
-    "Property"."LIST_57" AS acres,
-        CASE "Property".__class_name
-            WHEN 'A'::text THEN "Property"."GF20121128203155695117000000" && ARRAY['Garage - Attached'::text, 'Garage - Building'::text, 'Garage - Detached'::text, 'Assigned'::text]
-            WHEN 'F'::text THEN "Property"."GF20121206203003854226000000" && ARRAY['Garage - Attached'::text, 'Garage - Building'::text, 'Garage - Detached'::text, 'Assigned'::text] OR "Property"."GF20121207034326840518000000" && ARRAY['Garage - 1 Car'::text, 'Garage - 2 Car'::text]
+    ((initcap("LIST_39") || ', FL'::text) || ' '::text) || "substring"("LIST_43", 1, 5) AS address_line2,
+    initcap("LIST_39") AS city,
+    initcap("LIST_39") || ', FL'::text AS city_st,
+    "substring"("LIST_43", 1, 5) AS zip,
+    "LIST_41" AS county,
+    __geo_modified_at,
+    __geo_latitude AS latitude,
+    __geo_longitude AS longitude,
+    "LIST_48" AS square_feet,
+    "LIST_53" AS year_built,
+    "LIST_57" AS acres,
+        CASE __class_name
+            WHEN 'A'::text THEN "GF20121128203155695117000000" && ARRAY['Garage - Attached'::text, 'Garage - Building'::text, 'Garage - Detached'::text, 'Assigned'::text]
+            WHEN 'F'::text THEN "GF20121206203003854226000000" && ARRAY['Garage - Attached'::text, 'Garage - Building'::text, 'Garage - Detached'::text, 'Assigned'::text] OR "GF20121207034326840518000000" && ARRAY['Garage - 1 Car'::text, 'Garage - 2 Car'::text]
             ELSE NULL::boolean
         END AS garage,
     NULL::boolean AS basement,
-        CASE "Property".__class_name
-            WHEN 'A'::text THEN "Property"."GF20121126194243819854000000" && ARRAY['Fireplace(s)'::text]
-            WHEN 'F'::text THEN "Property"."GF20121206203003177597000000" && ARRAY['Fireplace(s)'::text]
+        CASE __class_name
+            WHEN 'A'::text THEN "GF20121126194243819854000000" && ARRAY['Fireplace(s)'::text]
+            WHEN 'F'::text THEN "GF20121206203003177597000000" && ARRAY['Fireplace(s)'::text]
             ELSE NULL::boolean
         END AS fireplace,
-        CASE "Property".__class_name
-            WHEN 'A'::text THEN "Property"."GF20121126194243919925000000" && ARRAY['Fence'::text]
-            WHEN 'F'::text THEN "Property"."GF20121206203002756811000000" && ARRAY['Fence'::text, 'Fenced Yard'::text]
+        CASE __class_name
+            WHEN 'A'::text THEN "GF20121126194243919925000000" && ARRAY['Fence'::text]
+            WHEN 'F'::text THEN "GF20121206203002756811000000" && ARRAY['Fence'::text, 'Fenced Yard'::text]
             ELSE NULL::boolean
         END AS fenced_yard,
-    "Property"."LIST_108" = 'Yes'::text AS waterfront,
-    "Property"."LIST_51" = 1::numeric OR "Property"."LIST_64" = 1.0 AS one_story,
-    ("Property"."GF20121128194138408449000000" && ARRAY['None'::text]) IS NOT TRUE AND "Property"."GF20121128194138408449000000" IS NOT NULL OR ("Property"."GF20121206202431279127000000" && ARRAY['None'::text]) IS NOT TRUE AND "Property"."GF20121206202431279127000000" IS NOT NULL OR "Property"."LIST_109" = 'Yes'::text OR "Property"."GF20121207034326840518000000" && ARRAY['Community Pool'::text, 'Private Pool'::text] OR "Property"."GF20121128203214100844000000" && ARRAY['Pool'::text] OR "Property"."GF20121206202841357230000000" && ARRAY['Pool'::text] OR "Property"."GF20121206202431812853000000" && ARRAY['Pool'::text] OR "Property"."GF20121206203004466211000000" && ARRAY['Pool'::text] AS pool,
-    "Property"."GF20121126194243919925000000" && ARRAY['Deck'::text, 'Open Patio'::text, 'Open Porch'::text, 'Screen Porch'::text, 'Screened Balcony'::text, 'Covered Balcony'::text, 'Screened Patio'::text, 'Wrap Porch'::text] OR "Property"."GF20121206202429990607000000" && ARRAY['Deck'::text, 'Open Patio'::text, 'Open Porch'::text, 'Screen Porch'::text, 'Screened Balcony'::text, 'Covered Balcony'::text, 'Screened Patio'::text, 'Wrap Porch'::text] OR "Property"."GF20121206203002756811000000" && ARRAY['Deck'::text, 'Open Patio'::text, 'Open Porch'::text, 'Screen Porch'::text, 'Screened Balcony'::text, 'Covered Balcony'::text, 'Screened Patio'::text, 'Wrap Porch'::text] AS patio_deck_porch,
-    "Property"."GF20121211024909824726000000" && ARRAY['Walk-in Closets'::text] OR "Property"."GF20121211025107658704000000" && ARRAY['Walk-in Closets'::text] OR "Property"."GF20121126194243819854000000" && ARRAY['Walk-in Closet'::text] OR "Property"."GF20121206203003177597000000" && ARRAY['Walk-in Closet'::text] OR "Property"."GF20121211025107658704000000" && ARRAY['Walk-in Closets'::text] OR "Property"."GF20121211025151415154000000" && ARRAY['Walk-in Closets'::text] AS walk_in_closets,
+    "LIST_108" = 'Yes'::text AS waterfront,
+    "LIST_51" = 1::numeric OR "LIST_64" = 1.0 AS one_story,
+    ("GF20121128194138408449000000" && ARRAY['None'::text]) IS NOT TRUE AND "GF20121128194138408449000000" IS NOT NULL OR ("GF20121206202431279127000000" && ARRAY['None'::text]) IS NOT TRUE AND "GF20121206202431279127000000" IS NOT NULL OR "LIST_109" = 'Yes'::text OR "GF20121207034326840518000000" && ARRAY['Community Pool'::text, 'Private Pool'::text] OR "GF20121128203214100844000000" && ARRAY['Pool'::text] OR "GF20121206202841357230000000" && ARRAY['Pool'::text] OR "GF20121206202431812853000000" && ARRAY['Pool'::text] OR "GF20121206203004466211000000" && ARRAY['Pool'::text] AS pool,
+    "GF20121126194243919925000000" && ARRAY['Deck'::text, 'Open Patio'::text, 'Open Porch'::text, 'Screen Porch'::text, 'Screened Balcony'::text, 'Covered Balcony'::text, 'Screened Patio'::text, 'Wrap Porch'::text] OR "GF20121206202429990607000000" && ARRAY['Deck'::text, 'Open Patio'::text, 'Open Porch'::text, 'Screen Porch'::text, 'Screened Balcony'::text, 'Covered Balcony'::text, 'Screened Patio'::text, 'Wrap Porch'::text] OR "GF20121206203002756811000000" && ARRAY['Deck'::text, 'Open Patio'::text, 'Open Porch'::text, 'Screen Porch'::text, 'Screened Balcony'::text, 'Covered Balcony'::text, 'Screened Patio'::text, 'Wrap Porch'::text] AS patio_deck_porch,
+    "GF20121211024909824726000000" && ARRAY['Walk-in Closets'::text] OR "GF20121211025107658704000000" && ARRAY['Walk-in Closets'::text] OR "GF20121126194243819854000000" && ARRAY['Walk-in Closet'::text] OR "GF20121206203003177597000000" && ARRAY['Walk-in Closet'::text] OR "GF20121211025107658704000000" && ARRAY['Walk-in Closets'::text] OR "GF20121211025151415154000000" && ARRAY['Walk-in Closets'::text] AS walk_in_closets,
     NULL::boolean AS double_vanity,
-    "Property"."LIST_86" AS __minor_area,
+    "LIST_86" AS __minor_area,
     NULL::text AS __major_area,
-    "Property"."LIST_77" AS subdivision,
-    "Property"."LIST_87" AS modification_timestamp,
-    "Property"."VOWAddr" AS display_address,
+    "LIST_77" AS subdivision,
+    "LIST_87" AS modification_timestamp,
+    "VOWAddr" AS display_address,
     --"" as school_district,
-    "Property"."LIST_85" AS elementary_school,
-    "Property"."LIST_32" AS middle_school,
-    "Property"."LIST_73" AS high_school,
-    "Property".selling_office_name AS office_name,
+    "LIST_85" AS elementary_school,
+    "LIST_32" AS middle_school,
+    "LIST_73" AS high_school,
+    selling_office_name AS office_name,
     CASE __class_name
       WHEN 'A' THEN "GF20121128190237228652000000"
       WHEN 'B' THEN "GF20121206202432253492000000"
@@ -213,7 +214,7 @@ CREATE VIEW beaches.view_property AS
     END as "feature_restrictions[]"
 
 
-FROM beaches."Property" JOIN beaches.mutation ON beaches."Property"."LIST_1"::text = beaches.mutation.remote_id::text AND beaches.mutation.last_transaction_completed_at is not null
+FROM beaches."Property" as p, beaches.mutation as m WHERE p."LIST_1"::text = m.remote_id::text AND m.last_transaction_completed_at is not null
 
 UNION
 
@@ -223,6 +224,7 @@ UNION
     __inserted_at AS age,
     __inserted_at,
     __modified_at,
+    last_transaction_completed_at,
     __price_updated_at,
     "Virtu_1223" AS virtual_tour,
     __price_history_times,
@@ -246,7 +248,7 @@ UNION
       WHEN 'Backup Contract-Call LA' THEN 'Backup Contract-Call LA'
       ELSE NULL::text
     END as under_contract_description,
-    CASE "Property".__class_name
+    CASE __class_name
         WHEN '6'::text THEN 'for_rent'::text
         ELSE 'for_sale'::text
     END AS listing_type,
@@ -349,5 +351,5 @@ UNION
     "HOA_111"[0] as "feature_governing_body",
     "PETS_A_181" as "feature_pets_allowed",
     null::text[] as "feature_restrictions[]"
-FROM ragfl."Property" JOIN ragfl.mutation ON ragfl."Property".sysid::text = ragfl.mutation.remote_id::text AND ragfl.mutation.last_transaction_completed_at is not null
+FROM ragfl."Property" as p, ragfl.mutation as m WHERE p.sysid::text = m.remote_id::text AND m.last_transaction_completed_at is not null
 ;  

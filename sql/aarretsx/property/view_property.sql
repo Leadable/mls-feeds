@@ -7,6 +7,7 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
     "Property".__removed_at,
     "Property".__inserted_at,
     "Property".__modified_at,
+    last_transaction_completed_at,
     "Property".__price_updated_at,
     "Property".__price_history_times,
     "Property".__price_history_vals,
@@ -167,6 +168,6 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
     COALESCE("Property"."RESILAKE", "Property"."RENTLAKE", "Property"."LOTLLAKE") AS lake,
     "Property"."LastModifiedDateTime" AS modification_timestamp,
     true AS display_address
-   FROM aarretsx."Property"
+   FROM aarretsx."Property", aarretsx.mutation
   WHERE ("Property"."PropertyType" = ANY (ARRAY['Rental'::text, 'Residential'::text, 'Lots & Land'::text, 'Condo'::text, 'Income Property'::text])) AND "Property"."PropertySubtype1" <> 'Farm'::text AND "Property"."Association" = 'Ann Arbor Area MLS'::text
 ;

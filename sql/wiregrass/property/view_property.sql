@@ -8,6 +8,7 @@ SELECT
   (__inserted_at - '1 hours'::interval) as age,
   __inserted_at,
   __modified_at,
+  last_transaction_completed_at,
   __price_updated_at,
   __price_history_times,
   __price_history_vals,
@@ -112,5 +113,5 @@ SELECT
   "LM_Dec_9" as price_per_sqft,
   initcap("L_Type_") as feature_type
 
-FROM wiregrass."Property"
+FROM wiregrass."Property", wiregrass.mutation
 ;

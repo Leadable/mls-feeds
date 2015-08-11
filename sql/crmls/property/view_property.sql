@@ -6,6 +6,7 @@ CREATE OR REPLACE VIEW crmls.view_property AS
     p.__inserted_at - '03:00:00'::interval AS age,
     p.__inserted_at,
     p.__modified_at,
+    m.last_transaction_completed_at,
     p.__price_updated_at,
     p."VirtualTour" AS virtual_tour,
     p."MLSID" AS feature_source_mls,
@@ -238,6 +239,6 @@ CREATE OR REPLACE VIEW crmls.view_property AS
             ELSE NULL::text
         END AS feature_type13,
     p."PropertyType" AS feature_comm_type
-   FROM crmls."Property" p
+   FROM crmls."Property" as p, crmls.mutation as m
   WHERE p."State" = 'CA'::text
 ;
