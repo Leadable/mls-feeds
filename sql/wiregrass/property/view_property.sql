@@ -95,7 +95,7 @@ SELECT
   coalesce("LFD_ZONING_42") as "feature_zoning[]",
   "L_Keyword2" as feature_full_baths,
   "L_Keyword3" as feature_half_baths,
-  "L_Keyword5" IN ('Yes', 'Carport Attached', 'Carport Detached', 'Garage Attached', 'Garage Detached', 'Other/See Remarks') as feature_garage,
+  "L_Keyword5" IN ('Yes', 'Carport Attached', 'Carport Detached', 'Garage Attached', 'Garage Detached', 'Other/See Remarks') as garage,
   "L_Keyword7" as feature_pool,
   "VT_VTourURL" as virtual_tour,
   null::text as __minor_area,
