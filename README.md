@@ -21,13 +21,12 @@ Each board will follow the same steps to sync the data.
 5. Geocode listing addresses for new listings and existings listings with an address change.
 
 # Publishing Changes
-After a board has been updated (Steps 1-5 of previous section), a publish script will run to determine how to update the live data. Incremental changes will be used to update live data, unless a full rebuild is necessary.
+The final step of updating a board's data is publishing the new data to the live database. A foreign table is used from the mls-feeds-db to directly connect to the live database. Updates are done as such:
 
-1. Determine if there is a schema change by hashing the column names and types of the view against the hash of the materialized view which represents live data. If there is a schema change, a full rebuild is necessary.
-2. If the schema is consistent, then hash the metadata values (__inserted_at, __modified_at, __removed_at) for all rows in the view against the materialized view to determine if the data has changed.
-3. Generate diff containing whatever schema and data changes are necessary, push diff to storage service
-4. Insert a row on live publish table containing old/new hashes, if a rebuild is necessary, and location of diff.
-5. Update the local materialized view which represents the live data.
+1. Compare rows from live table and feeds table and delete where __modified_at differs
+2. Insert all rows from feeds table not present in the live table
+
+This operation is very fast in most cases, however there is a bottleneck when gathering listing_id from the view on the feeds-db. Views cannot use indexes in Postgres 9.4 so this operation can be very slow.
 
 # Maintaining State
 Each board has a table call mutation wich keeps track of the remote changes
