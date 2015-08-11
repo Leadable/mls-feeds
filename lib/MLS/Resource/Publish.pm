@@ -47,9 +47,8 @@ sub go {
                 select v.* from $local_table as v, $MLS::Config::MLS.mutation as mut where 
                 mut.remote_id = v.listing_id
                 and mut.last_transaction_completed_at is not null
-                and not exists (
-                    select listing_id from $remote_table as mv
-                    where v.listing_id = mv.listing_id
+                and v.listing_id not in (
+                    select listing_id from $remote_table
                 );
         |;
 
