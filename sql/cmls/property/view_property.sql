@@ -56,7 +56,7 @@ SELECT
         END
   END AS listing_type,
   "Status" as under_contract_description,
-  "Matrix_Unique_ID" as listing_id,
+  "Matrix_Unique_ID"::text as listing_id,
   "MLSNumber"::text as mlsnum,
   coalesce(__image_count, "PhotoCount", 0) as image_count,
   "ListPrice" as price,

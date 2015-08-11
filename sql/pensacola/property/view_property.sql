@@ -174,5 +174,4 @@ SELECT
   coalesce("LFD_INTERIOR_1", "LFD_INTERIOR_104", "LFD_INTERIOR_78") as "feature_interior_features[]"
 
 FROM pensacola."Property"
-WHERE __class_name <> 'RN_4'
 ;

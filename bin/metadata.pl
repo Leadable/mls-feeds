@@ -103,6 +103,11 @@ sub dumpAllTables {
     # always assume lookups are text since we only care about storing the long value
     my $long_data_type = $table->GetLookupName() ? 'text' : $DATA_TYPE_FROM_RETS_TO_PG{ $table->GetDataType() };
 
+    # fall back to text
+    if ($INTERPRETATION_TYPE_FROM_RETS_TO_PG{ $table->GetInterpretation() } eq 'none') {
+      $long_data_type = 'text';
+    }
+
     my $longname = $table->GetLongName();
     $longname =~ s/'/''/;
 
