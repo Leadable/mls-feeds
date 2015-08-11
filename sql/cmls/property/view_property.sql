@@ -197,7 +197,9 @@ SELECT
   "FireplaceDescription" as "feature_fireplace[]"
   
 FROM
-  cmls.mutation,
   cmls."Property" p
-LEFT OUTER JOIN rooms r ON p."Matrix_Unique_ID" = r.listing_id
+LEFT OUTER JOIN rooms r ON p."Matrix_Unique_ID" = r.listing_id,
+  cmls.mutation m
+WHERE
+  p."Matrix_Unique_ID"::text = m.remote_id
 ;

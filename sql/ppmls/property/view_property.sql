@@ -27,7 +27,7 @@ SELECT
   "Matrix_Unique_ID"::text as listing_id,
   NULL::text as sold_date, -- note sold data is not present in this board yet
   NULL::text as sold_price,
-  CASE "Property".__class_name
+  CASE p.__class_name
       WHEN 'Rental'::text THEN
       CASE "Status"
           WHEN 'Leased'     THEN 'leased'::text
@@ -181,5 +181,5 @@ SELECT
   "EarnestMoney" as feature_earnest_money,
   "LeaseTermMin" as feature_lease_term_min
 FROM
-  ppmls."Property", ppmls.mutation
+  ppmls."Property" as p, ppmls.mutation as m where p."Matrix_Unique_ID"::text = m.remote_id
 ;

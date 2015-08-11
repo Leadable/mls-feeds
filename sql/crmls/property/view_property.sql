@@ -240,5 +240,5 @@ CREATE OR REPLACE VIEW crmls.view_property AS
         END AS feature_type13,
     p."PropertyType" AS feature_comm_type
    FROM crmls."Property" as p, crmls.mutation as m
-  WHERE p."State" = 'CA'::text
+  WHERE p."ListingKey"::text = m.remote_id and p."State" = 'CA'::text
 ;

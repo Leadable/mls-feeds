@@ -169,5 +169,5 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
     "Property"."LastModifiedDateTime" AS modification_timestamp,
     true AS display_address
    FROM aarretsx."Property", aarretsx.mutation
-  WHERE ("Property"."PropertyType" = ANY (ARRAY['Rental'::text, 'Residential'::text, 'Lots & Land'::text, 'Condo'::text, 'Income Property'::text])) AND "Property"."PropertySubtype1" <> 'Farm'::text AND "Property"."Association" = 'Ann Arbor Area MLS'::text
+  WHERE aarretsx."Property"."ListingRid"::text = aarretsx.mutation.remote_id and ("Property"."PropertyType" = ANY (ARRAY['Rental'::text, 'Residential'::text, 'Lots & Land'::text, 'Condo'::text, 'Income Property'::text])) AND "Property"."PropertySubtype1" <> 'Farm'::text AND "Property"."Association" = 'Ann Arbor Area MLS'::text
 ;

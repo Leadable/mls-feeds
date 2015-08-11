@@ -113,5 +113,6 @@ SELECT
   "LM_Dec_9" as price_per_sqft,
   initcap("L_Type_") as feature_type
 
-FROM wiregrass."Property", wiregrass.mutation
+FROM wiregrass."Property" as p, wiregrass.mutation as m WHERE
+"L_ListingID"::text = m.remote_id
 ;
