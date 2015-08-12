@@ -28,7 +28,7 @@ SELECT
   null::text as under_contract_description,
   "L_AskingPrice" as price,
   coalesce(__image_count, "L_PictureCount"::integer, 0) as image_count,
-  "LM_Int1_1" as beds,
+  "L_Keyword1" as beds,
   'for_sale'::text as listing_type,
   CASE __class_name
     WHEN 'LD_2' THEN 'Lots & Land'
@@ -36,7 +36,8 @@ SELECT
     WHEN 'RE_1' THEN "L_Type_"
     WHEN 'MF_4' THEN 'Multi-Family'
   END as type,
-  "LM_Int2_8" as baths_total,
+  "L_Keyword2" as baths_total,
+  "L_Keyword3" as baths_partial,
   "LR_remarks22" as remarks,
   initcap("L_Address") as address_line1,
   initcap("L_City") as city,
@@ -94,8 +95,6 @@ SELECT
   coalesce("LFD_WATERAUTHORITY_124","LFD_WATERAUTHORITY_41","LFD_WATERAUTHORITY_54","LFD_WATERAUTHORITY_6","LFD_WATERAUTHORITY_91") as "feature_waterauthority[]",
   coalesce("LFD_WINDOWS_106","LFD_WINDOWS_21") as "feature_windows[]",
   coalesce("LFD_ZONING_42") as "feature_zoning[]",
-  "L_Keyword2" as feature_full_baths,
-  "L_Keyword3" as feature_half_baths,
   "L_Keyword5" IN ('Yes', 'Carport Attached', 'Carport Detached', 'Garage Attached', 'Garage Detached', 'Other/See Remarks') as garage,
   "L_Keyword7" as feature_pool,
   "VT_VTourURL" as virtual_tour,
