@@ -29,10 +29,6 @@ sub is_container_running {
     return `sudo docker inspect --format="{{ .State.Running }}" $label` eq "true\n";
 }
 
-my $env_vars = $db_vars_hash->{$ENV{MLS_DB_HOST}};
-
-die "[$env_vars] not found in db_vars_hash" if (!$env_vars);
-
 my @tools_env = map {"-e $_='$tools->{$_}'"} keys %$tools;
 my @live_env  = map {"-e $_='$feeds->{$_}'"} keys %$feeds;
 
