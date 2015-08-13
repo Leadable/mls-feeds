@@ -116,7 +116,7 @@ sub set_dbh {
 sub get_feeds_dbh {
   my $self = shift;
 
-  my $dbname = 'mls';
+  my $dbname = 'mls-db-owner';
   my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};
   my $port = $ENV{POSTGRES_PORT_5432_TCP_PORT};
   my $user = $ENV{POSTGRES_FEEDS_USER};
