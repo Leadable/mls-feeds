@@ -1,20 +1,4 @@
--- Database: mls
-
-DROP DATABASE IF EXISTS mls;
-
-CREATE DATABASE mls;
-
-\c mls
-
--- Extension: postgis
-
--- DROP EXTENSION postgis;
-
 CREATE EXTENSION postgis;
-
--- Table: property
-
--- DROP TABLE property;
 
 CREATE TABLE property
 (
@@ -88,3 +72,5 @@ WITH (
   OIDS=FALSE
 );
 
+CREATE ROLE readonly;
+CREATE ROLE "mls-feeds-live-read-only" WITH LOGIN ENCRYPTED PASSWORD 'YPKx5hxrSBj4TTdYLDaCNqkDr2KUCU6h5gTS8kDM' IN ROLE readonly;
