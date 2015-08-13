@@ -34,7 +34,6 @@ my $config_path = "${board_path}::Config::$resource";
 eval "require $config_path" or die "Could not find [$config_path]: $@\n";
 
 my $dbh_feeds = MLS::Database->new({db => 'feeds', AutoCommit => 0});
-my $dbh_live  = MLS::Database->new({db => 'live'});
 
 require MLS::Resource::Publish;
 
@@ -46,7 +45,6 @@ foreach my $id (@areas) {
     MLS::Resource::Publish->new({
       id             => $id,
       dbh_feeds      => $dbh_feeds,
-      dbh_live       => $dbh_live,
     })->go();
 }
 

@@ -28,27 +28,26 @@ sub go {
     $self->{totals} = {new => 0, updated => 0};
 
     my $dbh_feeds = $self->{dbh_feeds};
-    my $dbh_live  = $self->{dbh_live};
 
-    my $remote_table = "$MLS::Config::MLS.ft_view_$self->{id}";
-    my $local_table  = "$MLS::Config::MLS.view_$self->{id}";
-    my $mv_active    = "$MLS::Config::MLS.view_$self->{id}_mv_active";
+    my $view      = "$MLS::Config::MLS.view_$self->{id}";
+    my $mv        = "$MLS::Config::MLS.view_$self->{id}_mv";
+    my $mv_active = "$MLS::Config::MLS.view_$self->{id}_mv_active";
 
     print "Syncing local with remote...\n";
 
     eval {
         my $delete_sql = qq|
-            delete from $remote_table as m using $local_table as v
+            delete from $mv as m using $view as v
                 where v.listing_id = m.listing_id and v.last_transaction_completed_at != m.last_transaction_completed_at;
         |;
 
         my $insert_sql = qq|
-            insert into $remote_table
-                select v.* from $local_table as v, $MLS::Config::MLS.mutation as mut where 
+            insert into $mv
+                select v.* from $view as v, $MLS::Config::MLS.mutation as mut where 
                 mut.remote_id = v.listing_id
                 and mut.last_transaction_completed_at is not null
                 and v.listing_id not in (
-                    select listing_id from $remote_table
+                    select listing_id from $mv
                 );
         |;
 
