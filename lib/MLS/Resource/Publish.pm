@@ -71,7 +71,7 @@ sub go {
     if ($MLS::Config::RESOURCE eq 'Property') {
         print "Refreshing mv_active...\n";
 
-        $dbh_live->do(qq|
+        $dbh_feeds->do(qq|
             REFRESH MATERIALIZED VIEW CONCURRENTLY $mv_active;
         |);
     }
