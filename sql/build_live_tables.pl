@@ -9,7 +9,14 @@ use MLS::Resource::Utils;
 use Data::Dumper;
 
 my $dbh_feeds = MLS::Database->new({db => 'feeds'});
-my $dbh_live  = MLS::Database->new({db => 'live'});
+my $dbh_tools = MLS::Database->new({db => 'tools'});
+
+# needed for the raw psql command
+my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};
+my $port = $ENV{POSTGRES_PORT_5432_TCP_PORT};
+my $user = $ENV{POSTGRES_FEEDS_USER};
+my $pass = $ENV{PGPASSWORD} = $ENV{POSTGRES_FEEDS_PASS};
+my $dbname = 'mls-db-owner';
 
 my %INDEXABLE_COLUMNS;
 
@@ -70,7 +77,23 @@ qw(
 );
 
 my $MLS = $ARGV[0] or die "You must supply the MLS name to build tables for\n";
+my $force = $ARGV[1] eq '-f';
 
+# check if MLS is running
+my $sql = 'SELECT status FROM monitor_feeds where mls = ' . $dbh_tools->quote($MLS);
+my $status = $dbh_tools->selectcol_arrayref($sql, { Slice => {} })->[0];
+die "[$MLS] is running. Run this script with the -f option if you really want to replace the views\n" if ($status eq 'RUNNING' && !$force);
+
+# rebuild view_property and area views
+my $view_property = "$FindBin::Bin/$MLS/property/view_property.sql";
+die "Could not find [$view_property]" if (! -e $view_property);
+
+my $cmd = qq{cat $FindBin::Bin/$MLS/property/view_property.sql $FindBin::Bin/$MLS/views/* | psql -v ON_ERROR_STOP=1 -q -h $host -p $port -U $user $dbname -1 -f -};
+print "$cmd\n";
+system($cmd) == 0 or
+  die "There was a problem with the command: [" . ($? >> 8) . "]";
+
+# rebuild the materialized views
 my $area_folder = "$FindBin::Bin/$MLS/views";
 opendir (my $DH, $area_folder) or
     die "Could not opendir [$area_folder]";
@@ -78,46 +101,21 @@ opendir (my $DH, $area_folder) or
 my @areas = grep {!/^\./} readdir($DH);
 
 foreach my $area (@areas) {
-    $area =~ s/\.sql$//;
+  $area =~ s/\.sql$//;
 
-    next if ($area eq 'view_office' || $area eq 'view_openhouse' || $area eq 'view_activeagent');
+  next if ($area eq 'view_office' || $area eq 'view_openhouse' || $area eq 'view_activeagent');
 
-    # check if this area exists on live
-    my $sth = $dbh_live->table_info('', $MLS, $area);
-    $sth->execute;
-    my $result = $sth->fetchrow_hashref;
+  print "Building [$area]\n";
 
-    if ($result) {
-      print "[$area] already exists on live\n";
-    }
-    else {
-      print "Building [$area] on live\n";
+  my $table_sql = generate_table_sql($area);
+  my $index_sql = generate_index_sql($area);
 
-      my $table_sql = generate_table_sql($area);
-      my $extra_sql = get_extra_sql($area);
-      my $index_sql = generate_index_sql($area);
-
-      $dbh_live->do(qq|
-          BEGIN;
-          $table_sql
-          $extra_sql
-          $index_sql
-          END;
-      |);
-    }
-
-    # check if this area needs a foreign table
-    my $result = eval {
-      $dbh_feeds->selectall_arrayref("SELECT 1 from $MLS.ft_$area");
-    };
-
-    if ($@) {
-      print "Building [ft_$area]\n";
-      $dbh_feeds->do(generate_ft_sql($area));
-    }
-    else {
-      print "[ft_$area] already exists\n";
-    }
+  $dbh_feeds->do(qq|
+      BEGIN;
+      $table_sql
+      $index_sql
+      END;
+  |);
 }
 
 print "\n[DONE]\n\n";
@@ -141,38 +139,21 @@ sub get_table_schema {
     ];
 }
 
-sub generate_ft_sql {
-  my $area = shift;
-
-  my $schema = get_table_schema($area);
-
-  my $cols = join ',',
-               map {$dbh_feeds->quote_identifier($_->{col_name}) . ' ' . $_->{col_type}} @$schema;
-  my $table_sql = qq|
-    CREATE FOREIGN TABLE $MLS.ft_$area ($cols)
-    SERVER main
-    OPTIONS (table_name '$area')
-  ;|;
-}
-
 sub generate_table_sql {
     my $area = shift;
 
     my $schema = get_table_schema($area);
 
     my $cols = join ',',
-               map {$dbh_live->quote_identifier($_->{col_name}) . ' ' . $_->{col_type}} @$schema;
-    my $table_sql = qq|CREATE TABLE $MLS.$area ($cols);|;
+               map {$dbh_feeds->quote_identifier($_->{col_name}) . ' ' . $_->{col_type}} @$schema;
 
-    my $views_sql =
-        qq|CREATE VIEW $MLS.${area}_mv AS SELECT * FROM $MLS.${area};| .
-        qq|CREATE MATERIALIZED VIEW $MLS.${area}_mv_active AS SELECT * FROM $MLS.${area} as v WHERE | .
+    my $sql =
+        qq|DROP TABLE IF EXISTS $MLS.${area}_mv;\n| .
+        qq|CREATE TABLE $MLS.${area}_mv AS SELECT * FROM $MLS.${area};\n| .
+        qq|CREATE MATERIALIZED VIEW $MLS.${area}_mv_active AS SELECT * FROM $MLS.${area} as v WHERE \n| .
         MLS::Resource::Utils::get_mv_active_def('v') . ';';
 
-    return qq|
-        $table_sql
-        $views_sql
-    |;
+    return $sql;
 }
 
 sub generate_index_sql {
@@ -183,8 +164,8 @@ sub generate_index_sql {
 
   my $schema = get_table_schema($area);
 
-  # create indexes on the full table and the active view
-  my @tables = ("$MLS.$area", "$MLS.${area}_mv_active");
+  # create indexes
+  my @tables = ("$MLS.${area}_mv", "$MLS.${area}_mv_active");
 
   foreach my $table (@tables) {
       foreach my $col (@$schema) {
@@ -201,11 +182,11 @@ sub generate_index_sql {
           $idx_type = 'BTREE';
         }
 
-        my $index_name = $dbh_live->quote_identifier(
+        my $index_name = $dbh_feeds->quote_identifier(
           join '_', ('idx', $area, $col->{col_name}, $id++)
         );
 
-        my $col_name = $dbh_live->quote_identifier($col->{col_name});
+        my $col_name = $dbh_feeds->quote_identifier($col->{col_name});
 
         my $unique = ($col->{col_name} eq 'listing_id') ? 'UNIQUE' : '';
 
@@ -215,26 +196,6 @@ sub generate_index_sql {
     }
 
   my $sql = join "\n", @indexes;
-  return $sql;
-}
-
-# extra sql could include comments, creation of views, etc
-sub get_extra_sql {
-  my $area = shift;
-
-  my $file = "$FindBin::Bin/$MLS/extra/$area.sql";
-  return '' if (! -e $file);
-
-  open (my $fh, '<', $file) or
-    die "Could not open [$file] for read: $!";
-
-  # slurp file into $sql
-  my $sql;
-  {
-    local $/ = undef;
-    $sql = <$fh>;
-  }
-
   return $sql;
 }
 

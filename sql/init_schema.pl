@@ -12,7 +12,7 @@ my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};
 my $port = $ENV{POSTGRES_PORT_5432_TCP_PORT};
 my $user = $ENV{POSTGRES_FEEDS_USER};
 my $pass = $ENV{POSTGRES_FEEDS_PASS};
-my $dbname = 'mls';
+my $dbname = 'mls-db-owner';
 
 if (!$host || !$port || !$user || !$pass) {
   print "The following environment variables must be set:
