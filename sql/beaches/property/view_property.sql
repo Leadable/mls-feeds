@@ -216,7 +216,7 @@ CREATE VIEW beaches.view_property AS
 
 FROM beaches."Property" as p, beaches.mutation as m WHERE p."LIST_1"::text = m.remote_id::text AND m.last_transaction_completed_at is not null
 
-UNION
+UNION ALL
 
  SELECT 'beaches'::text AS mls,
     __removed_at,
