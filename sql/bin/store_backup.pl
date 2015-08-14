@@ -8,7 +8,7 @@ use lib "$FindBin::Bin/../../lib";
 use MLS::Storage;
 
 die "BACKUP_FILE must be specified" if (!$ENV{BACKUP_FILE});
-die "MLS must be specified"         if (!$ENV{MLS});
+die "MLS must be specified"         if (!$ENV{MLS_NAME});
 
 my $storage_client = MLS::Storage->new({ use_s3 => 0, bucket => 'db-backup'});
 
