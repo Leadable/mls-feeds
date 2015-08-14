@@ -113,5 +113,5 @@ SELECT
   initcap("L_Type_") as feature_type
 
 FROM wiregrass."Property" as p, wiregrass.mutation as m WHERE
-"L_ListingID"::text = m.remote_id
+"L_ListingID"::text = m.remote_id and m.last_transaction_completed_at is not null
 ;
