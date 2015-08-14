@@ -43,9 +43,7 @@ sub go {
 
         my $insert_sql = qq|
             insert into $mv
-                select v.* from $view as v, $MLS::Config::MLS.mutation as mut where 
-                mut.remote_id = v.listing_id
-                and mut.last_transaction_completed_at is not null
+                select v.* from $view as v
                 and v.listing_id not in (
                     select listing_id from $mv
                 );
