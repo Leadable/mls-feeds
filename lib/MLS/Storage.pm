@@ -45,7 +45,7 @@ sub do_store_file {
       die "Error uploading file: " . $res->status_line;
     }
 
-    return "https://$MLS::Config::AZURE_STORAGE.blob.core.windows.net/$self->{bucket}/$opts->{dest_filename}";
+    return "https://$self->{azure_obj}{account_name}.blob.core.windows.net/$self->{bucket}/$opts->{dest_filename}";
   }
 }
 
@@ -96,21 +96,25 @@ sub _make_s3_client{
 sub _make_azure_client {
   my $bucket = shift;
 
-  die '$MLS::Config::AZURE_STORAGE must be specified' if (!$MLS::Config::AZURE_STORAGE);
+  die 'MLS_DB_HOST must be specified' if (!$ENV{MLS_DB_HOST});
 
+  my $storage_acct;
   my $key;
-  if ($MLS::Config::AZURE_STORAGE eq 'leadablestoruswest2') {
+
+  if ($ENV{MLS_DB_HOST} =~ /^west/) {
+    $storage_acct = 'leadablestoruswest2';
     $key = 'oS6TSgZZm06TDrIVI6x56MBM9IEmEdtZfQgWD82CNgZPDW13hXoRSqcgiQsFl2kEBaqWob63S6fF1qsQT/jEXg==';
   }
-  elsif ($MLS::Config::AZURE_STORAGE eq 'leadablestoruseast2') {
+  elsif ($ENV{MLS_DB_HOST} =~ /^east/) {
+    $storage_acct = 'leadablestoruseast2';
     $key = 'DPcUfEUY219/GKo9yH2sGXY6P8Al3TGyO/1Mrj/vV16Z3Z4KTvTMQ1Oz3U1GFcyVyhsKZ0Kn2Z6g1ugKC1wL5g==';
   }
   else {
-    die "[$MLS::Config::AZURE_STORAGE] has no key information in MLS::Storage";
+    die "unknown db host [$ENV{MLS_DB_HOST}]";
   }
 
   return Net::Azure::StorageClient::Blob->new(
-    account_name => $MLS::Config::AZURE_STORAGE,
+    account_name => $storage_acct,
     primary_access_key => $key,
     container_name => $bucket,
   );
