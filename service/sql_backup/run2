@@ -2,6 +2,34 @@
 
 use strict;
 
+my ($sec, $min, $hour) = localtime(time);
+
+die 'MLS_DB_HOST must be set' if (!$ENV{MLS_DB_HOST});
+
+# sleep for 10 minutes then wake up and check if its time to run
+
+while (1) {
+    if ($ENV{MLS_DB_HOST} =~ /^east/ && $hour == 6) {
+        # 6am utc = 2am EDT/3am EST
+        last;
+    }
+
+    elsif ($ENV{MLS_DB_HOST} =~ /^west/ && $hour == 9) {
+        # 9am utc = 2am PDT/3am PST
+        last;
+    }
+
+    sleep 600;
+}
+
+my $tools = {
+    POSTGRES_TOOLS_TCP_ADDR => 'leadable-tools-db.cloudapp.net',
+    POSTGRES_TOOLS_TCP_PORT => '6432',
+    POSTGRES_TOOLS_USER     => 'tools-db-owner',
+    POSTGRES_TOOLS_PASS     => 'zmWWhBDcusTvtq4Bbx5tQW9GAUSMhR3RuyAnghgV',
+};
+my @tools_env = map {"-e $_='$tools->{$_}'"} keys %$tools;
+
 my $containers = `docker ps | egrep -o 'mls-db-\\w+'`;
 my @dbs = split "\n", $containers;
 
@@ -29,6 +57,7 @@ foreach my $db (@dbs) {
 
     @cmd = (
         q|sudo docker run|,
+        @tools_env,
         qq|-e BACKUP_FILE='/opt/backups/$mls.tar'|,
         qq|-e MLS_DB_HOST='$ENV{MLS_DB_HOST}'|,
         qq|-e MLS_NAME='$mls'|,
@@ -44,3 +73,9 @@ foreach my $db (@dbs) {
 
 }
 
+# sleep 1 hour before exiting so this doesn't run again until tomorrow
+sleep 3600;
+
+exit;
+
+1;
