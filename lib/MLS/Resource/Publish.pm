@@ -33,7 +33,7 @@ sub go {
     my $mv        = "$MLS::Config::MLS.view_$self->{id}_mv";
     my $mv_active = "$MLS::Config::MLS.view_$self->{id}_mv_active";
 
-    print "Syncing local with remote...\n";
+    print "Syncing views...\n";
 
     eval {
         my $delete_sql = qq|
@@ -43,8 +43,8 @@ sub go {
 
         my $insert_sql = qq|
             insert into $mv
-                select v.* from $view as v
-                and v.listing_id not in (
+                select * from $view as v where
+                v.listing_id not in (
                     select listing_id from $mv
                 );
         |;
@@ -58,20 +58,20 @@ sub go {
 
         $self->{totals}{new} = $dbh_feeds->do($insert_sql) - $self->{totals}{updated};
 
+        if ($MLS::Config::RESOURCE eq 'Property') {
+            print "Refreshing mv_active...\n";
+
+            $dbh_feeds->do(qq|
+                REFRESH MATERIALIZED VIEW CONCURRENTLY $mv_active;
+            |);
+        }
+
         $dbh_feeds->commit;
     };
 
     if ($@) {
         $dbh_feeds->rollback;
         die $@;
-    }
-
-    if ($MLS::Config::RESOURCE eq 'Property') {
-        print "Refreshing mv_active...\n";
-
-        $dbh_feeds->do(qq|
-            REFRESH MATERIALIZED VIEW CONCURRENTLY $mv_active;
-        |);
     }
 
     $self->finish();
