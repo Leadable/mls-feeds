@@ -105,7 +105,7 @@ my $psql_cmd = qq|psql -v ON_ERROR_STOP=1 -q -h $host -p $port -U $user $dbname|
 ##############################
 print "Creating the resource tables\n";
 
-my $resource_path = "$FindBin::Bin/$mls/resources.sql";
+my $resource_path = "$FindBin::Bin/../$mls/resources.sql";
 
 die "Could not find [$resource_path]" if (! -e $resource_path);
 

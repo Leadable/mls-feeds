@@ -2,7 +2,7 @@
 use strict;
 
 use FindBin;
-use lib "$FindBin::Bin/../lib";
+use lib "$FindBin::Bin/../../lib";
 
 use MLS::Database;
 use MLS::Resource::Utils;
@@ -101,10 +101,10 @@ die "[$MLS] is running. Run this script with the -f option if you really want to
 print "\nRecreating the views for [$MLS]\n\n";
 
 # rebuild view_property and area views
-my $view_property = "$FindBin::Bin/$MLS/property/view_property.sql";
+my $view_property = "$FindBin::Bin/../$MLS/property/view_property.sql";
 die "Could not find [$view_property]" if (! -e $view_property);
 
-my $cmd = qq{cat $FindBin::Bin/$MLS/property/view_property.sql $FindBin::Bin/$MLS/views/* | psql -v ON_ERROR_STOP=1 -q -h $host -p $port -U $user $dbname -1 -f -};
+my $cmd = qq{cat $FindBin::Bin/../$MLS/property/view_property.sql $FindBin::Bin/../$MLS/views/* | psql -v ON_ERROR_STOP=1 -q -h $host -p $port -U $user $dbname -1 -f -};
 print "$cmd\n";
 system($cmd) == 0 or
   die "There was a problem with the command: [" . ($? >> 8) . "]";
@@ -119,7 +119,7 @@ else {
 }
 
 # rebuild the materialized views
-my $area_folder = "$FindBin::Bin/$MLS/views";
+my $area_folder = "$FindBin::Bin/../$MLS/views";
 opendir (my $DH, $area_folder) or
     die "Could not opendir [$area_folder]";
 
