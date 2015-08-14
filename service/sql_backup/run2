@@ -1,16 +1,18 @@
 #!/usr/bin/perl
 
+use strict;
+
 my $containers = `docker ps | egrep -o 'mls-db-\\w+'`;
 my @dbs = split "\n", $containers;
 
 foreach my $db (@dbs) {
-    $container =~ /mls-db-(\w+)/;
+    $db =~ /mls-db-(\w+)/;
     my $mls = $1;
 
     my @cmd = (
         q|docker|,
         q|exec|,
-        qq|$container|,
+        qq|$db|,
         q|pg_dumpall|,
         q|-U mls-db-owner|,
         q|-l mls-db-owner|,

@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+use strict;
+
 use FindBin;
 use File::Temp qw(tempfile);
 use lib "$FindBin::Bin/../../lib";
