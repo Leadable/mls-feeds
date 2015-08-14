@@ -8,6 +8,23 @@ use MLS::Database;
 use MLS::Resource::Utils;
 use Data::Dumper;
 
+use Pod::Usage;
+use Getopt::Long;
+
+my $MLS;
+my $force;
+my $tables;
+my $help;
+
+GetOptions(
+    "board=s" => \$MLS,
+    "force"   => \$force,
+    "tables"  => \$tables,
+    "help"    => \$help,
+) or pod2usage(1);
+
+pod2usage(1) if ($help || !$MLS);
+
 my $dbh_feeds = MLS::Database->new({db => 'feeds'});
 my $dbh_tools = MLS::Database->new({db => 'tools'});
 
@@ -76,13 +93,12 @@ qw(
     listing_type
 );
 
-my $MLS = $ARGV[0] or die "You must supply the MLS name to build tables for\n";
-my $force = $ARGV[1] eq '-f';
-
 # check if MLS is running
 my $sql = 'SELECT status FROM monitor_feeds where mls = ' . $dbh_tools->quote($MLS);
 my $status = $dbh_tools->selectcol_arrayref($sql, { Slice => {} })->[0];
 die "[$MLS] is running. Run this script with the -f option if you really want to replace the views\n" if ($status eq 'RUNNING' && !$force);
+
+print "\nRecreating the views for [$MLS]\n\n";
 
 # rebuild view_property and area views
 my $view_property = "$FindBin::Bin/$MLS/property/view_property.sql";
@@ -92,6 +108,15 @@ my $cmd = qq{cat $FindBin::Bin/$MLS/property/view_property.sql $FindBin::Bin/$ML
 print "$cmd\n";
 system($cmd) == 0 or
   die "There was a problem with the command: [" . ($? >> 8) . "]";
+
+# exit after recreating the views unless specified
+if (!$tables) {
+  print "\n[DONE]\n";
+  exit;
+}
+else {
+  print "\nRebuilding mv and mv_active for each area...\n\n";
+}
 
 # rebuild the materialized views
 my $area_folder = "$FindBin::Bin/$MLS/views";
@@ -148,6 +173,7 @@ sub generate_table_sql {
                map {$dbh_feeds->quote_identifier($_->{col_name}) . ' ' . $_->{col_type}} @$schema;
 
     my $sql =
+        qq|DROP TABLE IF EXISTS $MLS.${area}_mv CASCADE;\n| .
         qq|CREATE TABLE $MLS.${area}_mv AS SELECT * FROM $MLS.${area};\n| .
         qq|CREATE MATERIALIZED VIEW $MLS.${area}_mv_active AS SELECT * FROM $MLS.${area}_mv as v WHERE \n| .
         MLS::Resource::Utils::get_mv_active_def('v') . ';';
