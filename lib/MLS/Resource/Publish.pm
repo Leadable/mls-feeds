@@ -25,41 +25,20 @@ sub go {
 
     print "----Publish Data [$self->{id}]---\n\n";
 
-    $self->{totals} = {new => 0, updated => 0};
-
     my $dbh_feeds = $self->{dbh_feeds};
 
-    my $view      = "$MLS::Config::MLS.view_$self->{id}";
     my $mv        = "$MLS::Config::MLS.view_$self->{id}_mv";
     my $mv_active = "$MLS::Config::MLS.view_$self->{id}_mv_active";
 
-    print "Syncing views...\n";
-
     eval {
-        my $delete_sql = qq|
-            delete from $mv as m using $view as v
-                where v.listing_id = m.listing_id and v.last_transaction_completed_at != m.last_transaction_completed_at;
-        |;
+        print "Refreshing [$mv]...\n";
 
-        my $insert_sql = qq|
-            insert into $mv
-                select * from $view as v where
-                v.listing_id not in (
-                    select listing_id from $mv
-                );
-        |;
-
-        print "$delete_sql\n";
-
-        # dbi returns '0E0' when zero rows are affected, subtract 0 to make 'updated' a number
-        $self->{totals}{updated} = $dbh_feeds->do($delete_sql) - 0;
-
-        print "$insert_sql\n";
-
-        $self->{totals}{new} = $dbh_feeds->do($insert_sql) - $self->{totals}{updated};
+        $dbh_feeds->do(qq|
+            REFRESH MATERIALIZED VIEW CONCURRENTLY $mv;
+        |);
 
         if ($MLS::Config::RESOURCE eq 'Property') {
-            print "Refreshing mv_active...\n";
+            print "Refreshing [$mv_active]...\n";
 
             $dbh_feeds->do(qq|
                 REFRESH MATERIALIZED VIEW CONCURRENTLY $mv_active;
@@ -80,13 +59,8 @@ sub go {
 sub finish {
     my $self = shift;
 
-    my $totals = $self->{totals};
+    $self->monitor($self->{id} . '_done', 1);
 
-    $self->monitor($self->{id} . '_new', $totals->{new});
-    $self->monitor($self->{id} . '_updated', $totals->{updated});
-
-    print "\nReport:\n";
-    print Dumper $totals;
     print "\n[DONE]\n\n";
 }
 

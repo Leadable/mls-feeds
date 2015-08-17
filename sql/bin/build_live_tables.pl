@@ -89,7 +89,6 @@ qw(
     feature_governing_body
     feature_pets_allowed
     "feature_restrictions[]"
-    __geo_neigh
     listing_type
 );
 
@@ -173,8 +172,8 @@ sub generate_table_sql {
                map {$dbh_feeds->quote_identifier($_->{col_name}) . ' ' . $_->{col_type}} @$schema;
 
     my $sql =
-        qq|DROP TABLE IF EXISTS $MLS.${area}_mv CASCADE;\n| .
-        qq|CREATE TABLE $MLS.${area}_mv AS SELECT * FROM $MLS.${area};\n| .
+        qq|DROP MATERIALIZED VIEW IF EXISTS $MLS.${area}_mv CASCADE;\n| .
+        qq|CREATE MATERIALIZED VIEW $MLS.${area}_mv AS SELECT * FROM $MLS.${area};\n| .
         qq|CREATE MATERIALIZED VIEW $MLS.${area}_mv_active AS SELECT * FROM $MLS.${area}_mv as v WHERE \n| .
         MLS::Resource::Utils::get_mv_active_def('v') . ';';
 
