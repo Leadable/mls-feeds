@@ -13,13 +13,11 @@ use Getopt::Long;
 
 my $MLS;
 my $force;
-my $tables;
 my $help;
 
 GetOptions(
     "board=s" => \$MLS,
     "force"   => \$force,
-    "tables"  => \$tables,
     "help"    => \$help,
 ) or pod2usage(1);
 
@@ -107,15 +105,6 @@ my $cmd = qq{cat $FindBin::Bin/../$MLS/property/view_property.sql $FindBin::Bin/
 print "$cmd\n";
 system($cmd) == 0 or
   die "There was a problem with the command: [" . ($? >> 8) . "]";
-
-# exit after recreating the views unless specified
-if (!$tables) {
-  print "\n[DONE]\n";
-  exit;
-}
-else {
-  print "\nRebuilding mv and mv_active for each area...\n\n";
-}
 
 # rebuild the materialized views
 my $area_folder = "$FindBin::Bin/../$MLS/views";
