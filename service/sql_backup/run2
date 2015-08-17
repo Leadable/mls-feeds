@@ -2,13 +2,13 @@
 
 use strict;
 
-my ($sec, $min, $hour) = localtime(time);
-
 die 'MLS_DB_HOST must be set' if (!$ENV{MLS_DB_HOST});
 
 # sleep for 10 minutes then wake up and check if its time to run
 
 while (1) {
+    my ($sec, $min, $hour) = localtime(time);
+
     if ($ENV{MLS_DB_HOST} =~ /^east/ && $hour == 6) {
         # 6am utc = 2am EDT/3am EST
         last;
