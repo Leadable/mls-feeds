@@ -44,21 +44,22 @@ foreach my $db (@dbs) {
         q|pg_dumpall|,
         q|-U mls-db-owner|,
         q|-l mls-db-owner|,
-        qq|-f /var/lib/postgresql/data/$mls.tar|,
+        qq|-f /var/lib/postgresql/data/$mls.sql|,
     );
 
     `@cmd`;
 
-    my $file = qq|/mnt/psql_data/$mls/$mls.tar|;
+    my $file = qq|/mnt/psql_data/$mls/$mls.sql|;
     my $staging_dir = q|/mnt/backup_staging/|;
 
     `sudo mv $file $staging_dir`;
+    `sudo gzip $file`;
 
 
     @cmd = (
         q|sudo docker run|,
         @tools_env,
-        qq|-e BACKUP_FILE='/opt/backups/$mls.tar'|,
+        qq|-e BACKUP_FILE='/opt/backups/$mls.sql.gz'|,
         qq|-e MLS_DB_HOST='$ENV{MLS_DB_HOST}'|,
         qq|-e MLS_NAME='$mls'|,
         q|-v /home/joe/mls-feeds/:/opt/mls-feeds|,
