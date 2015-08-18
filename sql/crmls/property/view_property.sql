@@ -1,4 +1,4 @@
-DROP VIEW crmls.view_property CASCADE;
+DROP VIEW IF EXISTS crmls.view_property CASCADE;
 CREATE OR REPLACE VIEW crmls.view_property AS
  SELECT 'crmls'::text AS mls,
     p.__removed_at,
@@ -240,5 +240,8 @@ CREATE OR REPLACE VIEW crmls.view_property AS
         END AS feature_type13,
     p."PropertyType" AS feature_comm_type
    FROM crmls."Property" as p, crmls.mutation as m
-  WHERE p."ListingKey"::text = m.remote_id and p."State" = 'CA'::text
+  WHERE 
+    p."ListingKey"::text = m.remote_id and
+    p."State" = 'CA'::text and
+    m.last_transaction_completed_at is not null
 ;
