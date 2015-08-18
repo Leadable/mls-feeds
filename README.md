@@ -115,3 +115,13 @@ Then to have daemontools watch this directory:
 If the daemon detects a file named '.cancel' in the folder, the docker container that is running will be stopped. The daemon will not start again until .cancel is removed from the directory.
 
 Otherwise the daemon will watch the docker container until it completes and then sleep for five minutes before starting it again.
+
+# Backup and Recovery
+
+Nightly backups are performed with a script located in service/sql_backup. pg_dumpall will be run on each db container and results are gzipped and uploaded to file storage. An entry for the backup is created in the backup table on the tools db.
+
+Recovery is possible by running sql/bin/recover_backup.pl $MLS. This will query the backup table in the tools db for the most recent backup for $MLS. The backup will be downloaded and reconstructed from the multiple gzip parts, then can be picked up in /mnt/recovery.
+
+The backup may be restored once the db/pgb containers are online (see the pgbouncer repo for more on that)
+
+    psql -h $HOST -p $PORT -U mls-db-owner -f /mnt/recovery/$MLS-pgdump.sql
