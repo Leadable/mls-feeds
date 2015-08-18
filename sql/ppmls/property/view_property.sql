@@ -181,5 +181,8 @@ SELECT
   "EarnestMoney" as feature_earnest_money,
   "LeaseTermMin" as feature_lease_term_min
 FROM
-  ppmls."Property" as p, ppmls.mutation as m where p."Matrix_Unique_ID"::text = m.remote_id
+  ppmls."Property" as p, ppmls.mutation as m 
+WHERE 
+  p."Matrix_Unique_ID"::text = m.remote_id AND
+  m.last_transaction_completed_at is not null
 ;

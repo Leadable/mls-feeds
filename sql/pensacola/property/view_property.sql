@@ -174,6 +174,9 @@ SELECT
   coalesce("LFD_ROOF_119", "LFD_ROOF_17", "LFD_ROOF_85") as "feature_roof[]",
   coalesce("LFD_INTERIOR_1", "LFD_INTERIOR_104", "LFD_INTERIOR_78") as "feature_interior_features[]"
 
-FROM pensacola."Property" as p, pensacola.mutation as m WHERE
-"L_ListingID"::text = m.remote_id
+FROM 
+  pensacola."Property" as p, pensacola.mutation as m
+WHERE
+  "L_ListingID"::text = m.remote_id and
+  m.last_transaction_completed_at is not null
 ;

@@ -168,6 +168,11 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
     COALESCE("Property"."RESILAKE", "Property"."RENTLAKE", "Property"."LOTLLAKE") AS lake,
     "Property"."LastModifiedDateTime" AS modification_timestamp,
     true AS display_address
-   FROM aarretsx."Property", aarretsx.mutation
-  WHERE aarretsx."Property"."ListingRid"::text = aarretsx.mutation.remote_id and ("Property"."PropertyType" = ANY (ARRAY['Rental'::text, 'Residential'::text, 'Lots & Land'::text, 'Condo'::text, 'Income Property'::text])) AND "Property"."PropertySubtype1" <> 'Farm'::text AND "Property"."Association" = 'Ann Arbor Area MLS'::text
+   FROM
+    aarretsx."Property", aarretsx.mutation
+  WHERE
+    aarretsx."Property"."ListingRid"::text = aarretsx.mutation.remote_id and
+    aarretsx.mutation.last_transaction_completed_at is not null and
+    ("Property"."PropertyType" = ANY (ARRAY['Rental'::text, 'Residential'::text, 'Lots & Land'::text, 'Condo'::text, 'Income Property'::text])) AND
+    "Property"."PropertySubtype1" <> 'Farm'::text AND "Property"."Association" = 'Ann Arbor Area MLS'::text
 ;

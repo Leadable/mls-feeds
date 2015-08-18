@@ -201,5 +201,6 @@ FROM
 LEFT OUTER JOIN rooms r ON p."Matrix_Unique_ID" = r.listing_id,
   cmls.mutation m
 WHERE
-  p."Matrix_Unique_ID"::text = m.remote_id
+  p."Matrix_Unique_ID"::text = m.remote_id AND
+  m.last_transaction_completed_at is not null
 ;
