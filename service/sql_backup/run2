@@ -22,6 +22,8 @@ while (1) {
     sleep 600;
 }
 
+print "starting backup...\n";
+
 my $tools = {
     POSTGRES_TOOLS_TCP_ADDR => 'leadable-tools-db.cloudapp.net',
     POSTGRES_TOOLS_TCP_PORT => '6432',
@@ -37,6 +39,9 @@ foreach my $db (@dbs) {
     $db =~ /mls-db-(\w+)/;
     my $mls = $1;
 
+    print "pg_dumpall [$mls]\n";
+
+    # /mnt/backup_staging is mapped to /opt/backup in mls-db-*
     my @cmd = (
         q|docker|,
         q|exec|,
@@ -44,17 +49,13 @@ foreach my $db (@dbs) {
         q|pg_dumpall|,
         q|-U mls-db-owner|,
         q|-l mls-db-owner|,
-        qq|-f /var/lib/postgresql/data/$mls.sql|,
+        qq|-f /opt/backup/$mls.sql|,
     );
 
     `@cmd`;
+    `sudo gzip /mnt/backup_staging/$mls.sql`;
 
-    my $file = qq|/mnt/psql_data/$mls/$mls.sql|;
-    my $staging_dir = q|/mnt/backup_staging/|;
-
-    `sudo mv /mnt/psql_data/$mls/$mls.sql $staging_dir`;
-    `sudo gzip $staging_dir/$mls.sql`;
-
+    print "uploading backup...\n";
 
     @cmd = (
         q|sudo docker run|,
@@ -72,7 +73,10 @@ foreach my $db (@dbs) {
 
     `@cmd`;
 
+    print "[$mls] DONE\n";
 }
+
+print "backup finished, going back to sleep\n";
 
 # sleep 1 hour before exiting so this doesn't run again until tomorrow
 sleep 3600;
