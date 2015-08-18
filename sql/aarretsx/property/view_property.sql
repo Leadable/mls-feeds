@@ -1,6 +1,6 @@
 -- View: aarretsx.view_property
 
-DROP VIEW aarretsx.view_property cascade;
+DROP VIEW IF EXISTS aarretsx.view_property cascade;
 CREATE OR REPLACE VIEW aarretsx.view_property AS 
  SELECT 'aarretsx'::text AS mls,
     "Property".__removed_at IS NULL AS __active,

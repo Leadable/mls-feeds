@@ -30,7 +30,7 @@ sub is_container_running {
 }
 
 # cleanup old containers, not always removed by docker for some reason
-`docker rm mls-feeds-$mls`;
+`docker rm -f mls-feeds-$mls`;
 
 my @tools_env = map {"-e $_='$tools->{$_}'"} keys %$tools;
 my @live_env  = map {"-e $_='$feeds->{$_}'"} keys %$feeds;

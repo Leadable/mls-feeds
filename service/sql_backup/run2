@@ -4,9 +4,11 @@ use strict;
 
 die 'MLS_DB_HOST must be set' if (!$ENV{MLS_DB_HOST});
 
+my $force = $ARGV[0] eq '-f';
+
 # sleep for 10 minutes then wake up and check if its time to run
 
-while (1) {
+while (1 && !$force) {
     my ($sec, $min, $hour) = localtime(time);
 
     if ($ENV{MLS_DB_HOST} =~ /^east/ && $hour == 6) {
