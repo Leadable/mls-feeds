@@ -52,8 +52,8 @@ foreach my $db (@dbs) {
     my $file = qq|/mnt/psql_data/$mls/$mls.sql|;
     my $staging_dir = q|/mnt/backup_staging/|;
 
-    `sudo mv $file $staging_dir`;
-    `sudo gzip $file`;
+    `sudo mv /mnt/psql_data/$mls/$mls.sql $staging_dir`;
+    `sudo gzip $staging_dir/$mls.sql`;
 
 
     @cmd = (
