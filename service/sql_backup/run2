@@ -53,7 +53,7 @@ foreach my $db (@dbs) {
     );
 
     `@cmd`;
-    `sudo gzip /mnt/backup_staging/$mls.sql`;
+    `sudo gzip -f /mnt/backup_staging/$mls.sql`;
 
     print "uploading backup...\n";
 
