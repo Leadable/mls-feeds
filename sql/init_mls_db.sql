@@ -74,3 +74,15 @@ WITH (
 
 CREATE ROLE readonly;
 CREATE ROLE "mls-feeds-live-read-only" WITH LOGIN ENCRYPTED PASSWORD 'YPKx5hxrSBj4TTdYLDaCNqkDr2KUCU6h5gTS8kDM' IN ROLE readonly;
+
+create extension tablefunc;
+
+create extension dblink;
+
+create extension postgres_fdw;
+
+CREATE SERVER main FOREIGN DATA WRAPPER postgres_fdw OPTIONS (host '67.222.150.82', port '6000', dbname 'dbkaigoaig2h9j');
+
+CREATE USER MAPPING FOR "mls-feeds-live-read-only" SERVER main OPTIONS (user 'main-read-only', password 'YPKx5hxrSBj4TTdYLDaCNqkDr2KUCU6h5gTS8kDM');
+
+GRANT USAGE ON FOREIGN SERVER main TO readonly;
