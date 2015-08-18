@@ -34,7 +34,6 @@ while (read($fh, $buffer, 10000000)) {
     my ($part_fh, $part_filename) = tempfile(
         TEMPLATE => "XXXXXXXXXXXXXXX",
         DIR      => '/tmp',
-        SUFFIX   => '.gz',
         UNLINK   => 1,
     );
 
@@ -45,7 +44,7 @@ while (read($fh, $buffer, 10000000)) {
     my $url = eval {
         $storage_client->store_file({
           source_filename => $part_filename,
-          dest_filename   => "$mls/$time/$i.gz",
+          dest_filename   => "$mls/$time/$i.sql.gz",
           content_type    => 'text/plain',
         });
     };
