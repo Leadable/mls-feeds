@@ -67,7 +67,7 @@ foreach my $params (@params_list) {
             qq|-e MLS_DB_HOST='$ENV{MLS_DB_HOST}'|,
             qq|--link mls-db-$mls:postgres|,
             q|--privileged|,
-            q|-v /home/joe/mls-feeds/:/opt/mls-feeds|,
+            q|-v ~/mls-feeds/:/opt/mls-feeds|,
             qq|--name=mls-feeds-$mls|,
             q|--rm|,
             q|leadable/mls-feeds|,

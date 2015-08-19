@@ -20,7 +20,7 @@ my @cmd = (
     q|docker run|,
     @tools_env,
     qq|-e MLS_NAME='$mls'|,
-    q|-v /home/joe/mls-feeds/:/opt/mls-feeds|,
+    q|-v ~/mls-feeds/:/opt/mls-feeds|,
     q|-v /mnt/recovery:/opt/recovery|,
     qq|--name=mls-recover-$mls|,
     q|--rm|,

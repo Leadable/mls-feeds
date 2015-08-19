@@ -65,7 +65,7 @@ foreach my $db (@dbs) {
         qq|-e BACKUP_FILE='/opt/backups/$mls.sql.gz'|,
         qq|-e MLS_DB_HOST='$ENV{MLS_DB_HOST}'|,
         qq|-e MLS_NAME='$mls'|,
-        q|-v /home/joe/mls-feeds/:/opt/mls-feeds|,
+        q|-v ~/mls-feeds/:/opt/mls-feeds|,
         q|-v /mnt/backup_staging/:/opt/backups|,
         qq|--name=mls-backup-$mls|,
         q|--rm|,
