@@ -26,7 +26,7 @@ my $feeds = {
 sub is_container_running {
     my $label = shift;
 
-    return `sudo docker inspect --format="{{ .State.Running }}" $label` eq "true\n";
+    return `docker inspect --format="{{ .State.Running }}" $label` eq "true\n";
 }
 
 # cleanup old containers, not always removed by docker for some reason
@@ -61,7 +61,7 @@ foreach my $params (@params_list) {
     elsif ($pid == 0) {
         # note: on local machines, run this command without sudo
         my @cmd = (
-            q|sudo docker run|,
+            q|docker run|,
             @tools_env,
             @live_env,
             qq|-e MLS_DB_HOST='$ENV{MLS_DB_HOST}'|,
@@ -86,7 +86,7 @@ foreach my $params (@params_list) {
             # check for cancel file
             if (-e "$FindBin::Bin/.cancel") {
                 print "Cancel file found while running [$mls]\n";
-                `sudo docker stop mls-feeds-$mls`;
+                `docker stop mls-feeds-$mls`;
                 exit;
             }
             elsif (! is_container_running("mls-feeds-$mls")) {

@@ -63,7 +63,7 @@ foreach my $db (@dbs) {
     `docker rm -f mls-backup-$mls`;
 
     @cmd = (
-        q|sudo docker run|,
+        q|docker run|,
         @tools_env,
         qq|-e BACKUP_FILE='/opt/backups/$mls.sql.gz'|,
         qq|-e MLS_DB_HOST='$ENV{MLS_DB_HOST}'|,
