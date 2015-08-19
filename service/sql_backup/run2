@@ -59,6 +59,9 @@ foreach my $db (@dbs) {
 
     print "uploading backup...\n";
 
+    # cleanup old containers, not always removed by docker for some reason
+    `docker rm -f mls-backup-$mls`;
+
     @cmd = (
         q|sudo docker run|,
         @tools_env,
