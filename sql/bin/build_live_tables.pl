@@ -24,7 +24,6 @@ GetOptions(
 pod2usage(1) if ($help || !$MLS);
 
 my $dbh_feeds = MLS::Database->new({db => 'feeds'});
-my $dbh_tools = MLS::Database->new({db => 'tools'});
 
 # needed for the raw psql command
 my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};
@@ -91,9 +90,13 @@ qw(
 );
 
 # check if MLS is running
-my $sql = 'SELECT status FROM monitor_feeds where mls = ' . $dbh_tools->quote($MLS);
-my $status = $dbh_tools->selectcol_arrayref($sql, { Slice => {} })->[0];
-die "[$MLS] is running. Run this script with the -f option if you really want to replace the views\n" if ($status eq 'RUNNING' && !$force);
+if (!$force) {
+  my $dbh_tools = MLS::Database->new({db => 'tools'});
+
+  my $sql = 'SELECT status FROM monitor_feeds where mls = ' . $dbh_tools->quote($MLS);
+  my $status = $dbh_tools->selectcol_arrayref($sql, { Slice => {} })->[0];
+  die "[$MLS] is running. Run this script with the -f option if you really want to replace the views\n" if ($status eq 'RUNNING');
+}
 
 print "\nRecreating the views for [$MLS]\n\n";
 
