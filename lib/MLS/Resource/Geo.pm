@@ -51,6 +51,9 @@ sub go {
 
   $self->{primary_key} = $MLS::Config::PRIMARY_KEY{$self->{column_identifier}};
 
+  $self->{mapbox_api_key} = 'pk.eyJ1IjoibGlzdGluZ3AiLCJhIjoiOFVKOENBTSJ9.fcoVMMQ5M0HQDSR0owQ8OQ';
+  $self->{bing_api_key}   = 'AgY1iwb6H-_GidP_6n9GaPGlOPbdeuDJguMoGVKsbGrj8lfqury1agX4UEeXjZu4';
+
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
 
@@ -210,10 +213,10 @@ sub http_request {
       $req_url .= '&key=' . $self->{google_api_key};
     }
     elsif ($service eq 'mapbox') {
-      $req_url .= '&access_token=' . $MLS::Config::MAPBOX_ACCESS_TOKEN;
+      $req_url .= '&access_token=' . $self->{mapbox_api_key};
     }
     elsif ($service eq 'bing') {
-      $req_url .= '&key=' . $MLS::Config::BING_ACCESS_TOKEN;
+      $req_url .= '&key=' . $self->{bing_api_key};
     }
 
     $tx = $ua->get($req_url);
