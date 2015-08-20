@@ -41,18 +41,19 @@ eval "require $config_path" or die "Could not find [$config_path]: $@\n";
 # Should be called when requiring the MLS config anyway
 # but call here just in case it is forgotten to avoid instant exits
 MLS::Resource::Utils::is_peak_time();
+my $log_dir = MLS::Resource::Utils::get_log_dir();
 
 my $dbh       = MLS::Database->new({db => 'feeds'});
 my $tools_dbh = MLS::Database->new({db => 'tools'});
 
 my $rets = $MLS::Config::RETS;
-$rets->SetHttpLogName("$MLS::Config::LOG_DIR/rets.log");
+$rets->SetHttpLogName("$log_dir/rets.log");
 
 my $photo_storage   = MLS::Storage->new({ use_s3 => 0, bucket => $MLS::Config::PHOTO_STORAGE_BUCKET });
 my $publish_storage = MLS::Storage->new({ use_s3 => 0, bucket => $MLS::Config::PUBLISH_STORAGE_BUCKET });
 my $log_storage     = MLS::Storage->new({ use_s3 => 0, bucket => $MLS::Config::LOG_STORAGE_BUCKET });
 
-my $monitor = MLS::Monitor->new({ dbh => $tools_dbh, log_dir => $MLS::Config::LOG_DIR, storage_client => $log_storage });
+my $monitor = MLS::Monitor->new({ dbh => $tools_dbh, log_dir => $log_dir, storage_client => $log_storage });
 
 my $mutation_module = "${board_path}::Mutation";
 my $row_module      = "${board_path}::Row";

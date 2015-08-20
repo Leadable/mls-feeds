@@ -2,7 +2,7 @@ package MLS::Resource::Utils;
 
 use strict;
 use DateTime;
-use Data::Dumper;
+use File::Path qw(mkpath);
 
 sub find_vendor {
     my ($board_name, $vendor_dir) = @_;
@@ -163,6 +163,16 @@ sub parse_address {
     return 'INVALID' unless (scalar(@line1) && scalar(@line2));
 
     return join(' ', @line1) . ', ' . join(' ', @line2);
+}
+
+sub get_log_dir {
+    my $log_dir = "/tmp/log/$MLS::Config::MLS";
+
+    if (! -d $log_dir) {
+        mkpath($log_dir);
+    }
+
+    return $log_dir;
 }
 
 1;

@@ -3,13 +3,9 @@ package MLS::Resource::Paragon::wiregrass::Config;
 use strict;
 
 use MLS::Rets;
-use Geo::StreetAddress::US;
 
 # MLS identifier
 $MLS::Config::MLS = 'wiregrass';
-
-# Location of logging
-$MLS::Config::LOG_DIR = "/tmp/log/$MLS::Config::MLS";
 
 # RETS session object
 $MLS::Config::RETS = MLS::Rets->new({
@@ -17,11 +13,6 @@ $MLS::Config::RETS = MLS::Rets->new({
   username   => 'bhancock',
   password   => 'firework',
 });
-
-#$MLS::Config::Mutation::OFFSET_SIZE = 2500;
-# $MLS::Config::Row::OFFSET_SIZE = 1000;
-
-$MLS::Config::AZURE_STORAGE = 'leadablestoruseast2';
 
 # bucket name for photos
 $MLS::Config::PHOTO_STORAGE_BUCKET = 'dfo-photos';

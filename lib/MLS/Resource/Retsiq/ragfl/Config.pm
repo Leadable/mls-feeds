@@ -3,13 +3,9 @@ package MLS::Resource::Retsiq::ragfl::Config;
 use strict;
 
 use MLS::Rets;
-use Geo::StreetAddress::US;
 
 # MLS identifier
 $MLS::Config::MLS = 'ragfl';
-
-# Location of logging
-$MLS::Config::LOG_DIR = "/tmp/log/$MLS::Config::MLS";
 
 # RETS session object
 $MLS::Config::RETS = MLS::Rets->new({
@@ -20,8 +16,6 @@ $MLS::Config::RETS = MLS::Rets->new({
 
 # Should be SystemName or DBName
 $MLS::Config::Row::COLUMN_IDENTIFIER = 'DBName';
-
-$MLS::Config::AZURE_STORAGE = 'leadablestoruseast2';
 
 # bucket name for photos
 $MLS::Config::PHOTO_STORAGE_BUCKET = 'dfo-photos';

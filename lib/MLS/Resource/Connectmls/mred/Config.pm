@@ -3,13 +3,9 @@ package MLS::Resource::Connectmls::mred::Config;
 use strict;
 
 use MLS::Rets;
-use Geo::StreetAddress::US;
 
 # MLS identifier
 $MLS::Config::MLS = 'mred';
-
-# Location of logging
-$MLS::Config::LOG_DIR = "/tmp/log/$MLS::Config::MLS";
 
 # RETS session object
 $MLS::Config::RETS = MLS::Rets->new({
@@ -21,8 +17,6 @@ $MLS::Config::RETS = MLS::Rets->new({
 
 $MLS::Config::Mutation::OFFSET_SIZE = 100000;
 # $MLS::Config::Row::OFFSET_SIZE = 1000;
-
-$MLS::Config::AZURE_STORAGE = 'leadablestoruseast2';
 
 # bucket name for photos
 $MLS::Config::PHOTO_STORAGE_BUCKET = 'dfo-photos';

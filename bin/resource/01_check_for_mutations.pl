@@ -33,7 +33,9 @@ eval qq|require $config_path| or die "Could not find [$config_path]: $@\n";
 my $dbh = MLS::Database->new({db => 'feeds'});
 my $rets = $MLS::Config::RETS;
 
-$rets->SetHttpLogName("$MLS::Config::LOG_DIR/check_for_mutations.log");
+my $log_dir = MLS::Resource::Utils::get_log_dir();
+
+$rets->SetHttpLogName("$log_dir/check_for_mutations.log");
 
 eval "require $module_path" or die "Could not find [$module_path]: $@\n";
 

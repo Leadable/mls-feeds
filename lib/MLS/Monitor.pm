@@ -2,7 +2,6 @@ package MLS::Monitor;
 use strict;
 
 use Data::Dumper qw(Dumper);
-use File::Path qw(mkpath);
 use Mojo::JSON qw(j);
 use POSIX;
 use MLS::Resource::Utils;
@@ -64,10 +63,6 @@ sub start {
     else {
       die "Could not get ID for monitor row";
     }
-  }
-
-  if (! -d $self->{log_dir}) {
-    mkpath($self->{log_dir});
   }
 
   my $pid = fork;
