@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 use FindBin;
-use lib "blib/lib", "blib/arch", "$FindBin::Bin/../lib";
+use lib "$FindBin::Bin/../lib";
 
 use strict;
 
@@ -16,6 +16,7 @@ my $SCRIPT_DIR = $FindBin::Bin;
 my $dbh = MLS::Database->new({db => 'feeds'});
 
 my @view_cols = qw(
+  last_transaction_completed_at
   listing_id
   listing_type
   sold_price
