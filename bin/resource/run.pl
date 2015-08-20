@@ -49,9 +49,8 @@ my $tools_dbh = MLS::Database->new({db => 'tools'});
 my $rets = $MLS::Config::RETS;
 $rets->SetHttpLogName("$log_dir/rets.log");
 
-my $photo_storage   = MLS::Storage->new({ use_s3 => 0, bucket => $MLS::Config::PHOTO_STORAGE_BUCKET });
-my $publish_storage = MLS::Storage->new({ use_s3 => 0, bucket => $MLS::Config::PUBLISH_STORAGE_BUCKET });
-my $log_storage     = MLS::Storage->new({ use_s3 => 0, bucket => $MLS::Config::LOG_STORAGE_BUCKET });
+my $photo_storage   = MLS::Storage->new({ use_s3 => 0, bucket => 'dfo-photos' });
+my $log_storage     = MLS::Storage->new({ use_s3 => 0, bucket => 'dfo-log' });
 
 my $monitor = MLS::Monitor->new({ dbh => $tools_dbh, log_dir => $log_dir, storage_client => $log_storage });
 
