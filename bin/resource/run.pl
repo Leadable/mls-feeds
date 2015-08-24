@@ -17,6 +17,7 @@ my $mls;
 my $resource;
 my $no_publish;
 my $force_rebuild;
+my $force_offpeak;
 my $help;
 
 GetOptions(
@@ -24,10 +25,13 @@ GetOptions(
     "resource=s"     => \$resource,
     "nopublish"      => \$no_publish,
     "force-rebuild"  => \$force_rebuild,
+    "force-offpeak"  => \$force_offpeak,
     "help"           => \$help,
 ) or pod2usage(1);
 
 pod2usage(1) if ($help || !$mls);
+
+$ENV{FORCE_OFFPEAK} = 1 if ($force_offpeak);
 
 my $vendor = MLS::Resource::Utils::find_vendor($mls, "$FindBin::Bin/../../lib/MLS/Resource");
 
@@ -160,6 +164,10 @@ Do not publish SQL to tools database after gathering data
 =item B<-f, --force-rebuild>
 
 During the publish phase, generate a SQL diff containing the entire feeds data
+
+=item B<-f, --force-offpeak>
+
+Force off peak hours which will cause the mutation step to query for all results
 
 =item B<--help>
 

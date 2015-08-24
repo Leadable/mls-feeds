@@ -44,7 +44,7 @@ sub get_mv_active_select_sql {
 
 # Modifies $MLS::Config::PEAK_TIME
 sub is_peak_time {
-    return 0 if (!$ENV{MLS_DB_HOST});
+    return 0 if (!$ENV{MLS_DB_HOST} || $ENV{FORCE_OFFPEAK});
 
     my $dt = DateTime->now;
     my $hour = $dt->hour;
