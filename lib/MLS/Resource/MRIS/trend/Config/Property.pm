@@ -32,7 +32,7 @@ my $search = '(ModificationTimestamp=' . MLS::Resource::Utils::get_search_interv
 %MLS::Config::IMG_MOD_TS_COLUMN = ( SystemName => 'MaxPhotoTms' );
 
 # RETS Resource status column
-%MLS::Config::STATUS_COLUMN = ( SystemName => 'ListingStatus');
+%MLS::Config::STATUS_COLUMN = ( SystemName => 'LocaleListingStatus');
 
 # RETS Resource price column
 %MLS::Config::PRICE_COLUMN = ( SystemName => 'ListPrice');
