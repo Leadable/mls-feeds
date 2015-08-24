@@ -5,7 +5,8 @@ CREATE OR REPLACE VIEW trend.view_glick AS
    vl.*,
    null::text[] as __geo_neigh
   FROM
-    (SELECT * FROM trend.view_listings WHERE state <> 'DE') vl
+    trend.view_property vl
+   WHERE state <> 'DE'
 ;
 
 -- (select * from trend.places where area_id = 15 and category = 'Neighborhood') as places ON ST_Contains(ST_SETSRID(places.way, 4326), vl.__geo_geom)
@@ -87,5 +88,3 @@ COMMENT ON COLUMN trend.view_glick."feature_design[]"
 COMMENT ON COLUMN trend.view_glick."feature_type[]"
   IS '{ "advanced": true, "label": "Type", "input": "checkbox-group", "rank": 210 }';
 
--- invalidate cache
-UPDATE area SET config_version = NOW() WHERE id = 15;

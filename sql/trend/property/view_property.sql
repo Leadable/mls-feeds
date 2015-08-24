@@ -19,13 +19,25 @@ SELECT
   __status_history_vals,
   "ListingKey"::text as listing_id,
   "ListingID" as mlsnum,
+  "CloseDate" as sold_date,
+  "ClosePrice" as sold_price,
   "LocaleListingStatus" as status,
   false as comments_disabled,
-  ("LocaleListingStatus" = 'PENDING') as under_contract,
+  "LocaleListingStatus" IN ('PENDING', 'CONTRACT') as under_contract,
   CASE "LocaleListingStatus"
-    WHEN 'PENDING' THEN 'Under Contract'
+    WHEN 'PENDING'  THEN 'Under Contract'
+    WHEN 'CONTRACT' THEN 'Under Contract'
     ELSE null::text
   END as under_contract_description,
+  CASE __class_name
+    WHEN 'RNT' THEN 'for_rent'
+    WHEN 'COM' THEN
+      CASE "AnnualLeasePrice"
+        WHEN null THEN 'for_sale'
+        ELSE 'for_rent'
+      END
+    ELSE 'for_sale'
+  END as listing_type,
   coalesce(__image_count, "TotalPhotos", 0) as image_count,
   "ListPrice" as price,
   "Beds" as beds,
@@ -49,7 +61,6 @@ SELECT
   __geo_latitude as latitude,
   __geo_longitude as longitude,
   "NetSQFT" as square_feet,
-  "YearBuilt" as year_built,
   "LotAreaAcre" as acres,
   "Basement" as basement,
   "Fireplace" as fireplace,
@@ -105,6 +116,6 @@ SELECT
   "Styles" as "feature_styles[]"
 FROM
   trend."Property", trend.mutation as m
-WHERE __class_name IN ('LOT', 'RES', 'RNT')
+WHERE __class_name IN ('LOT', 'RES', 'RNT') and
   "ListingKey"::text = m.remote_id and m.last_transaction_completed_at is not null
 ;
