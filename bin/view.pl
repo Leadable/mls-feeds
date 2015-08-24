@@ -10,8 +10,8 @@ use Mojolicious::Lite;
 use MLS::Database;
 use File::Basename;
 
-# have to do this outside of the handlers for some reason
-my $SCRIPT_DIR = $FindBin::Bin;
+die "MLS_NAME must be set" if (!$ENV{MLS_NAME});
+my $mls = $ENV{MLS_NAME};
 
 my $dbh = MLS::Database->new({db => 'feeds'});
 
@@ -125,10 +125,9 @@ my @view_cols = qw(
   feature_view[]
 );
 
-get '/:mls/get_view' => sub {
+get '/get_view' => sub {
   my $c = shift;
 
-  my $mls = $c->param('mls');
   my $table = 'Property';
 
   my $boiler_plate_cols = join ",\n", @view_cols;
@@ -151,10 +150,9 @@ get '/:mls/get_view' => sub {
   );
 };
 
-get '/:mls/view_data/:col' => sub {
+get '/view_data/:col' => sub {
   my $c = shift;
 
-  my $mls = $c->param('mls');
   my $col = $c->param('col');
   my $class = $c->param('class_name');
   my $table = 'Property';
@@ -217,10 +215,9 @@ get '/:mls/view_data/:col' => sub {
 
 };
 
-get '/:mls' => sub {
+get '/' => sub {
   my $c = shift;
 
-  my $mls = $c->param('mls');
   my $table = 'Property';
 
   my $rs = $dbh->selectall_arrayref(qq|
@@ -255,34 +252,9 @@ get '/:mls' => sub {
   );
 };
 
-get '/' => sub {
-  my $c = shift;
-
-  my @mls_list = map {basename $_}
-                 split "\n", `find $SCRIPT_DIR/../lib/MLS/Resource -type d -maxdepth 2 -mindepth 2`;
-
-  $c->render(
-    template => 'main',
-    mls_list => [sort @mls_list]
-  );
-};
-
-1;
-
 app->start;
 
 __DATA__
-
-@@ main.html.ep
-<!DOCTYPE html>
-<html>
-<div>
-<h2> Setup a view for: </h2>
-  % foreach (@$mls_list) {
-    <a href="<%= $_ %>/"><%= $_ %></a><br>
-  % }
-</div>
-</html>
 
 @@ get_view.html.ep
 <!DOCTYPE html>
