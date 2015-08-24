@@ -15,6 +15,7 @@ $MLS::Config::OBJECT = 'Photo';
 # RETS Resource Classes
 my $search = '(ModificationTimestamp=' . MLS::Resource::Utils::get_search_interval . ')';
 %MLS::Config::CLASSES = (
+  ALL => { StandardName => 'TREND All',                 'SearchRequest' => $search },
   RES => { StandardName => 'TREND Residential',         'SearchRequest' => $search },
   MUL => { StandardName => 'TREND Multi-Family',        'SearchRequest' => $search },
   COM => { StandardName => 'TREND Commercial',          'SearchRequest' => $search },
