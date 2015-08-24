@@ -265,6 +265,7 @@ sub fetch_remote {
       if ($@) {
         print "Error while parsing results:\n";
         $self->{totals}{error}++;
+        $dbh->rollback;
 
         if (ref $@ eq 'librets::RetsReplyException') {
           print "librets::RetsException: " . $@->GetFullReport();
@@ -272,6 +273,9 @@ sub fetch_remote {
         elsif ($@) {
           print $@;
         }
+      }
+      else {
+        $dbh->commit;
       }
 
       print '.';
@@ -404,6 +408,7 @@ sub insert {
     warn "Duplicate primary key found\n";
     warn Dumper $data;
     $self->{totals}{dupes}++;
+    die $@;
   }
   elsif ($@) {
     # some other error, die normally
@@ -440,11 +445,8 @@ sub update_mutation_table {
   };
 
   if ($@) {
-    $dbh->do('ROLLBACK');
     die $@;
   }
-
-  $dbh->do('COMMIT');
 }
 
 1;
