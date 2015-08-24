@@ -23,6 +23,10 @@ sub go {
   $self->{totals} = { new => 0, updated => 0, dupes => 0, error => 0, };
   $self->fetch_pg_col_info();
 
+  my $dbh = $self->{dbh};
+
+  $dbh->set_autocommit(0);
+
   my $chunk_size;
   if (! defined $MLS::Config::Row::OFFSET_SIZE) {
     warn "WARNING: No offset size defined for this board ($MLS::Config::MLS), using default of 1,000\n";
@@ -53,6 +57,8 @@ sub go {
       print "[$done/$total] completed\n\n";
     }
   }
+
+  $dbh->set_autocommit(1);
 
   $self->finish();
 }
@@ -389,7 +395,6 @@ sub insert {
   push(@vals, 'NOW()');
 
   my $sql = 'INSERT INTO ' . $MLS::Config::MLS . '."' . $MLS::Config::RESOURCE . '"(' . join(',', @cols) . ') VALUES(' . join(',', @vals) . ')';
-  $self->{temp_error} = "$sql\n";
 
   eval {
     $dbh->do($sql);
@@ -414,8 +419,6 @@ sub update_mutation_table {
 
   my $dbh = $self->{dbh};
 
-  $dbh->set_autocommit(0);
-
   eval {
     my $address_sql;
     if (%MLS::Config::ADDR_COLUMNS) {
@@ -431,7 +434,6 @@ sub update_mutation_table {
       'remote_id = ' . $dbh->quote($remote_id)
     );
     my $sql = "UPDATE $MLS::Config::MLS.mutation SET local_row_mod_ts = remote_row_mod_ts" . $address_sql . " WHERE " . join(' AND ', @conditions);
-    $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
 
     MLS::Resource::Utils::check_transaction_complete($dbh, \@conditions);
@@ -443,7 +445,6 @@ sub update_mutation_table {
   }
 
   $dbh->do('COMMIT');
-  $dbh->set_autocommit(1);
 }
 
 1;
