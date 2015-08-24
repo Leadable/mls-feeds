@@ -32,9 +32,6 @@ sub search_remote {
     $objectDescriptor = $response->NextObject();
   }
 
-  use Data::Dumper;
-  print Dumper \@urls;
-
   return \@urls;
 }
 
