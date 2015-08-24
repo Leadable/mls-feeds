@@ -72,23 +72,6 @@ WITH (
   OIDS=FALSE
 );
 
-CREATE TABLE places
-(
-  id serial NOT NULL,
-  mls text NOT NULL,
-  category text,
-  label text,
-  way geometry,
-  area_id integer,
-  CONSTRAINT pkey_places PRIMARY KEY (id),
-  CONSTRAINT fkey_places_area_id FOREIGN KEY (area_id)
-      REFERENCES area (id) MATCH SIMPLE
-      ON UPDATE RESTRICT ON DELETE RESTRICT
-)
-WITH (
-  OIDS=FALSE
-);
-
 CREATE ROLE readonly;
 CREATE ROLE "mls-feeds-live-read-only" WITH LOGIN ENCRYPTED PASSWORD 'YPKx5hxrSBj4TTdYLDaCNqkDr2KUCU6h5gTS8kDM' IN ROLE readonly;
 
