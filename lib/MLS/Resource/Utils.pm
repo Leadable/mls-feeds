@@ -3,6 +3,7 @@ package MLS::Resource::Utils;
 use strict;
 use DateTime;
 use File::Path qw(mkpath);
+use Geo::StreetAddress::US;
 
 sub find_vendor {
     my ($board_name, $vendor_dir) = @_;
