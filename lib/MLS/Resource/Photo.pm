@@ -24,7 +24,7 @@ sub go {
   my ($self) = @_;
 
   print "----Fetching photos----\n\n";
-  $self->{totals} = {listings_complete => 0, photo_urls_fetched => 0};
+  $self->{totals} = {listings_complete => 0, photo_urls_fetched => 0, error => 0};
 
   $self->{primary_key} = $MLS::Config::PRIMARY_KEY{$self->{column_identifier}};
 
@@ -38,6 +38,7 @@ sub go {
     if (++$i % 100 == 0) {
       $self->monitor('photo_urls_fetched', $self->{totals}{photo_urls_fetched});
       $self->monitor('listings_complete', $self->{totals}{listings_complete});
+      $self->monitor('error', $self->{totals}{error});
       print "[$i]\n";
     }
   }
@@ -50,6 +51,7 @@ sub finish {
 
   $self->monitor('photo_urls_fetched', $self->{totals}{photo_urls_fetched});
   $self->monitor('listings_complete', $self->{totals}{listings_complete});
+  $self->monitor('error', $self->{totals}{error});
 
   print "\nReport:\n";
   print Dumper $self->{totals};
@@ -98,9 +100,19 @@ sub fetch_remote {
   my ($self, $row) = @_;
 
   # subclass method
-  my $urls = $self->search_remote($row);
+  my $urls = eval {
+    $self->search_remote($row);
+  };
 
-  return if ! defined $urls;
+  if ($@) {
+    print "Error, skipping this listing\n";
+    $self->{totals}{error}++;
+    return;
+  }
+  elsif (! defined $urls) {
+    print "No urls returned\n";
+    return;
+  }
 
   $self->{totals}{photo_urls_fetched} += scalar @$urls;
   $self->{totals}{listings_complete}++;
