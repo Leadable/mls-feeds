@@ -57,6 +57,17 @@ if ($partition) {
             exit(0);
         }
     }
+
+    my $i = 1;
+    # parent, wait for children to finish
+    $SIG{CHLD} = sub {
+      print "Child [$i] died...\n";
+      exit if ($i++ == 5);
+    };
+
+    while (1) {
+        sleep 10;
+    }
 }
 else {
     my $dbh = MLS::Database->new({db => 'feeds'});
