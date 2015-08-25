@@ -167,7 +167,9 @@ sub generate_table_sql {
         qq|DROP MATERIALIZED VIEW IF EXISTS $MLS.${area}_mv CASCADE;\n| .
         qq|CREATE MATERIALIZED VIEW $MLS.${area}_mv AS SELECT * FROM $MLS.${area};\n| .
         qq|CREATE MATERIALIZED VIEW $MLS.${area}_mv_active AS SELECT * FROM $MLS.${area}_mv as v WHERE \n| .
-        MLS::Resource::Utils::get_mv_active_def('v') . ';';
+        MLS::Resource::Utils::get_mv_active_def('v') . ";\n" .
+        qq|GRANT SELECT ON $MLS.${area}_mv TO readonly;\n| .
+        qq|GRANT SELECT ON $MLS.${area}_mv_active TO readonly;\n|;
 
     return $sql;
 }

@@ -81,6 +81,12 @@ my @sql = (
     response jsonb,
     CONSTRAINT pkey_geocoder_cache PRIMARY KEY (service, query)
   ) WITH (OIDS=FALSE);",
+
+  "GRANT USAGE ON SCHEMA $mls TO readonly;",
+
+  "ALTER DEFAULT PRIVILEGES IN SCHEMA $mls
+    GRANT SELECT ON TABLES
+    TO readonly;",
 );
 
 for my $sql (@sql) {
