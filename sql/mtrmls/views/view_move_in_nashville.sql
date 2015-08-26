@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW mtrmls.view_move_in_nashville AS
   SELECT
    2::integer as area_id,
    vl.*,
-   null::text[] as __geo_neigh
+   array(select jsonb_array_elements_text(__geo_places#>'{2,"Neighborhood"}')::text) as __geo_neigh
   FROM
     mtrmls.view_property vl
 ;

@@ -13,6 +13,7 @@ SELECT
   __geo_geom,
   __geo_outlier,
   __geo_modified_at,
+  __geo_places,
   __price_history_times,
   __price_history_vals,
   __photo_urls,
