@@ -104,10 +104,10 @@ print "\nRecreating the views for [$MLS]\n\n";
 my $view_property = "$FindBin::Bin/../$MLS/property/view_property.sql";
 die "Could not find [$view_property]" if (! -e $view_property);
 
-my $cmd = qq{cat $FindBin::Bin/../$MLS/property/view_property.sql $FindBin::Bin/../$MLS/views/* | psql -v ON_ERROR_STOP=1 -q -h $host -p $port -U $user $dbname -1 -f -};
-print "$cmd\n";
-system($cmd) == 0 or
-  die "There was a problem with the command: [" . ($? >> 8) . "]";
+my @sql_cmds = ('BEGIN;');
+
+my $replace_views = `cat $FindBin::Bin/../$MLS/property/view_property.sql $FindBin::Bin/../$MLS/views/*`;
+push @sql_cmds, $replace_views;
 
 # rebuild the materialized views
 my $area_folder = "$FindBin::Bin/../$MLS/views";
@@ -123,16 +123,13 @@ foreach my $area (@areas) {
 
   print "Building [$area]\n";
 
-  my $table_sql = generate_table_sql($area);
-  my $index_sql = generate_index_sql($area);
-
-  $dbh_feeds->do(qq|
-      BEGIN;
-      $table_sql
-      $index_sql
-      END;
-  |);
+  push @sql_cmds, generate_table_sql($area);
+  push @sql_cmds, generate_index_sql($area);
 }
+
+push @sql_cmds, 'END;';
+
+$dbh_feeds->do(join("\n",@sql_cmds));
 
 print "\n[DONE]\n\n";
 
