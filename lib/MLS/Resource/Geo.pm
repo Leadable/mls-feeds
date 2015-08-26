@@ -57,6 +57,18 @@ sub go {
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
 
+  # check if places table exists
+  eval {
+    $self->{dbh}->do("SELECT 1 from $MLS::Config::MLS.places");
+  };
+
+  if ($@) {
+    $self->{places_table} = 0;
+  }
+  else {
+    $self->{places_table} = 1;
+  }
+
   my $i = 0;
   foreach my $remote_row (@$mutated) {
     $self->{totals}{total}++;
@@ -489,6 +501,35 @@ sub geocode_google {
   return 0;
 }
 
+sub update_places_obj {
+  my ($self, $remote_id) = @_;
+
+  my $dbh = $self->{dbh};
+
+  $remote_id = $dbh->quote($remote_id);
+
+  my $sql = qq|
+    UPDATE $MLS::Config::MLS."$MLS::Config::RESOURCE" set __geo_places = (
+      SELECT
+        json_build_object(
+          places.area_id, json_build_object (
+            places.category, array_agg(places.label)
+          )
+        )::jsonb as obj
+      FROM
+        $MLS::Config::MLS."$MLS::Config::RESOURCE" p JOIN (select * from $MLS::Config::MLS.places) as places ON ST_Contains(ST_SETSRID(places.way, 4326), p.__geo_geom)
+      WHERE
+        p."$self->{primary_key}" = $remote_id
+      GROUP BY
+        p."$self->{primary_key}", places.area_id, places.category
+    )
+    WHERE
+      "$self->{primary_key}" = $remote_id;
+  |;
+
+  $dbh->do($sql);
+}
+
 sub update_local_row {
   my ($self, $remote_row, $data) = @_;
 
@@ -521,6 +562,10 @@ sub update_local_row {
   my $sql = "UPDATE $MLS::Config::MLS.\"$MLS::Config::RESOURCE\" SET " . join(', ', @vals) . " WHERE " . $dbh->quote_identifier($MLS::Config::PRIMARY_KEY{SystemName}) . " = " . $dbh->quote($remote_row->{remote_id});
   $self->{temp_error} = "$sql\n";
   $dbh->do($sql);
+
+  if ($self->{places_table}) {
+    $self->update_places_obj($remote_row->{remote_id});
+  }
 }
 
 sub update_mutation_row {
