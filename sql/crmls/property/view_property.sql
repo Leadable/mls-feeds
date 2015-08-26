@@ -19,6 +19,7 @@ CREATE OR REPLACE VIEW crmls.view_property AS
     p.__status_history_times,
     p.__status_history_vals,
     __photo_urls,
+    COALESCE(array_length(__photo_urls, 1), 0) as image_count,
     -- ( SELECT array_agg("Media"."MediaURL" ORDER BY "Media"."MediaOrder") AS array_agg
     --        FROM crmls."Media"
     --       WHERE "Media"."ClassSourceKey" = p."SourceKey" AND "Media"."MediaType" = 'Image'::text AND NOT (EXISTS ( SELECT 1
@@ -47,7 +48,6 @@ CREATE OR REPLACE VIEW crmls.view_property AS
                 ELSE 'for_sale'::text
             END
     END AS listing_type,
-    COALESCE(p.__image_count, 0) AS image_count,
     p."ListPrice" AS price,
     p."Bedrooms" AS beds,
         CASE p.__class_name
