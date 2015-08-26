@@ -24,12 +24,10 @@ sub search_remote {
 
   my $search = "(ClassSourceKey=$source_key)";
 
-  my @urls;
-
   my $rets = $self->{rets};
 
   my $request = $rets->CreateSearchRequest('Media', 'Media', $search);
-  $request->SetSelect('MediaURL');
+  $request->SetSelect('MediaURL,MediaOrder');
   $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
   $request->SetOffset($librets::SearchRequest::OFFSET_NONE);
   $request->SetStandardNames(0);
@@ -37,10 +35,13 @@ sub search_remote {
   $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
 
   my $results = $rets->Search($request);
+  my %data;
 
   while (MLS::Rets::HasNext($results)) {
-    push @urls, $results->GetString("MediaURL") . '?v=' . time;
+    $data{$results->GetString("MediaOrder")} = $results->GetString("MediaURL") . '?v=' . time;
   }
+
+  my @urls = map {$data{$_}} sort { $a <=> $b } keys %data;
 
   return \@urls;
 }
