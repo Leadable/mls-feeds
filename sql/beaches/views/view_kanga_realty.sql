@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW beaches.view_kanga_realty AS
   SELECT
    83::integer as area_id,
    vl.*,
-   null::text[] as __geo_neigh
+   array(select jsonb_array_elements_text(__geo_places#>'{83,"Neighborhood"}')::text) as __geo_neigh
   FROM
     (select * from beaches.view_property) vl
 ;
