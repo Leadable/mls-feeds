@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW cmls.view_maxwell AS
   SELECT
    4::integer as area_id,
    vl.*,
-   null::text[] as __geo_area
+   array(select jsonb_array_elements_text(__geo_places#>'{4,"Neighborhood"}')::text) as __geo_area
   FROM
     cmls.view_property vl
 ;

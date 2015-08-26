@@ -31,6 +31,7 @@ SELECT
   __percent_reduced,
   __geo_geom,
   __geo_outlier,
+  __geo_places,
   __price_history_times,
   __price_history_vals,
   __inserted_at as age,
