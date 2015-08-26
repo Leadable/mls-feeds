@@ -66,7 +66,8 @@ CREATE TABLE property
   __geo_entity_type text,
   __geo_raw text,
   __image_count integer,
-  __geo_outlier boolean
+  __geo_outlier boolean,
+  __geo_places jsonb
 )
 WITH (
   OIDS=FALSE
