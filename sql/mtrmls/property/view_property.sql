@@ -49,15 +49,13 @@ SELECT
   "TotalBedrooms" as beds,
   "TotalFullBaths" as baths_total,
   CASE "PropertyClassID"
-    WHEN 'Residential'::text     THEN 'Residential'::text
-    WHEN 'Land-Lots-Farms'::text THEN 'Lots & Land'::text
-    WHEN 'Condominium'::text     THEN 'Condo'::text
-    WHEN 'Rental'::text          THEN
+    WHEN 'Rental'::text THEN
       CASE "PropertySubType"
         WHEN 'Site Built'::text         THEN 'Residential'::text
-        WHEN 'Condominium'::text        THEN 'Condo'::text
+        WHEN 'Condominium'::text        THEN 'Condominium'::text
         ELSE 'Apartment'::text
       END
+    ELSE "PropertyClassID"
   END as type,
   COALESCE("Remarks", '') as remarks,
   "StreetAddressDisplay" as address_line1,
