@@ -15,6 +15,8 @@ $MLS::Config::RETS = MLS::Rets->new({
   user_agent => 'JIngersoll/1.0',
 });
 
+$MLS::Config::RETS_LOGOUT = 1;
+
 $MLS::Config::Mutation::OFFSET_SIZE = 250;
 $MLS::Config::Row::OFFSET_SIZE = 250;
 
