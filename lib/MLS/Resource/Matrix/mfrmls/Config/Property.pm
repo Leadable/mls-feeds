@@ -15,7 +15,7 @@ $MLS::Config::OBJECT = 'LargePhoto';
 # RETS Resource Classes
 my $search = '(MatrixModifiedDT=' . MLS::Resource::Utils::get_search_interval() . ')';
 %MLS::Config::CLASSES = (
-
+  Listing => { StandardName => 'Cross Property', 'SearchRequest' => $search },
 );
 
 # RETS Resource Primary Key
