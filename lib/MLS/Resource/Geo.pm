@@ -516,7 +516,7 @@ sub update_places_obj {
     WHERE
         p."$self->{primary_key}" = $remote_id
     GROUP BY
-        p."ListingKey", places.area_id, places.category;
+        p."$self->{primary_key}", places.area_id, places.category;
   |;
 
   my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
