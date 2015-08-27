@@ -509,20 +509,30 @@ sub update_places_obj {
   $remote_id = $dbh->quote($remote_id);
 
   my $sql = qq|
-    UPDATE $MLS::Config::MLS."$MLS::Config::RESOURCE" set __geo_places = (
-      SELECT
-        json_build_object(
-          places.area_id, json_build_object (
-            places.category, array_agg(places.label)
-          )
-        )::jsonb as obj
-      FROM
+    SELECT
+        places.area_id, places.category, array_agg(places.label) as labels
+    FROM
         $MLS::Config::MLS."$MLS::Config::RESOURCE" p JOIN (select * from $MLS::Config::MLS.places) as places ON ST_Contains(ST_SETSRID(places.way, 4326), p.__geo_geom)
-      WHERE
+    WHERE
         p."$self->{primary_key}" = $remote_id
-      GROUP BY
-        p."$self->{primary_key}", places.area_id, places.category
-    )
+    GROUP BY
+        p."ListingKey", places.area_id, places.category;
+  |;
+
+  my $rs = $dbh->selectall_arrayref($sql, { Slice => {} });
+
+  my %obj;
+  foreach my $row (@$rs) {
+      $obj{$row->{area_id}}{$row->{category}} = $row->{labels};
+  }
+
+  my $json = j(\%obj);
+
+  my $sql = qq|
+    UPDATE
+      $MLS::Config::MLS."$MLS::Config::RESOURCE"
+    SET
+      __geo_places = '$json'::jsonb
     WHERE
       "$self->{primary_key}" = $remote_id;
   |;
