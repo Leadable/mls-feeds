@@ -10,6 +10,7 @@ SELECT
   last_transaction_completed_at,
   __geo_geom,
   __geo_outlier,
+  __geo_places,
   __price_updated_at,
   __price_history_times,
   __price_history_vals,

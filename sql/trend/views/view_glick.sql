@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW trend.view_glick AS
   SELECT
    15::integer as area_id,
    vl.*,
-   null::text[] as __geo_neigh
+   array(select jsonb_array_elements_text(__geo_places#>'{15,"Neighborhood"}')::text) as __geo_neigh
   FROM
     trend.view_property vl
    WHERE state <> 'DE'
