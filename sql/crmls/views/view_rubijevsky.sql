@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW crmls.view_rubijevsky AS
   SELECT
    68::integer as area_id,
    vl.*,
-   null::text[] as __geo_neigh
+   array(select jsonb_array_elements_text(__geo_places#>'{68,"Neighborhood"}')::text) as __geo_neigh
   FROM
     (SELECT * FROM crmls.view_property WHERE (city in ('Banning', 'Carson', 'Fairmont', 'Inglewood', 'Laguna Beach', 'Lancaster', 'Lompoc', 'Long Beach', 'Outside Area (Inside Ca)', 'Pine Cove', 'Playa Vista', 'Redlands', 'Wilmington') is not true)) vl
 ;

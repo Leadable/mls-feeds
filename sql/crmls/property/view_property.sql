@@ -6,6 +6,7 @@ CREATE OR REPLACE VIEW crmls.view_property AS
     p.__inserted_at - '03:00:00'::interval AS age,
     p.__inserted_at,
     p.__modified_at,
+    p.__geo_places,
     m.last_transaction_completed_at,
     p.__price_updated_at,
     p."VirtualTour" AS virtual_tour,

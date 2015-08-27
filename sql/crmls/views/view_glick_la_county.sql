@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW crmls.view_glick_la_county AS
   SELECT
    25::integer as area_id,
    vl.*,
-   null::text[] as __geo_neigh
+   array(select jsonb_array_elements_text(__geo_places#>'{25,"Neighborhood"}')::text) as __geo_neigh
   FROM
     (select * from crmls.view_property WHERE county IN ('Los Angeles', 'Santa Barbara', 'Ventura') OR city IN('San Clemente', 'Dana Point', 'Laguna Niguel')) vl
 ;

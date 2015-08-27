@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW crmls.view_paxson AS
   SELECT
    41::integer as area_id,
    vl.*,
-   null::text[] as __geo_neigh
+   array(select jsonb_array_elements_text(__geo_places#>'{41,"Neighborhood"}')::text) as __geo_neigh
   FROM
     crmls.view_property vl
 ;
