@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW ppmls.view_clement AS
   SELECT
     66::integer as area_id,
     vl.*,
-    null::text[] as __geo_neigh
+    array(select jsonb_array_elements_text(__geo_places#>'{66,"Neighborhood"}')::text) as __geo_neigh
   FROM
     (SELECT * from ppmls.view_property) vl
 ;
