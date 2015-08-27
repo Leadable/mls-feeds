@@ -148,22 +148,17 @@ sub update_mutation_table {
       'remote_id = ' . $dbh->quote($remote_id)
     );
     my $sql = "UPDATE $MLS::Config::MLS.mutation SET local_img_mod_ts = remote_img_mod_ts WHERE " . join(' AND ', @conditions);
-    $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
-
-    my $sql = "SELECT * FROM $MLS::Config::MLS.mutation WHERE " . join(' AND ', @conditions);
-    $self->{temp_error} = "$sql\n";
-    my $row = $dbh->selectrow_hashref($sql);
 
     MLS::Resource::Utils::check_transaction_complete($dbh, \@conditions);
   };
 
   if ($@) {
-    $dbh->do('ROLLBACK');
+    $dbh->rollback;
     die $@;
   }
 
-  $dbh->do('COMMIT');
+  $dbh->commit;
   $dbh->set_autocommit(1);
 }
 
