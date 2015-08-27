@@ -41,7 +41,7 @@ $MLS::Config::RETS_LOGOUT = 1;
   suffix   => 'StreetSuffix',
   post_dir => 'StreetDirSuffix',
   prefix   => 'StreetDirPrefix',
-  city     => 'City',
+  city     => 'StreetCity',
   state    => 'StateOrProvince',
   zip      => 'PostalCode',
 );
