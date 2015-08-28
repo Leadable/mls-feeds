@@ -17,6 +17,6 @@ $MLS::Config::RETS = MLS::Rets->new({
   use_logout => 1,
 });
 
-$MLS::Config::Mutation::OFFSET_SIZE = 500;
+$MLS::Config::Mutation::OFFSET_SIZE = 30000;
 
 1;
