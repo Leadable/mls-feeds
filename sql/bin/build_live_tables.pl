@@ -13,11 +13,13 @@ use Getopt::Long;
 
 my $MLS;
 my $force;
+my $index_only;
 my $help;
 
 GetOptions(
     "board=s" => \$MLS,
     "force"   => \$force,
+    "index-only" => \$index_only,
     "help"    => \$help,
 ) or pod2usage(1);
 
@@ -95,43 +97,53 @@ if (!$force) {
 
   my $sql = 'SELECT status FROM monitor_feeds where mls = ' . $dbh_tools->quote($MLS);
   my $status = $dbh_tools->selectcol_arrayref($sql, { Slice => {} })->[0];
-  die "[$MLS] is running. Run this script with the -f option if you really want to replace the views\n" if ($status eq 'RUNNING');
+  die "[$MLS] is running. Run this script with the --force option to proceed\n" if ($status eq 'RUNNING');
 }
 
-print "\nRecreating the views for [$MLS]\n\n";
+my @areas = @{get_areas()};
 
-# rebuild view_property and area views
-my $view_property = "$FindBin::Bin/../$MLS/property/view_property.sql";
-die "Could not find [$view_property]" if (! -e $view_property);
+print "Areas found:\n";
+print Dumper \@areas;
 
-my @sql_cmds = ('BEGIN;');
+# views
+if (!$index_only) {
+  print "\nRecreating the views for [$MLS]\n\n";
 
-my $replace_views = `cat $FindBin::Bin/../$MLS/property/view_property.sql $FindBin::Bin/../$MLS/views/*`;
-push @sql_cmds, $replace_views;
+  my $view_property = "$FindBin::Bin/../$MLS/property/view_property.sql";
+  die "Could not find [$view_property]" if (! -e $view_property);
 
-# rebuild the materialized views
-my $area_folder = "$FindBin::Bin/../$MLS/views";
-opendir (my $DH, $area_folder) or
-    die "Could not opendir [$area_folder]";
+  my @sql_cmds = ('BEGIN;');
 
-my @areas = grep {!/^\./} readdir($DH);
+  my $replace_views = `cat $FindBin::Bin/../$MLS/property/view_property.sql $FindBin::Bin/../$MLS/views/*`;
+  push @sql_cmds, $replace_views;
 
+  foreach my $area (@areas) {
+    push @sql_cmds, generate_table_sql($area);
+  }
+
+  push @sql_cmds, 'END;';
+
+  $dbh_feeds->do(join("\n",@sql_cmds));
+}
+
+# indexes
 foreach my $area (@areas) {
-  $area =~ s/\.sql$//;
-
-  next if ($area eq 'view_office' || $area eq 'view_openhouse' || $area eq 'view_activeagent');
-
-  print "Building [$area]\n";
-
-  push @sql_cmds, generate_table_sql($area);
-  push @sql_cmds, generate_index_sql($area); # TODO: Cannot build indexes unless area views are already present
+  print "Build indexes on [$area]\n";
+  $dbh_feeds->do(generate_index_sql($area));
 }
-
-push @sql_cmds, 'END;';
-
-$dbh_feeds->do(join("\n",@sql_cmds));
 
 print "\n[DONE]\n\n";
+
+sub get_areas {
+  my $area_folder = "$FindBin::Bin/../$MLS/views";
+  opendir (my $DH, $area_folder) or
+    die "Could not opendir [$area_folder]";
+
+  my @areas = map {$_ =~ s/\.sql$//; $_}
+              grep {!/^\./ && !($_ eq 'view_office' || $_ eq 'view_openhouse' || $_ eq 'view_activeagent')} readdir($DH);
+
+  return \@areas;
+}
 
 sub get_table_schema {
     my $area = shift;
