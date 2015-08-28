@@ -13,8 +13,9 @@ $MLS::Config::RETS = MLS::Rets->new({
   username  => 'RETS704',
   password  => 'c6AsPUf3',
   use_logout => 1,
+  NumRetry => 99,
 });
 
-$MLS::Config::Mutation::OFFSET_SIZE = 500;
+$MLS::Config::Mutation::OFFSET_SIZE = 10000;
 
 1;
