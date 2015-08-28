@@ -33,8 +33,6 @@ my $search = '(MatrixModifiedDT=' . MLS::Resource::Utils::get_search_interval() 
 # RETS Resource price column
 %MLS::Config::PRICE_COLUMN = ( SystemName => 'ListPrice' );
 
-$MLS::Config::RETS_LOGOUT = 1;
-
 %MLS::Config::ADDR_COLUMNS = (
   street   => 'StreetName',
   number   => 'StreetNumber',

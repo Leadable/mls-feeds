@@ -14,6 +14,8 @@ $MLS::Config::RETS = MLS::Rets->new({
   password  => 'c6AsPUf3'
 });
 
+$MLS::Config::RETS_LOGOUT = 1;
+
 $MLS::Config::Mutation::OFFSET_SIZE = 10000;
 
 1;
