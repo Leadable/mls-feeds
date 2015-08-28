@@ -12,8 +12,9 @@ $MLS::Config::RETS = MLS::Rets->new({
   login_url => 'http://rets.mfrmls.com/contact/rets/login',
   username  => 'RETS704',
   password  => 'c6AsPUf3',
+  user_agent => 'Raelstrom/1.0',
+  rets_version => $librets::RETS_1_7_2,
   use_logout => 1,
-  NumRetry => 99,
 });
 
 $MLS::Config::Mutation::OFFSET_SIZE = 10000;
