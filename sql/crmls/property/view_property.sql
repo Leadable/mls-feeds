@@ -2,7 +2,7 @@ DROP VIEW IF EXISTS crmls.view_property CASCADE;
 CREATE OR REPLACE VIEW crmls.view_property AS
  SELECT 'crmls'::text AS mls,
     p.__removed_at,
-    p.__removed_at IS NULL AND p."Status" <> 'Closed Sale'::text AS __active,
+    p.__removed_at IS NULL AS __active,
     p.__inserted_at - '03:00:00'::interval AS age,
     p.__inserted_at,
     p.__modified_at,
