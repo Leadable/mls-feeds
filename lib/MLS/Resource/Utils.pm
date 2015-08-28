@@ -71,7 +71,10 @@ sub is_peak_time {
 
 # returns a timestamp suitable for running a rets query with
 sub get_search_interval {
+    my $opts = shift;
+
     my $peak = is_peak_time;
+    my $ts_name = $MLS::Config::ROW_MOD_TS_COLUMN{SystemName};
     my $search;
 
     if ($peak) {
@@ -79,12 +82,26 @@ sub get_search_interval {
 
       # during peak hours, get from last 24hrs
       my $dt = DateTime->from_epoch( epoch => time - 86400);
-      $search = "$dt+";
+      $search = "($ts_name=$dt+)";
+    }
+    elsif ($opts->{offpeak_monthly}) {
+        print "Off-Peak Hours (Monthly Search)\n";
+
+        foreach my $year (2012..2015) {
+            foreach my $month (1..11) {
+                my $next_month = sprintf("%02d", $month + 1);
+                $month = sprintf("%02d", $month);
+
+                push @$search, "($ts_name=$year-$month-01-$year-$next_month-01)";
+            }
+        }
     }
     else {
-      print "Off-Peak Hours\n";
-      $search = '1900-01-01T00:00:00+';
+        print "Off-Peak Hours\n";
+        $search = "($ts_name=1900-01-01T00:00:00+)";
     }
+
+    return $search;
 }
 
 sub check_transaction_complete {

@@ -11,16 +11,6 @@ $MLS::Config::RESOURCE = 'Property';
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'Photo';
 
-# RETS Resource Classes
-my $search = '((ListingRid=1+),(LastModifiedDateTime=' . MLS::Resource::Utils::get_search_interval . '))';
-%MLS::Config::CLASSES = (
-  COMM => { StandardName => '',                     'SearchRequest' => $search },  # Commercial
-  INCP => { StandardName => '',                     'SearchRequest' => $search },  # Income Property
-  LOTL => { StandardName => 'LotsAndLand',          'SearchRequest' => $search },  # Land
-  RENT => { StandardName => 'ResidentialProperty',  'SearchRequest' => $search },  # Rental
-  RESI => { StandardName => 'ResidentialProperty',  'SearchRequest' => $search },  # Residential
-);
-
 # RETS Resource Primary Key
 %MLS::Config::PRIMARY_KEY = ( SystemName => 'ListingRid', DBName => 'ListingRid' );
 
@@ -45,6 +35,16 @@ my $search = '((ListingRid=1+),(LastModifiedDateTime=' . MLS::Resource::Utils::g
   city     => 'City',
   state    => 'State',
   zip      => 'ZipCode',
+);
+
+# RETS Resource Classes
+my $search = '((ListingRid=1+),' . MLS::Resource::Utils::get_search_interval . ')';
+%MLS::Config::CLASSES = (
+  COMM => { StandardName => '',                     'SearchRequest' => $search },  # Commercial
+  INCP => { StandardName => '',                     'SearchRequest' => $search },  # Income Property
+  LOTL => { StandardName => 'LotsAndLand',          'SearchRequest' => $search },  # Land
+  RENT => { StandardName => 'ResidentialProperty',  'SearchRequest' => $search },  # Rental
+  RESI => { StandardName => 'ResidentialProperty',  'SearchRequest' => $search },  # Residential
 );
 
 1;

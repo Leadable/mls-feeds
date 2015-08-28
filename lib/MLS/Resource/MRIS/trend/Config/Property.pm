@@ -12,16 +12,6 @@ $MLS::Config::RESOURCE = 'Property';
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'Photo';
 
-# RETS Resource Classes
-my $search = '(ModificationTimestamp=' . MLS::Resource::Utils::get_search_interval . ')';
-%MLS::Config::CLASSES = (
-  RES => { StandardName => 'TREND Residential',         'SearchRequest' => $search },
-  MUL => { StandardName => 'TREND Multi-Family',        'SearchRequest' => $search },
-  COM => { StandardName => 'TREND Commercial',          'SearchRequest' => $search },
-  LOT => { StandardName => 'TREND Lot Land',            'SearchRequest' => $search },
-  RNT => { StandardName => 'TREND Residential Rentals', 'SearchRequest' => $search },
-);
-
 # RETS Resource Primary Key
 %MLS::Config::PRIMARY_KEY = ( SystemName => 'ListingKey' );
 
@@ -45,6 +35,16 @@ my $search = '(ModificationTimestamp=' . MLS::Resource::Utils::get_search_interv
   city     => 'CityName',
   state    => 'State',
   zip      => 'PostalCode',
+);
+
+# RETS Resource Classes
+my $search = MLS::Resource::Utils::get_search_interval();
+%MLS::Config::CLASSES = (
+  RES => { StandardName => 'TREND Residential',         'SearchRequest' => $search },
+  MUL => { StandardName => 'TREND Multi-Family',        'SearchRequest' => $search },
+  COM => { StandardName => 'TREND Commercial',          'SearchRequest' => $search },
+  LOT => { StandardName => 'TREND Lot Land',            'SearchRequest' => $search },
+  RNT => { StandardName => 'TREND Residential Rentals', 'SearchRequest' => $search },
 );
 
 1;

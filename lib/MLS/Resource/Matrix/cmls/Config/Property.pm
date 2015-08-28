@@ -12,16 +12,6 @@ $MLS::Config::RESOURCE = 'Property';
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'LargePhoto';
 
-# RETS Resource Classes
-my $search = '(MatrixModifiedDT=' . MLS::Resource::Utils::get_search_interval() . ')';
-%MLS::Config::CLASSES = (
-  Resi   => { StandardName => 'Residential', 'SearchRequest' => $search },
-  Comm   => { StandardName => 'Commercial',  'SearchRequest' => $search, ignore => 1 },
-  Land   => { StandardName => 'Land',        'SearchRequest' => $search },
-  MF     => { StandardName => 'MultiFamily', 'SearchRequest' => $search },
-  Rent   => { StandardName => 'Rental',      'SearchRequest' => $search },
-);
-
 # RETS Resource Primary Key
 %MLS::Config::PRIMARY_KEY = ( SystemName => 'Matrix_Unique_ID' );
 
@@ -46,6 +36,16 @@ my $search = '(MatrixModifiedDT=' . MLS::Resource::Utils::get_search_interval() 
   city     => 'City',
   state    => 'StateOrProvince',
   zip      => 'PostalCode',
+);
+
+# RETS Resource Classes
+my $search = MLS::Resource::Utils::get_search_interval();
+%MLS::Config::CLASSES = (
+  Resi   => { StandardName => 'Residential', 'SearchRequest' => $search },
+  Comm   => { StandardName => 'Commercial',  'SearchRequest' => $search, ignore => 1 },
+  Land   => { StandardName => 'Land',        'SearchRequest' => $search },
+  MF     => { StandardName => 'MultiFamily', 'SearchRequest' => $search },
+  Rent   => { StandardName => 'Rental',      'SearchRequest' => $search },
 );
 
 1;

@@ -12,17 +12,6 @@ $MLS::Config::RESOURCE = 'Property';
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'HiRes';
 
-# RETS Resource Classes
-my $search = '(LIST_87=' . MLS::Resource::Utils::get_search_interval . ')';
-%MLS::Config::CLASSES = (
-  A => { StandardName => 'ResidentialProperty',   'SearchRequest' => $search },
-  B => { StandardName => 'MultiFamily',           'SearchRequest' => $search },
-  C => { StandardName => 'LotsAndLand',           'SearchRequest' => $search },
-  D => { StandardName => 'CommonInterest',        'SearchRequest' => "", ignore => 1 },
-  E => { StandardName => '',                      'SearchRequest' => "", ignore => 1 },
-  F => { StandardName => '',                      'SearchRequest' => $search },
-);
-
 # RETS Resource Primary Key
 %MLS::Config::PRIMARY_KEY = ( SystemName => 'LIST_1', DBName => 'techid' );
 
@@ -47,6 +36,17 @@ my $search = '(LIST_87=' . MLS::Resource::Utils::get_search_interval . ')';
   city     => 'LIST_39',
   state    => 'LIST_40',
   zip      => 'LIST_43',
+);
+
+# RETS Resource Classes
+my $search = MLS::Resource::Utils::get_search_interval();
+%MLS::Config::CLASSES = (
+  A => { StandardName => 'ResidentialProperty',   'SearchRequest' => $search },
+  B => { StandardName => 'MultiFamily',           'SearchRequest' => $search },
+  C => { StandardName => 'LotsAndLand',           'SearchRequest' => $search },
+  D => { StandardName => 'CommonInterest',        'SearchRequest' => "", ignore => 1 },
+  E => { StandardName => '',                      'SearchRequest' => "", ignore => 1 },
+  F => { StandardName => '',                      'SearchRequest' => $search },
 );
 
 1;

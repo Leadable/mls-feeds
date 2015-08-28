@@ -12,12 +12,6 @@ $MLS::Config::RESOURCE = 'Property';
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'LargePhoto';
 
-# RETS Resource Classes
-my $search = '(MatrixModifiedDT=' . MLS::Resource::Utils::get_search_interval() . ')';
-%MLS::Config::CLASSES = (
-  Listing => { StandardName => 'Cross Property', 'SearchRequest' => $search },
-);
-
 # RETS Resource Primary Key
 %MLS::Config::PRIMARY_KEY = ( SystemName => 'Matrix_Unique_ID' );
 
@@ -65,6 +59,12 @@ $MLS::Config::MV_ACTIVE_COLS = q|
   city     => 'StreetCity',
   state    => 'StateOrProvince',
   zip      => 'PostalCode',
+);
+
+# RETS Resource Classes
+my $search = MLS::Resource::Utils::get_search_interval({offpeak_monthly => 1});
+%MLS::Config::CLASSES = (
+  Listing => { StandardName => 'Cross Property', 'SearchRequest' => $search },
 );
 
 1;

@@ -11,18 +11,6 @@ $MLS::Config::RESOURCE = 'Property';
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'LargePhoto';
 
-# RETS Resource Classes
-my $search = '(TimestampModified=' . MLS::Resource::Utils::get_search_interval . ')';
-%MLS::Config::CLASSES = (
-  Residential       => { StandardName => 'Residential',       'SearchRequest' => $search },
-  Commercial        => { StandardName => 'Commercial',        'SearchRequest' => $search },
-  Land              => { StandardName => 'Land',              'SearchRequest' => $search },
-  Mobile            => { StandardName => 'Mobile',            'SearchRequest' => "", ignore => 1 },
-  CrossProperty     => { StandardName => 'CrossProperty',     'SearchRequest' => "", ignore => 1 },
-  ResidentialIncome => { StandardName => 'ResidentialIncome', 'SearchRequest' => $search },
-  ResidentialLease  => { StandardName => 'ResidentialLease',  'SearchRequest' => $search },
-);
-
 # RETS Resource Primary Key
 %MLS::Config::PRIMARY_KEY = ( SystemName => 'ListingKey' );
 
@@ -47,6 +35,18 @@ my $search = '(TimestampModified=' . MLS::Resource::Utils::get_search_interval .
   city     => 'City',
   state    => 'State',
   zip      => 'PostalCode',
+);
+
+# RETS Resource Classes
+my $search = MLS::Resource::Utils::get_search_interval();
+%MLS::Config::CLASSES = (
+  Residential       => { StandardName => 'Residential',       'SearchRequest' => $search },
+  Commercial        => { StandardName => 'Commercial',        'SearchRequest' => $search },
+  Land              => { StandardName => 'Land',              'SearchRequest' => $search },
+  Mobile            => { StandardName => 'Mobile',            'SearchRequest' => "", ignore => 1 },
+  CrossProperty     => { StandardName => 'CrossProperty',     'SearchRequest' => "", ignore => 1 },
+  ResidentialIncome => { StandardName => 'ResidentialIncome', 'SearchRequest' => $search },
+  ResidentialLease  => { StandardName => 'ResidentialLease',  'SearchRequest' => $search },
 );
 
 1;

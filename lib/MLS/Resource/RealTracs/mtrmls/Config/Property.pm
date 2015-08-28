@@ -12,20 +12,6 @@ $MLS::Config::RESOURCE = 'Property';
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'Photo';
 
-my $search = '(ModDate=' . MLS::Resource::Utils::get_search_interval . ')';
-
-# RETS Resource Classes
-%MLS::Config::CLASSES = (
-  CND => { StandardName => 'Condominium',     'SearchRequest' => $search },
-  RES => { StandardName => 'Residential',     'SearchRequest' => $search },
-  LLF => { StandardName => 'Land-Lots-Farms', 'SearchRequest' => $search },
-  RNT => { StandardName => 'Rental',          'SearchRequest' => $search },
-  MLS => { StandardName => 'Cross-Class',     'SearchRequest' => "", ignore => 1 },
-  COM => { StandardName => 'Commercial',      'SearchRequest' => "", ignore => 1 },
-  MUL => { StandardName => 'Multi-Family',    'SearchRequest' => "", ignore => 1 },
-  AUC => { StandardName => 'Auction',         'SearchRequest' => "", ignore => 1 },
-);
-
 # RETS Resource Primary Key
 %MLS::Config::PRIMARY_KEY = ( SystemName => 'MlsNum', );
 
@@ -78,6 +64,20 @@ $MLS::Config::MV_ACTIVE_COLS = q|
   city     => 'City',
   state    => 'State',
   zip      => 'ZipCode',
+);
+
+my $search = MLS::Resource::Utils::get_search_interval({offpeak_monthly => 1});
+
+# RETS Resource Classes
+%MLS::Config::CLASSES = (
+  CND => { StandardName => 'Condominium',     'SearchRequest' => $search },
+  RES => { StandardName => 'Residential',     'SearchRequest' => $search },
+  LLF => { StandardName => 'Land-Lots-Farms', 'SearchRequest' => $search },
+  RNT => { StandardName => 'Rental',          'SearchRequest' => $search },
+  MLS => { StandardName => 'Cross-Class',     'SearchRequest' => "", ignore => 1 },
+  COM => { StandardName => 'Commercial',      'SearchRequest' => "", ignore => 1 },
+  MUL => { StandardName => 'Multi-Family',    'SearchRequest' => "", ignore => 1 },
+  AUC => { StandardName => 'Auction',         'SearchRequest' => "", ignore => 1 },
 );
 
 1;

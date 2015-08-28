@@ -64,8 +64,6 @@ sub fetch_remote {
 
     next if $class->{ignore};
 
-    print "Search request: " . $class->{SearchRequest} . "\n";
-
     my @select_fields = (
       $MLS::Config::PRIMARY_KEY{SystemName},
       $MLS::Config::ROW_MOD_TS_COLUMN{SystemName}
@@ -75,24 +73,36 @@ sub fetch_remote {
       push @select_fields, $MLS::Config::IMG_MOD_TS_COLUMN{SystemName};
     }
 
-    eval {
-      my $request = $rets->CreateSearchRequest($MLS::Config::RESOURCE, $class_id, $class->{SearchRequest});
-      $request->SetSelect(join(',', @select_fields));
-      $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
-      $request->SetOffset($librets::SearchRequest::OFFSET_NONE);
-      $request->SetStandardNames(0);
-      $request->SetCountType($librets::SearchRequest::RECORD_COUNT_AND_RESULTS);
-      $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
+    my @searches;
 
-      # subclass method
-      $self->remote_search($request, $class_id);
-    };
-
-    if (ref $@ eq 'librets::RetsReplyException') {
-      die "librets::RetsException: " . $@->GetFullReport();
+    if (ref $class->{SearchRequest} eq 'ARRAY') {
+      @searches = @{$class->{SearchRequest}};
     }
-    elsif ($@) {
-      die $@;
+    else {
+      push @searches, $class->{SearchRequest};
+    }
+
+    foreach my $search_request (@searches) {
+      print "Search request: " . $search_request . "\n";
+      eval {
+        my $request = $rets->CreateSearchRequest($MLS::Config::RESOURCE, $class_id, $search_request);
+        $request->SetSelect(join(',', @select_fields));
+        $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
+        $request->SetOffset($librets::SearchRequest::OFFSET_NONE);
+        $request->SetStandardNames(0);
+        $request->SetCountType($librets::SearchRequest::RECORD_COUNT_AND_RESULTS);
+        $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
+
+        # subclass method
+        $self->remote_search($request, $class_id);
+      };
+
+      if (ref $@ eq 'librets::RetsReplyException') {
+        die "librets::RetsException: " . $@->GetFullReport();
+      }
+      elsif ($@) {
+        die $@;
+      }
     }
   }
 }
