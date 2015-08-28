@@ -171,7 +171,7 @@ sub retryable_method {
                 print "Retrying RETS method [$method] [$retries_left] more times\n";
                 sleep 10;
 
-                if ($MLS::Config::RETS_LOGOUT) {
+                if ($self->{use_logout}) {
                     $self->{rets}->Logout;
                 }
 
