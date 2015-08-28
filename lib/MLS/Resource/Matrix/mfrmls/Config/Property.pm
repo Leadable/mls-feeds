@@ -7,7 +7,7 @@ use MLS::Resource::Utils;
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
 
-@MLS::Config::AREAS = qw(isner padula wade);
+@MLS::Config::AREAS = qw(isner padula wade vernamonti);
 
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'LargePhoto';
