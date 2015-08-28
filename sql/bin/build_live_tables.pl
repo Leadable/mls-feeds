@@ -12,12 +12,14 @@ use Pod::Usage;
 use Getopt::Long;
 
 my $MLS;
+my $area;
 my $force;
 my $index_only;
 my $help;
 
 GetOptions(
     "board=s" => \$MLS,
+    "area=s"  => \$area,
     "force"   => \$force,
     "index-only" => \$index_only,
     "help"    => \$help,
@@ -100,22 +102,40 @@ if (!$force) {
   die "[$MLS] is running. Run this script with the --force option to proceed\n" if ($status eq 'RUNNING');
 }
 
-my @areas = @{get_areas()};
+my @areas;
 
-print "Areas found:\n";
-print Dumper \@areas;
+if ($area) {
+
+  if ($area !~ /^view_/) {
+    $area = "view_$area";
+  }
+
+  print "Area: [$area]\n";
+  push @areas, $area;
+}
+else {
+  @areas = @{get_areas()};
+
+  print "Areas found:\n";
+  print Dumper \@areas;
+}
 
 # views
 if (!$index_only) {
-  print "\nRecreating the views for [$MLS]\n\n";
-
-  my $view_property = "$FindBin::Bin/../$MLS/property/view_property.sql";
-  die "Could not find [$view_property]" if (! -e $view_property);
-
   my @sql_cmds = ('BEGIN;');
 
-  my $replace_views = `cat $FindBin::Bin/../$MLS/property/view_property.sql $FindBin::Bin/../$MLS/views/*`;
-  push @sql_cmds, $replace_views;
+  if ($area) {
+    push @sql_cmds, `cat $FindBin::Bin/../$MLS/views/$area.sql`;
+  }
+  else {
+    print "\nRecreating the views for [$MLS]\n\n";
+
+    my $view_property = "$FindBin::Bin/../$MLS/property/view_property.sql";
+    die "Could not find [$view_property]" if (! -e $view_property);
+
+    my $replace_views = `cat $FindBin::Bin/../$MLS/property/view_property.sql $FindBin::Bin/../$MLS/views/*`;
+    push @sql_cmds, $replace_views;
+  }
 
   foreach my $area (@areas) {
     push @sql_cmds, generate_table_sql($area);
