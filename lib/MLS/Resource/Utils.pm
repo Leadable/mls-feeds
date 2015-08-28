@@ -87,12 +87,20 @@ sub get_search_interval {
     elsif ($opts->{offpeak_monthly}) {
         print "Off-Peak Hours (Monthly Search)\n";
 
-        foreach my $year (2012..2015) {
-            foreach my $month (1..11) {
-                my $next_month = sprintf("%02d", $month + 1);
-                $month = sprintf("%02d", $month);
+        foreach my $start_year (2012..2015) {
+            foreach my $start_month (1..12) {
+                my $end_month = sprintf("%02d", $start_month + 1);
+                $start_month = sprintf("%02d", $start_month);
 
-                push @$search, "($ts_name=$year-$month-01-$year-$next_month-01)";
+                my $end_year = $start_year;
+
+                if ($end_month eq '13' ) {
+                    # wrap around
+                    $end_month = '01';
+                    $end_year++;
+                }
+
+                push @$search, "($ts_name=$start_year-$start_month-01-$end_year-$end_month-01)";
             }
         }
     }
