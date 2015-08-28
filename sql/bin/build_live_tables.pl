@@ -124,7 +124,7 @@ foreach my $area (@areas) {
   print "Building [$area]\n";
 
   push @sql_cmds, generate_table_sql($area);
-  push @sql_cmds, generate_index_sql($area);
+  push @sql_cmds, generate_index_sql($area); # TODO: Cannot build indexes unless area views are already present
 }
 
 push @sql_cmds, 'END;';
@@ -154,11 +154,6 @@ sub get_table_schema {
 
 sub generate_table_sql {
     my $area = shift;
-
-    my $schema = get_table_schema($area);
-
-    my $cols = join ',',
-               map {$dbh_feeds->quote_identifier($_->{col_name}) . ' ' . $_->{col_type}} @$schema;
 
     my $sql =
         qq|DROP MATERIALIZED VIEW IF EXISTS $MLS.${area}_mv CASCADE;\n| .
