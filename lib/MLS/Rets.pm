@@ -171,10 +171,6 @@ sub retryable_method {
                 print "Retrying RETS method [$method] [$retries_left] more times\n";
                 sleep 10;
 
-                if ($self->{use_logout}) {
-                    $self->{rets}->Logout;
-                }
-
                 $self->login;
             }
             else {

@@ -14,7 +14,6 @@ $MLS::Config::RETS = MLS::Rets->new({
   password  => 'c6AsPUf3',
   user_agent => 'Raelstrom/1.0',
   rets_version => $librets::RETS_1_7_2,
-  use_logout => 1,
 });
 
 $MLS::Config::Mutation::OFFSET_SIZE = 30000;
