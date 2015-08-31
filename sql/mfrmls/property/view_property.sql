@@ -134,10 +134,10 @@ SELECT
     "ExteriorFeatures" && ARRAY['Open Patio', 'Patio/Deck - Covered', 'Patio/Deck - Open', 'Patio/Deck - Screened', 'Patio/Porch/Deck Covered', 'Patio/Porch/Deck Open', 'Patio/Porch/Deck Screened', 'Porch/Patio']
   ) as "patio_deck_porch",
   --("Foundation" && ARRAY['Basement']) as "basement",
-  ("FireplaceYN") as "fireplace",
+  "FireplaceYN"::boolean as "fireplace",
   ("ExteriorFeatures" && ARRAY['Fenced']) as fenced_yard,
   ("InteriorFeatures" && ARRAY['Elevator']) as elevators,
-  ("WaterFrontageYN") as "waterfront",
+  "WaterFrontageYN"::boolean as "waterfront",
   (
     "GarageCarport" && ARRAY['1 Car Garage', '2 Car Garage', '3 Car Garage', '4 Car Garage', '5+ Car Garage', 'Under Building Parking']
   ) as "garage",
@@ -150,15 +150,15 @@ SELECT
     OR ("Pool" && ARRAY['Community'])
   ) as community_pool,
   ("ArchitecturalStyle" && ARRAY['Ranch']) as "ranch_style",
-  ("NewConstructionYN") as "new_construction",
+  "NewConstructionYN"::boolean as "new_construction",
   ("PropertyDescription" && ARRAY['One Story']) as "one_story",
   ("InteriorLayout" && ARRAY['Master Bedroom Dwonstairs']) as first_floor_master,
   ("InteriorFeatures" && ARRAY['Walk In Closet']) as walk_in_closets,
   ("MasterBathFeatures" && ARRAY['Dual Sinks']) as double_vanity,
-  ("WaterViewYN") as water_view,
-  ("WaterAccessYN") as water_access,
+  "WaterViewYN"::boolean as water_view,
+  "WaterAccessYN"::boolean as water_access,
   "MatrixModifiedDT" as modification_timestamp,
-  ("ShowPropAddrOnInternetYN") as display_address,
+  "ShowPropAddrOnInternetYN"::boolean as display_address,
 
   initcap("WaterName") as "lake",
   "WaterName" as "feature_water_name",
@@ -187,12 +187,12 @@ SELECT
   "ExteriorConstruction" as "feature_exterior_construction[]",
   "Parking" as "feature_parking[]",
   "TransportationAccess" as "feature_transportation_access[]",
-  "ForLeaseYN" as feature_for_lease,
+  "ForLeaseYN"::boolean as feature_for_lease,
   "WaterFrontage" as "feature_waterfront_desc[]",
   "WaterAccess" as "feature_water_access_desc[]",
   "RoadFrontage" as "feature_road_frontage",
   "GarageFeatures" as "feature_garage_features[]",
-  "PetRestrictionsYN" as "feature_pet_restrictions",
+  "PetRestrictionsYN"::boolean as "feature_pet_restrictions",
   "NumofPets" as "feature_pets_number",
   "MaxPetWeight" as "feature_pet_weight_max",
   "PetSize" as "feature_pet_size",
@@ -280,7 +280,7 @@ SELECT
   "AssociationFeeIncludes" as "feature_fee_assoc_includes[]",
   "AssociationApplicationFee" as "feature_fee_assoc_application",
   "BathsHalf" as feature_baths_half,
-  "SpecialTaxDistTampaYN" as feature_tax_special_dist_tampa,
+  "SpecialTaxDistTampaYN"::boolean as feature_tax_special_dist_tampa,
   "FloodZoneCode" as feature_flood_zone_code
 FROM
   mfrmls."Property" p, mfrmls.mutation m
