@@ -7,6 +7,7 @@ use DBI;
 use Mojo::UserAgent;
 use Getopt::Long;
 use Pod::Usage;
+use POSIX qw(_exit);
 
 use MLS::Storage;
 use MLS::Monitor;
@@ -128,7 +129,10 @@ eval {
 if ($@) {
     print "Caught error: $@";
     $monitor->finish({error => 1});
-    exit(1);
+
+    # This is a special exit which does wait for END to process
+    # which librets can hang, causing the process to wait forever
+    POSIX::_exit(1);
 }
 
 $monitor->finish();

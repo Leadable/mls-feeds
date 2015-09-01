@@ -3,7 +3,7 @@ use strict;
 
 use Data::Dumper qw(Dumper);
 use Mojo::JSON qw(j);
-use POSIX;
+use POSIX qw(strftime);
 use MLS::Resource::Utils;
 
 $| = 1;
