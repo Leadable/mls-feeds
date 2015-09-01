@@ -24,7 +24,7 @@ sub search_remote {
     DIR     => $tmpdir_root,
   );
 
-  my $request = new librets::GetObjectRequest($MLS::Config::RESOURCE, "Photo");
+  my $request = new librets::GetObjectRequest($MLS::Config::RESOURCE, $MLS::Config::OBJECT);
 
   $request->AddAllObjects($objectKey);
 

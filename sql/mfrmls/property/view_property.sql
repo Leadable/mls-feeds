@@ -44,6 +44,7 @@ SELECT
   "Matrix_Unique_ID"::text as listing_id,
   "MLSNumber"::text as mlsnum,
   coalesce(__image_count, "PhotoCount", 0) as image_count,
+  __photo_urls,
   "ListPrice" as price,
   "ClosePrice" as sold_price,
   "CloseDate" as sold_date,
@@ -67,12 +68,13 @@ SELECT
   CASE "Status"
     WHEN 'Sold'   THEN 'sold'
     WHEN 'Leased' THEN 'leased'
+    WHEN 'Rented' THEN 'leased'
     ELSE
       CASE "PropertyType"
         WHEN 'Rental' THEN 'for_rent'
         ELSE
-          CASE "LeasePrice"
-            WHEN null THEN 'for_sale'
+          CASE
+            WHEN "LeasePrice" IS NULL THEN 'for_sale'
             ELSE 'for_rent'
           END
       END
