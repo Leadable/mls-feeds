@@ -526,13 +526,13 @@ sub update_places_obj {
       $obj{$row->{area_id}}{$row->{category}} = $row->{labels};
   }
 
-  my $json = j(\%obj);
+  my $json = $dbh->quote(j(\%obj));
 
   my $sql = qq|
     UPDATE
       $MLS::Config::MLS."$MLS::Config::RESOURCE"
     SET
-      __geo_places = '$json'::jsonb
+      __geo_places = ${json}::jsonb
     WHERE
       "$self->{primary_key}" = $remote_id;
   |;

@@ -59,13 +59,13 @@ foreach my $id (@$ids) {
         $obj{$row->{area_id}}{$row->{category}} = $row->{labels};
     }
 
-    my $json = j(\%obj);
+    my $json = $dbh->quote(j(\%obj));
 
     $sql = qq|
         UPDATE
           $mls.$resource
         SET
-          __geo_places = '$json'::jsonb
+          __geo_places = ${json}::jsonb
         WHERE
           $id_col = $id;
     |;
