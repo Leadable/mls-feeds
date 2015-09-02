@@ -244,7 +244,7 @@ sub fetch_remote {
 
           if ($pg_col_type eq 'text[]') {
             my @vals = split(',', $value);
-            $data{ $pg_col_name } = 'ARRAY[' . join(',', map( $dbh->quote($_), @vals)) . ']';
+            $data{ $pg_col_name } = 'ARRAY[' . join(',', map( $dbh->quote($_), @vals)) . ']::text[]';
           }
           elsif (($pg_col_type eq 'integer' || $pg_col_type eq 'numeric') && $value eq '.') {
             $data{ $pg_col_name } = $dbh->quote(0);
