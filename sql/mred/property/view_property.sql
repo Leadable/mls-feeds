@@ -16,6 +16,7 @@ SELECT
   __geo_geom,
   __geo_outlier,
   __geo_modified_at,
+  __geo_places,
   __status_updated_at,
   __status_history_times,
   __status_history_vals,
