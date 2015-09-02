@@ -54,6 +54,7 @@ qw(
     listing_id
     mlsnum
     status
+    __list_date
     sold_date
     sold_price
     under_contract
