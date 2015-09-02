@@ -46,6 +46,8 @@ SELECT
     WHEN 'Contingent' THEN 'Under Contract'
     ELSE NULL::text
   END as under_contract_description,
+  "LD" as __list_date,
+  date_part('days', "CLOSEDDATE"::timestamp without time zone - "LD"::timestamp without time zone)::integer as days_to_close,
   "SP" as sold_price,
   "CLOSEDDATE" as sold_date,
   coalesce(__image_count, "PHOTOCOUNT", 0) as image_count,

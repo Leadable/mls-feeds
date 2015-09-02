@@ -42,6 +42,7 @@ SELECT
   ("Status" IN ('Active with Contract')) as under_contract,
   "Status" as under_contract_description,
   "Matrix_Unique_ID"::text as listing_id,
+  "DaysToClosed" as days_to_close,
   "MLSNumber"::text as mlsnum,
   coalesce(__image_count, "PhotoCount", 0) as image_count,
   __photo_urls,

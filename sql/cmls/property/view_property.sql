@@ -39,6 +39,11 @@ SELECT
   __status_history_times,
   __status_history_vals,
   __photo_urls,
+  __modified_at - "CDOM" * '1 day'::interval as __list_date,
+  CASE "Status"
+    WHEN 'Closed' THEN "CDOM"
+    ELSE null::integer
+  END as days_to_close,
   "CloseDate" as sold_date,
   "ClosePrice" as sold_price,
   "Status" as status,

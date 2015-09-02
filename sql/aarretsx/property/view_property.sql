@@ -20,6 +20,12 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
     "Property".__status_history_times,
     "Property".__status_history_vals,
     __photo_urls,
+    "EntryDate" as __list_date,
+    CASE "Property"."SellingDate"
+        WHEN '1800-01-01'::text THEN null::integer
+        WHEN '1900-01-01'::text THEN null::integer
+        ELSE date_part('day', "SellingDate"::timestamp without time zone - "EntryDate"::timestamp without time zone)::integer
+    END as days_to_close,
     CASE "Property"."Status"
         WHEN 'Active-Contingent'::text THEN 't'::boolean
         WHEN 'Active-LTC'::text        THEN 't'::boolean
@@ -49,6 +55,7 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
     END AS listing_type,
     CASE "Property"."SellingDate"
         WHEN '1800-01-01'::text THEN null::text
+        WHEN '1900-01-01'::text THEN null::text
         ELSE "Property"."SellingDate"
     END AS sold_date,
     "Property"."SellingPrice" as sold_price,

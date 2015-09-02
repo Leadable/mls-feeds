@@ -20,7 +20,9 @@ SELECT
   __status_history_vals,
   "ListingKey"::text as listing_id,
   "ListingID" as mlsnum,
-  "CloseDate" as sold_date,
+  "SourceCreationTimestamp" as __list_date,
+  null::integer as days_to_close,
+  "CloseDate" as sold_date, -- sold data not available
   "ClosePrice" as sold_price,
   "LocaleListingStatus" as status,
   false as comments_disabled,

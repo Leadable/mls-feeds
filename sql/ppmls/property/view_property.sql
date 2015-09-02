@@ -26,8 +26,10 @@ SELECT
   ("Status" IN ('Under Contract - Showing', 'UC Short Sale - Showing')) as under_contract,
   "Status" as under_contract_description,
   "Matrix_Unique_ID"::text as listing_id,
+  "OriginalEntryTimestamp" as __list_date,
+  NULL::integer as days_to_close,
   NULL::text as sold_date, -- note sold data is not present in this board yet
-  NULL::text as sold_price,
+  NULL::numeric as sold_price,
   CASE p.__class_name
       WHEN 'Rental'::text THEN
       CASE "Status"

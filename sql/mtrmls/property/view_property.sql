@@ -38,6 +38,8 @@ SELECT
             ELSE NULL::text
         END
   END AS listing_type,
+  "ListDate" as __list_date,
+  date_part('days', "ClosedDate"::timestamp without time zone - "ListDate"::timestamp without time zone)::integer as days_to_close,
   "ClosedDate" as sold_date,
   "SalesPrice" as sold_price,
   ("ListingStatusID" = 'Pending' OR ("ListingStatusID" = 'Active' AND "ContingencyType" is not null and "ContingencyType" <> 'None')) as under_contract,

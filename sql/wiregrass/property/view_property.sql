@@ -22,6 +22,8 @@ SELECT
   "L_ListingID"::text as listing_id,
   "L_ListingID" as mlsnum,
   "L_Status" as status,
+  null::text as __list_date,
+  null::integer as days_to_close,
   null::numeric as sold_price,
   null::text as sold_date,
   false as under_contract,

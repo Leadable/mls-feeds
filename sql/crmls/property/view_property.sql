@@ -30,6 +30,8 @@ CREATE OR REPLACE VIEW crmls.view_property AS
     p."ListingKey"::text AS listing_id,
     p."MLnumber" AS mlsnum,
     p."Status" AS status,
+    p."DateListingContract" as __list_date,
+    date_part('days', "DateClosedSale"::timestamp without time zone - "DateListingContract"::timestamp without time zone)::integer as days_to_close,
     p."DateClosedSale" as sold_date,
     p."SellingPrice" as sold_price,
     p."Status" = 'Backup Offer'::text OR p."Status" = 'Pending Sale'::text OR p."Status" = 'Leased'::text AS under_contract,
