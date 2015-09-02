@@ -1,6 +1,9 @@
 BEGIN;
      
   CREATE TABLE cmls."Agent"() INHERITS (property);
+    ALTER TABLE cmls."Property" ADD COLUMN "AcresCleared" decimal;
+    COMMENT ON COLUMN cmls."Property"."AcresCleared" IS 'Acres Cleared';
+
     ALTER TABLE cmls."Agent" ADD COLUMN "RatePlugAccessYN" boolean;
     COMMENT ON COLUMN cmls."Agent"."RatePlugAccessYN" IS 'Rate Plug Access YN';
      
