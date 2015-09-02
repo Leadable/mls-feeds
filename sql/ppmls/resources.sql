@@ -66,6 +66,12 @@ BEGIN;
      
     ALTER TABLE ppmls."Property" ADD COLUMN "CoListAgent_MUI" bigint;
     COMMENT ON COLUMN ppmls."Property"."CoListAgent_MUI" IS 'Co List Agent MUI';
+
+    ALTER TABLE ppmls."Property" ADD COLUMN "CommPropSubType" text[];
+    COMMENT ON COLUMN ppmls."Property"."CommPropSubType" IS 'Comm Prop Sub Type';
+
+    ALTER TABLE ppmls."Property" ADD COLUMN "CommPropUseType" text[];
+    COMMENT ON COLUMN ppmls."Property"."CommPropUseType" IS 'Comm Prop Use Type';
      
     ALTER TABLE ppmls."Property" ADD COLUMN "ComplexAmenities" text[];
     COMMENT ON COLUMN ppmls."Property"."ComplexAmenities" IS 'Complex Amenities';
