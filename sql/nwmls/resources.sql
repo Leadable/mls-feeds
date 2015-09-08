@@ -1,4 +1,4 @@
-CREATE TABLE nwmls."Property" inherits (property)
+CREATE TABLE nwmls."Property"
 (
   "ACC" text,
   "ADU" text,
@@ -428,4 +428,4 @@ CREATE TABLE nwmls."Property" inherits (property)
   "ZNC" text,
   "ZNR" text,
   image_meta_downloaded_at timestamp without time zone
-);
+) inherits (property);
