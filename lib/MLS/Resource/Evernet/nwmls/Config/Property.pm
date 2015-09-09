@@ -35,6 +35,50 @@ $MLS::Config::RESOURCE = 'Property';
   zip      => 'ZIP',
 );
 
+$MLS::Config::ADDRESS = sub {
+  my $remote_row = shift;
+
+  my %address;
+  while (my ($col_name, $col_mapping) = each %MLS::Config::ADDR_COLUMNS) {
+    $address{$col_name} = $remote_row->{$col_mapping} if ($col_mapping);
+  }
+
+  my (@line1, @full);
+
+  push(@line1, $address{number}) if $address{number};
+  push(@line1, $address{prefix}) if $address{prefix};
+  push(@line1, $address{street}) if $address{street};
+  push(@line1, $address{suffix}) if $address{suffix};
+  push(@line1, $address{post_dir}) if $address{post_dir};
+
+  $address{line1} = join(' ', @line1);
+
+  $address{line2} = sprintf('%s, %s %s', $address{city}, $address{state}, $address{zip})  if ($address{city} && $address{state} && $address{zip});
+  $address{line2} = sprintf('%s, %s', $address{city}, $address{state})                    if ($address{city} && $address{state} && !($address{zip}));
+
+  push(@full, $address{line1}) if $address{line1};
+  push(@full, $address{line2}) if $address{line2};
+  $address{full} = join(', ', @full);
+
+  my $spec = Geo::StreetAddress::US->parse_address($address{full});
+
+  @line1 = ();
+  my @line2 = ();
+
+  push(@line1, $spec->{number}) if $spec->{number};
+  push(@line1, $spec->{prefix}) if $spec->{prefix};
+  push(@line1, $spec->{street}) if $spec->{street};
+  push(@line1, $spec->{type}) if $spec->{type};
+  push(@line1, $spec->{suffix}) if $spec->{suffix};
+
+  push(@line2, $spec->{city} . ', ' . $spec->{state}) if ($spec->{city} && $spec->{state});
+  push(@line2, $spec->{zip}) if $spec->{zip};
+
+  return 'INVALID' unless (scalar(@line1) && scalar(@line2));
+
+  return join(' ', @line1) . ', ' . join(' ', @line2);
+};
+
 # Make sure $MLS::Config::PEAK_TIME is set
 MLS::Resource::Utils::is_peak_time();
 %MLS::Config::CLASSES = (

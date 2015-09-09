@@ -245,6 +245,7 @@ CREATE TABLE nwmls."Property"
   "NWESHRating" text,
   "OLP" numeric,
   "OOC" text,
+  "OFFICENAME" text,
   "OSF" text,
   "OTR" text[],
   "OTX" text,

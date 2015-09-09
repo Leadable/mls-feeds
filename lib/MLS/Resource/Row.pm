@@ -28,7 +28,7 @@ sub go {
   $dbh->set_autocommit(0);
 
   my $chunk_size;
-  if (! defined $MLS::Config::Row::OFFSET_SIZE) {
+  if (! defined $MLS::Config::Row::OFFSET_SIZE && $self->{rets}) {
     warn "WARNING: No offset size defined for this board ($MLS::Config::MLS), using default of 1,000\n";
     $chunk_size = 1000;
   }
@@ -40,21 +40,56 @@ sub go {
     my $class = $MLS::Config::CLASSES{ $class_id };
     next if $class->{ignore};
 
-    $self->fetch_rets_table_info($class_id);
-
     my $mutated = $self->mutated($class_id);
     next unless $mutated;
 
-    print "Class [$class_id] was found to be mutated\n";
-    my $done = 0;
-    my $total = scalar @$mutated;
+    print "Fetching rows for [$class_id]\n";
 
-    while (@$mutated) {
-      my @chunk = splice(@$mutated, 0, $chunk_size);
-      $self->fetch_remote($class_id, $class, \@chunk);
+    # TODO: This could be subclassed better... but probably no need
+    if ($self->{rets}) {
+      $self->fetch_rets_table_info($class_id);
 
-      $done += scalar @chunk;
-      print "[$done/$total] completed\n\n";
+      my $done = 0;
+      my $total = scalar @$mutated;
+
+      while (@$mutated) {
+        my @chunk = splice(@$mutated, 0, $chunk_size);
+        $self->fetch_remote($class_id, $class, \@chunk);
+
+        $done += scalar @chunk;
+        print "[$done/$total] completed\n\n";
+      }
+    }
+    else {
+      # NWMLS
+      $self->{local_price_col}   = $MLS::Config::PRICE_COLUMN{SystemName};
+      $self->{remote_price_col}  = $MLS::Config::PRICE_COLUMN{SystemName};
+      $self->{local_status_col}  = $MLS::Config::STATUS_COLUMN{SystemName};
+      $self->{remote_status_col} = $MLS::Config::STATUS_COLUMN{SystemName};
+
+      $self->{local_rows} = $self->fetch_local($mutated);
+
+      print '[' . scalar @$mutated . "] results to fetch\n";
+
+      my $i = 0;
+      foreach my $row (@$mutated) {
+        eval {
+          $self->fetch_row($row, $class_id);
+        };
+
+        if ($@) {
+          print "Error: $@";
+          $dbh->rollback;
+        }
+        else {
+          $dbh->commit;
+        }
+
+        print '.';
+        print "[$i]\n" if (++$i % 100 == 0);
+      }
+
+      print "\n";
     }
   }
 
@@ -257,7 +292,13 @@ sub fetch_remote {
         my $pkey_val = $results->GetString($MLS::Config::PRIMARY_KEY{SystemName});
         my $local_row = $local_rows->{ $pkey_val };
 
-        $local_row ? $self->update($results, \%data, $local_row) : $self->insert($results, \%data);
+        my $history_data = {
+          price_new  => $results->GetString($self->{remote_price_col}),
+          status_new => $results->GetString($self->{remote_status_col}),
+          pkey_val   => $pkey_val,
+        };
+
+        $local_row ? $self->update($history_data, \%data, $local_row) : $self->insert(\%data);
 
         $self->update_mutation_table($pkey_val, $results, $class_id);
       };
@@ -300,7 +341,7 @@ sub fetch_remote {
 }
 
 sub update {
-  my ($self, $results, $data, $local_row) = @_;
+  my ($self, $history_data, $data, $local_row) = @_;
  
   my $dbh = $self->{dbh};
  
@@ -311,7 +352,7 @@ sub update {
 
   if (%MLS::Config::PRICE_COLUMN) {
     my $price_val = $local_row->{$self->{local_price_col}};
-    my $price_newval = $results->GetString($self->{remote_price_col}) || 0;
+    my $price_newval = $history_data->{price_new} || 0;
 
     if ($price_val != $price_newval) {
 
@@ -336,7 +377,8 @@ sub update {
 
   if (%MLS::Config::STATUS_COLUMN) {
     my $status_val = $local_row->{$self->{local_status_col}};
-    my $status_newval = $results->GetString($self->{remote_status_col}) || 'NULL';
+    my $status_newval = $history_data->{status_new} || 'NULL';
+
     if ($status_val ne $status_newval) {
       # __status_updated_at
       push(@vals, '__status_updated_at = NOW()');
@@ -350,7 +392,7 @@ sub update {
   }
 
   my $pkey_ident = $MLS::Config::PRIMARY_KEY{SystemName};
-  my $pkey_val = $results->GetString($pkey_ident);
+  my $pkey_val = $history_data->{pkey_val};
 
   my $sql = 'UPDATE ' . $MLS::Config::MLS . '."' . $MLS::Config::RESOURCE . '" SET ' . join(',', @vals) . " WHERE " . $dbh->quote_identifier($pkey_ident) . " = " . $dbh->quote($pkey_val);
   $self->{temp_error} = "$sql\n";
@@ -360,7 +402,7 @@ sub update {
 }
 
 sub insert {
-  my ($self, $results, $data) = @_;
+  my ($self, $data) = @_;
 
   my $dbh = $self->{dbh};
 

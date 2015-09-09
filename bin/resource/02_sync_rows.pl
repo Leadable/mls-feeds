@@ -35,7 +35,9 @@ my $rets = $MLS::Config::RETS;
 
 my $log_dir = MLS::Resource::Utils::get_log_dir();
 
-$rets->SetHttpLogName("$log_dir/sync_rows.log");
+if ($rets) {
+    $rets->SetHttpLogName("$log_dir/sync_rows.log");
+}
 
 eval "require $module_path" or die "Could not find [$module_path]: $@\n";
 
