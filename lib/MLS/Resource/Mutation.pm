@@ -64,45 +64,59 @@ sub fetch_remote {
 
     next if $class->{ignore};
 
-    my @select_fields = (
-      $MLS::Config::PRIMARY_KEY{SystemName},
-      $MLS::Config::ROW_MOD_TS_COLUMN{SystemName}
-    );
-
-    if ($MLS::Config::IMG_MOD_TS_COLUMN{SystemName}) {
-      push @select_fields, $MLS::Config::IMG_MOD_TS_COLUMN{SystemName};
-    }
-
-    my @searches;
-
-    if (ref $class->{SearchRequest} eq 'ARRAY') {
-      @searches = @{$class->{SearchRequest}};
+    if ($rets) {
+      $self->do_rets_search($class, $class_id);
     }
     else {
-      push @searches, $class->{SearchRequest};
+      # NWMLS
+      $self->remote_search($class_id);
     }
+  }
+}
 
-    foreach my $search_request (@searches) {
-      print "Search request: " . $search_request . "\n";
-      eval {
-        my $request = $rets->CreateSearchRequest($MLS::Config::RESOURCE, $class_id, $search_request);
-        $request->SetSelect(join(',', @select_fields));
-        $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
-        $request->SetOffset($librets::SearchRequest::OFFSET_NONE);
-        $request->SetStandardNames(0);
-        $request->SetCountType($librets::SearchRequest::RECORD_COUNT_AND_RESULTS);
-        $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
+sub do_rets_search {
+  my ($self, $class, $class_id) = @_;
 
-        # subclass method
-        $self->remote_search($request, $class_id);
-      };
+  my $rets = $self->{rets};
 
-      if (ref $@ eq 'librets::RetsReplyException') {
-        die "librets::RetsException: " . $@->GetFullReport();
-      }
-      elsif ($@) {
-        die $@;
-      }
+  my @select_fields = (
+    $MLS::Config::PRIMARY_KEY{SystemName},
+    $MLS::Config::ROW_MOD_TS_COLUMN{SystemName}
+  );
+
+  if ($MLS::Config::IMG_MOD_TS_COLUMN{SystemName}) {
+    push @select_fields, $MLS::Config::IMG_MOD_TS_COLUMN{SystemName};
+  }
+
+  my @searches;
+
+  if (ref $class->{SearchRequest} eq 'ARRAY') {
+    @searches = @{$class->{SearchRequest}};
+  }
+  else {
+    push @searches, $class->{SearchRequest};
+  }
+
+  foreach my $search_request (@searches) {
+    print "Search request: " . $search_request . "\n";
+    eval {
+      my $request = $rets->CreateSearchRequest($MLS::Config::RESOURCE, $class_id, $search_request);
+      $request->SetSelect(join(',', @select_fields));
+      $request->SetLimit($librets::SearchRequest::LIMIT_DEFAULT);
+      $request->SetOffset($librets::SearchRequest::OFFSET_NONE);
+      $request->SetStandardNames(0);
+      $request->SetCountType($librets::SearchRequest::RECORD_COUNT_AND_RESULTS);
+      $request->SetFormatType($librets::SearchRequest::COMPACT_DECODED);
+
+      # subclass method
+      $self->remote_search($request, $class_id);
+    };
+
+    if (ref $@ eq 'librets::RetsReplyException') {
+      die "librets::RetsException: " . $@->GetFullReport();
+    }
+    elsif ($@) {
+      die $@;
     }
   }
 }
