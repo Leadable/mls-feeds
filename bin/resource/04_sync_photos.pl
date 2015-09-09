@@ -34,7 +34,11 @@ eval "require $config_path" or die "Could not find [$config_path]: $@\n";
 my $dbh = MLS::Database->new({db => 'feeds'});
 my $rets = $MLS::Config::RETS;
 my $log_dir = MLS::Resource::Utils::get_log_dir();
-$rets->SetHttpLogName("$log_dir/sync_photos.log");
+
+if ($rets) {
+    $rets->SetHttpLogName("$log_dir/sync_photos.log");
+}
+
 my $storage = MLS::Storage->new({ use_s3 => 0, bucket => 'dfo-photos' });
 
 eval "require $module_path" or die "Could not find [$module_path]: $@\n";

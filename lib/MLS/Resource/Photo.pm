@@ -105,7 +105,7 @@ sub fetch_remote {
   };
 
   if ($@) {
-    print "Error, skipping this listing\n";
+    print "Error, skipping this listing: $@\n";
     $self->{totals}{error}++;
     return;
   }
