@@ -184,18 +184,21 @@ sub finish {
     content_type    => 'text/plain',
   });
 
+  my $rets_log_url = '';
   # Store rets log
-  my $rets_log_url = eval {
-    $storage_client->store_file({
-      source_filename => "$self->{log_dir}/rets.log",
-      dest_filename   => "$filename_root-rets.log",
-      content_type    => 'text/plain',
-    });
-  };
+  if (-e "$self->{log_dir}/rets.log") {
+    $rets_log_url = eval {
+      $storage_client->store_file({
+        source_filename => "$self->{log_dir}/rets.log",
+        dest_filename   => "$filename_root-rets.log",
+        content_type    => 'text/plain',
+      });
+    };
 
-  if ($@) {
-    print $@;
-    $rets_log_url = '';
+    if ($@) {
+      print $@;
+      $rets_log_url = '';
+    }
   }
 
   %new_data = (

@@ -52,7 +52,10 @@ my $dbh       = MLS::Database->new({db => 'feeds'});
 my $tools_dbh = MLS::Database->new({db => 'tools'});
 
 my $rets = $MLS::Config::RETS;
-$rets->SetHttpLogName("$log_dir/rets.log");
+
+if ($rets) {
+    $rets->SetHttpLogName("$log_dir/rets.log");
+}
 
 my $photo_storage   = MLS::Storage->new({ use_s3 => 0, bucket => 'dfo-photos' });
 my $log_storage     = MLS::Storage->new({ use_s3 => 0, bucket => 'dfo-log' });
