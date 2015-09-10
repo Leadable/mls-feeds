@@ -23,16 +23,18 @@ sub remote_search {
     $endpoint = 'get_recent_listings';
   }
   else {
-    $endpoint = 'get_new_listings';
+    $endpoint = 'get_all_listings';
   }
 
   my $ua = Mojo::UserAgent->new();
+  $ua->inactivity_timeout(0);
+
   my $tx = $ua->get("http://$api_host:$api_port/$endpoint?class_name=$class_id");
 
   if (!$tx->success) {
     my ($err, $code) = $tx->error;
     if ($err) { 
-      print "\n\nHTTP USER AGENT ERROR:";
+      print "\n\nHTTP USER AGENT ERROR: ";
       print $code ? "$code response: $err" : "Connection error: $err"; 
     }
     

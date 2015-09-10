@@ -20,12 +20,13 @@ sub fetch_row {
     my $remote_id = $row_metdata->{remote_id};
 
     my $ua = Mojo::UserAgent->new();
+    $ua->inactivity_timeout(60);
     my $tx = $ua->get("http://$api_host:$api_port/get_listing?listing_id=$remote_id");
 
     if (!$tx->success) {
         my ($err, $code) = $tx->error;
         if ($err) {
-            print "\n\nHTTP USER AGENT ERROR:";
+            print "\n\nHTTP USER AGENT ERROR: ";
             print $code ? "$code response: $err" : "Connection error: $err";
         }
 
