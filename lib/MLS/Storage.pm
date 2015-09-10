@@ -109,6 +109,10 @@ sub _make_azure_client {
     $storage_acct = 'leadablestoruseast2';
     $key = 'DPcUfEUY219/GKo9yH2sGXY6P8Al3TGyO/1Mrj/vV16Z3Z4KTvTMQ1Oz3U1GFcyVyhsKZ0Kn2Z6g1ugKC1wL5g==';
   }
+  elsif ($ENV{MLS_DB_HOST} =~ /^south/) {
+    $storage_acct = 'leadabledockersouth1';
+    $key = 'Q0bbOCJvHj1hEaOwieWJFbHajMfgylaZrhBW6VjoETIfRkKXolyj0wQ4AhLkw6JPSKKJKhSPhGeAcISpUwaG1w==';
+  }
   else {
     die "unknown db host [$ENV{MLS_DB_HOST}]";
   }
