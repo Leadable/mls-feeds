@@ -2,7 +2,8 @@
 
 use strict;
 
-die 'MLS_DB_HOST must be set' if (!$ENV{MLS_DB_HOST});
+die 'MLS_DB_HOST must be set'  if (!$ENV{MLS_DB_HOST});
+die 'MLS_TIMEZONE must be set' if (!$ENV{MLS_TIMEZONE});
 
 my $force = $ARGV[0] eq '-f';
 
@@ -11,12 +12,12 @@ my $force = $ARGV[0] eq '-f';
 while (1 && !$force) {
     my ($sec, $min, $hour) = localtime(time);
 
-    if ($ENV{MLS_DB_HOST} =~ /^east/ && $hour == 6) {
+    if ($ENV{MLS_TIMEZONE} =~ /^east/ && $hour == 6) {
         # 6am utc = 2am EDT/3am EST
         last;
     }
 
-    elsif ($ENV{MLS_DB_HOST} =~ /^west/ && $hour == 9) {
+    elsif ($ENV{MLS_TIMEZONE} =~ /^west/ && $hour == 9) {
         # 9am utc = 2am PDT/3am PST
         last;
     }
@@ -67,6 +68,7 @@ foreach my $db (@dbs) {
         @tools_env,
         qq|-e BACKUP_FILE='/opt/backups/$mls.sql.gz'|,
         qq|-e MLS_DB_HOST='$ENV{MLS_DB_HOST}'|,
+        qq|-e MLS_TIMEZONE='$ENV{MLS_TIMEZONE}'|,
         qq|-e MLS_NAME='$mls'|,
         q|-v ~/mls-feeds/:/opt/mls-feeds|,
         q|-v /mnt/backup_staging/:/opt/backups|,

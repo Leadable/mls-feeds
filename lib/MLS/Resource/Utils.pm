@@ -44,20 +44,20 @@ sub get_mv_active_select_sql {
 
 # Modifies $MLS::Config::PEAK_TIME
 sub is_peak_time {
-    return 0 if (!$ENV{MLS_DB_HOST} || $ENV{FORCE_OFFPEAK});
+    return 0 if (!$ENV{MLS_TIMEZONE} || $ENV{FORCE_OFFPEAK});
 
     my $dt = DateTime->now;
     my $hour = $dt->hour;
 
     # off peak hours are 12am-6am
-    if ($ENV{MLS_DB_HOST} =~ /^east/) {
+    if ($ENV{MLS_TIMEZONE} =~ /^east/) {
         # 4am-10am utc
         if ($hour >= 4 && $hour < 10) {
             $MLS::Config::PEAK_TIME = 0;
             return;
         }
     }
-    elsif ($ENV{MLS_DB_HOST} =~ /^west/) {
+    elsif ($ENV{MLS_TIMEZONE} =~ /^west/) {
         # 7am-1pm utc
         if ($hour >= 7 && $hour < 13) {
             $MLS::Config::PEAK_TIME = 0;
