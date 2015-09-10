@@ -1,4 +1,3 @@
 #!/bin/sh
 export MLS_NAME=`basename $(pwd)`
-exec envdir ../env \
-     envdir ./env run2
+exec envdir ./env run2
