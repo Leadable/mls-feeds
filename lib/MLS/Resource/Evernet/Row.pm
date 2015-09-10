@@ -20,7 +20,7 @@ sub fetch_row {
     my $remote_id = $row_metdata->{remote_id};
 
     my $ua = Mojo::UserAgent->new();
-    $ua->inactivity_timeout(60);
+    $ua->inactivity_timeout(120);
     my $tx = $ua->get("http://$api_host:$api_port/get_listing?listing_id=$remote_id");
 
     if (!$tx->success) {
