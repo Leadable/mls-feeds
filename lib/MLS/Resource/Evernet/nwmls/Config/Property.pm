@@ -7,7 +7,7 @@ use MLS::Resource::Utils;
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
 
-@MLS::Config::AREAS = qw();
+@MLS::Config::AREAS = qw(warmack dominic);
 
 # RETS Resource Primary Key
 %MLS::Config::PRIMARY_KEY = ( SystemName => 'LN' );
