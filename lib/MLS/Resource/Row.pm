@@ -97,6 +97,11 @@ sub go {
         }
       }
 
+      $self->monitor('new', $self->{totals}{new});
+      $self->monitor('updated', $self->{totals}{updated});
+      $self->monitor('dupes', $self->{totals}{dupes});
+      $self->monitor('error', $self->{totals}{error});
+
       print "\n";
     }
   }
