@@ -7,7 +7,7 @@ use MLS::Resource::Utils;
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
 
-@MLS::Config::AREAS = qw(glick);
+@MLS::Config::AREAS = qw(glick hogue);
 
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'Photo';
