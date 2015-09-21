@@ -88,7 +88,7 @@ sub go {
         print '.';
 
         if (++$i % 100 == 0) {
-          print "[$i]\n"
+          print "[$i]\n";
 
           $self->monitor('new', $self->{totals}{new});
           $self->monitor('updated', $self->{totals}{updated});
