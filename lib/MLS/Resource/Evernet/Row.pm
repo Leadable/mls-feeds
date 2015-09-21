@@ -54,11 +54,6 @@ sub fetch_row {
     $local_row ? $self->update($history_data, \%data, $local_row) : $self->insert(\%data);
 
     $self->update_mutation_table($remote_id, $result, $class_id);
-
-    $self->monitor('new', $self->{totals}{new});
-    $self->monitor('updated', $self->{totals}{updated});
-    $self->monitor('dupes', $self->{totals}{dupes});
-    $self->monitor('error', $self->{totals}{error});
 }
 
 1;

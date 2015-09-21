@@ -86,7 +86,15 @@ sub go {
         }
 
         print '.';
-        print "[$i]\n" if (++$i % 100 == 0);
+
+        if (++$i % 100 == 0) {
+          print "[$i]\n"
+
+          $self->monitor('new', $self->{totals}{new});
+          $self->monitor('updated', $self->{totals}{updated});
+          $self->monitor('dupes', $self->{totals}{dupes});
+          $self->monitor('error', $self->{totals}{error});
+        }
       }
 
       print "\n";
