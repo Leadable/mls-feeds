@@ -18,6 +18,7 @@ SELECT
   __status_updated_at,
   __status_history_times,
   __status_history_vals,
+  __photo_urls,
   "ListingKey"::text as listing_id,
   "ListingID" as mlsnum,
   "SourceCreationTimestamp" as __list_date,
@@ -116,7 +117,8 @@ SELECT
   "Roof" as "feature_roof[]",
   "TenantPays" as "feature_tenant_pays[]",
   "Type" as "feature_type[]",
-  "Styles" as "feature_styles[]"
+  "Styles" as "feature_styles[]",
+  null::text as year_built
 FROM
   trend."Property", trend.mutation as m
 WHERE __class_name IN ('LOT', 'RES', 'RNT') and
