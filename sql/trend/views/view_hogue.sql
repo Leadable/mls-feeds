@@ -1,7 +1,7 @@
 DROP VIEW IF EXISTS trend.view_hogue;
 CREATE OR REPLACE VIEW trend.view_hogue AS
   SELECT
-   15::integer as area_id,
+   99::integer as area_id,
    vl.*,
    array(select jsonb_array_elements_text(__geo_places#>'{99,"Neighborhood"}')::text) as __geo_neigh
   FROM

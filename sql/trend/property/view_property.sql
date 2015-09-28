@@ -47,7 +47,25 @@ SELECT
   "Beds" as beds,
   "BathsFull" as baths_total,
   CASE "PropertyType"
-    WHEN 'Residential' THEN "Type"
+    WHEN 'Residential' THEN
+    CASE "Type"
+      WHEN 'Detached'      THEN 'Single Family'
+      WHEN 'Semi-Detached' THEN 'Row/Townhouse'
+      WHEN 'Row/Townhous'  THEN 'Row/Townhouse'
+      WHEN 'Mobile'        THEN 'Mobile'
+      WHEN 'Unit/Flat'     THEN 'Apartment'
+      ELSE 'Single Family'
+    END
+    WHEN 'Residential Rentals' THEN
+    CASE "Type"
+      WHEN 'Detached'      THEN 'Single Family'
+      WHEN 'Semi-Detached' THEN 'Row/Townhouse'
+      WHEN 'Row/Townhous'  THEN 'Row/Townhouse'
+      WHEN 'Mobile'        THEN 'Mobile'
+      WHEN 'Unit/Flat'     THEN 'Apartment'
+      ELSE 'Single Family'
+    END
+    WHEN 'Lot-Land'       THEN 'Lots & Land'
     ELSE "PropertyType"
   END as type,
   "Remarks" as remarks,
