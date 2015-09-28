@@ -96,8 +96,7 @@ sub start {
   }
   else {
     $SIG{CHLD} = sub {
-      print "Child died, exiting...\n";
-      exit;
+      die "Child died, killing parent process...";
     };
 
     # capture STDOUT, STDIN to log file
