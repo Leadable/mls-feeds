@@ -33,7 +33,7 @@ SELECT
   "LP" as price,
   "BR" as beds,
   CASE "ST"
-    WHEN 'S' THEN 'sold'
+    WHEN 'Sold' THEN 'sold'
     ELSE
     CASE __class_name
       WHEN 'RENT' THEN 'for_rent'
