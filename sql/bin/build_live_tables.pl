@@ -161,7 +161,7 @@ sub get_areas {
     die "Could not opendir [$area_folder]";
 
   my @areas = map {$_ =~ s/\.sql$//; $_}
-              grep {!/^\./ && !($_ eq 'view_office' || $_ eq 'view_openhouse' || $_ eq 'view_activeagent')} readdir($DH);
+              grep {!/^\./ && !($_ eq 'view_office.sql' || $_ eq 'view_openhouse.sql' || $_ eq 'view_activeagent.sql')} readdir($DH);
 
   return \@areas;
 }
