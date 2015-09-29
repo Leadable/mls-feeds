@@ -214,7 +214,12 @@ CREATE VIEW beaches.view_property AS
       WHEN 'F' THEN "GF20121206203004209266000000"
       ELSE null::text[]
     END as "feature_restrictions[]",
-    "LIST_96" like 'Yes%' as "feature_hopa"
+    CASE "LIST_96"
+      WHEN 'Yes-Verified'   THEN 'Yes - Verified'
+      WHEN 'Yes-Unverified' THEN 'Yes - Unverified'
+      WHEN 'No Hopa'        THEN 'No'
+      ELSE null::text
+    END as "feature_hopa"
 
 
 FROM beaches."Property" as p, beaches.mutation as m WHERE p."LIST_1"::text = m.remote_id::text AND m.last_transaction_completed_at is not null
@@ -356,6 +361,11 @@ UNION ALL
     "HOA_111"[0] as "feature_governing_body",
     "PETS_A_181" as "feature_pets_allowed",
     null::text[] as "feature_restrictions[]",
-    "HOPA_1410" in ('Verified','Unverified') as "feature_hopa"
+    CASE "HOPA_1410"
+      WHEN 'Verified'   THEN 'Yes - Verified'
+      WHEN 'Unverified' THEN 'Yes - Unverified'
+      WHEN 'No HOPA'    THEN 'No'
+      ELSE null::text
+    END as "feature_hopa"
 FROM ragfl."Property" as p, ragfl.mutation as m WHERE p.sysid::text = m.remote_id::text AND m.last_transaction_completed_at is not null
 ;  

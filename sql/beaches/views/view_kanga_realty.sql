@@ -23,4 +23,4 @@ COMMENT ON COLUMN beaches.view_kanga_realty.feature_governing_body IS '{ "advanc
 COMMENT ON COLUMN beaches.view_kanga_realty.feature_pets_allowed IS '{ "advanced": true, "label": "Pets Allowed", "input": "checkbox-group", "rank": 20 }';
 COMMENT ON COLUMN beaches.view_kanga_realty."feature_restrictions[]" IS '{ "advanced": true, "label": "Restrictions", "input": "checkbox-group", "rank": 25 }';
 COMMENT ON COLUMN beaches.view_kanga_realty.__geo_neigh IS '{ "location": true, "label": "Neighborhood", "label_plural": "Neighborhoods", "rank": 20 }';
-COMMENT ON COLUMN beaches.view_kanga_realty.feature_hopa IS '{ "feature": true, "label": "HOPA" }';
+COMMENT ON COLUMN beaches.view_kanga_realty.feature_hopa IS '{ "advanced": true, "label": "HOPA", "input": "checkbox-group", "rank": 20 }';
