@@ -35,6 +35,24 @@ $MLS::Config::RESOURCE = 'Property';
   zip      => 'ZIP',
 );
 
+# Four columns needed to make mv_active, listing_type, sold_date, __active, listing_id
+# These should be identical to the definitions in view_property
+$MLS::Config::MV_ACTIVE_COLS = q|
+  SELECT
+    CASE "ST"
+      WHEN 'Sold' THEN 'sold'
+      ELSE
+      CASE __class_name
+        WHEN 'RENT' THEN 'for_rent'
+        ELSE 'for_sale'
+      END
+    END as listing_type,
+    (__removed_at is null) as __active,
+    "LN"::text as listing_id,
+    "SDT" as sold_date
+  FROM nwmls."Property"
+|;
+
 $MLS::Config::ADDRESS = sub {
   my $remote_row = shift;
 
