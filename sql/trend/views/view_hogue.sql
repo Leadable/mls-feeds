@@ -14,8 +14,8 @@ CREATE OR REPLACE VIEW trend.view_hogue AS
 -- locations
 COMMENT ON COLUMN trend.view_hogue.city 
   IS '{ "location": true, "label": "City", "label_plural": "Cities", "rank": 10 }';
-COMMENT ON COLUMN trend.view_hogue.__geo_neigh
-  IS '{ "location": true, "label": "Neighborhood", "label_plural": "Neighborhoods", "rank": 15 }';
+-- COMMENT ON COLUMN trend.view_hogue.__geo_neigh
+--   IS '{ "location": true, "label": "Neighborhood", "label_plural": "Neighborhoods", "rank": 15 }';
 COMMENT ON COLUMN trend.view_hogue.subdivision 
   IS '{ "location": true, "label": "Subdivision", "label_plural": "Subdivisions", "rank": 20 }';
 COMMENT ON COLUMN trend.view_hogue.zip 
