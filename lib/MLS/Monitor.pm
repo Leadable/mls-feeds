@@ -3,7 +3,7 @@ use strict;
 
 use Data::Dumper qw(Dumper);
 use Mojo::JSON qw(j);
-use POSIX qw(strftime);
+use POSIX qw(strftime _exit);
 use MLS::Resource::Utils;
 
 $| = 1;
@@ -96,7 +96,9 @@ sub start {
   }
   else {
     $SIG{CHLD} = sub {
-      die "Child died, killing parent process...";
+      # This is a special exit which does wait for END to process
+      # which librets can hang, causing the process to wait forever
+      POSIX::_exit(1);
     };
 
     # capture STDOUT, STDIN to log file
