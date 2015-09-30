@@ -52,14 +52,14 @@ sub is_peak_time {
     # off peak hours are 12am-6am
     if ($ENV{MLS_TIMEZONE} =~ /^east/) {
         # 4am-10am utc
-        if ($hour >= 4 && $hour < 10) {
+        if ($hour >= 4 && $hour < 9) {
             $MLS::Config::PEAK_TIME = 0;
             return;
         }
     }
     elsif ($ENV{MLS_TIMEZONE} =~ /^west/) {
         # 7am-1pm utc
-        if ($hour >= 7 && $hour < 13) {
+        if ($hour >= 7 && $hour < 12) {
             $MLS::Config::PEAK_TIME = 0;
             return;
         }
