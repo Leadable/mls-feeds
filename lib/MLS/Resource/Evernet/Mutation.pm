@@ -20,9 +20,11 @@ sub remote_search {
   my $endpoint;
   
   if ($MLS::Config::PEAK_TIME) {
+    print "Peak Hours\n";
     $endpoint = 'get_recent_listings';
   }
   else {
+    print "Off-Peak Hours\n";
     $endpoint = 'get_all_listings';
   }
 
