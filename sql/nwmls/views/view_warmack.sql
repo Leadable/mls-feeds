@@ -5,7 +5,7 @@ CREATE OR REPLACE VIEW nwmls.view_warmack AS
    vl.*,
    array(select jsonb_array_elements_text(__geo_places#>'{97,"Neighborhood"}')::text) as __geo_area
   FROM
-    (select * from nwmls.view_property WHERE county IN ('King')) vl
+    (select * from nwmls.view_property WHERE county IN ('King') or city IN ('Edmonds', 'Mukilteo')) vl
 ;
 
 COMMENT ON COLUMN nwmls.view_warmack.city
