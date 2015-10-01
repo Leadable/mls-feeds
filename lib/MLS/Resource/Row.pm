@@ -305,14 +305,17 @@ sub fetch_remote {
         my $pkey_val = $results->GetString($MLS::Config::PRIMARY_KEY{SystemName});
         my $local_row = $local_rows->{ $pkey_val };
 
-        my $history_data = {
-          price_new  => $results->GetString($self->{remote_price_col}),
-          status_new => $results->GetString($self->{remote_status_col}),
-          pkey_val   => $pkey_val,
-        };
+        my $history_data = {pkey_val => $pkey_val};
+
+        if (%MLS::Config::PRICE_COLUMN) {
+          $history_data->{price_new} = $results->GetString($self->{remote_price_col});
+        }
+
+        if (%MLS::Config::STATUS_COLUMN) {
+          $history_data->{status_new} = $results->GetString($self->{remote_status_col});
+        }
 
         $local_row ? $self->update($history_data, \%data, $local_row) : $self->insert(\%data);
-
         $self->update_mutation_table($pkey_val, $results, $class_id);
       };
 
