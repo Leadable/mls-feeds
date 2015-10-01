@@ -20,4 +20,6 @@ my $search = MLS::Resource::Utils::get_search_interval();
   Unit   => { StandardName => 'Unit', 'SearchRequest' => $search },
 );
 
+$MLS::Config::Row::OFFSET_SIZE = 250;
+
 1;
