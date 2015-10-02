@@ -24,6 +24,7 @@ sub search_remote {
     my $remote_id = $row->{remote_id};
 
     my $ua = Mojo::UserAgent->new();
+    $ua->inactivity_timeout(120);
     my $tx = $ua->get("http://$api_host:$api_port/get_photos?listing_id=$remote_id");
 
     if (!$tx->success) {
