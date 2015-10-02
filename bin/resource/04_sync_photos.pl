@@ -11,11 +11,13 @@ use Pod::Usage;
 
 my $mls;
 my $resource;
+my $partition;
 my $help;
 
 GetOptions(
     "board=s"    => \$mls,
     "resource=s" => \$resource,
+    "partition"  => \$partition,
     "help"       => \$help,
 ) or pod2usage(1);
 
@@ -31,7 +33,6 @@ my $module_path = "${board_path}::Photo";
 
 eval "require $config_path" or die "Could not find [$config_path]: $@\n";
 
-my $dbh = MLS::Database->new({db => 'feeds'});
 my $rets = $MLS::Config::RETS;
 my $log_dir = MLS::Resource::Utils::get_log_dir();
 
@@ -39,15 +40,52 @@ if ($rets) {
     $rets->SetHttpLogName("$log_dir/sync_photos.log");
 }
 
-my $storage = MLS::Storage->new({ use_s3 => 0, bucket => 'dfo-photos' });
-
 eval "require $module_path" or die "Could not find [$module_path]: $@\n";
 
-$module_path->new({
-  dbh => $dbh,
-  rets => $rets,
-  storage_client => $storage,
-})->go();
+if ($partition) {
+    print "Partition mode active\n";
+    foreach (0..4) {
+
+        my $pid = fork;
+
+        if (! defined $pid) {
+            die "fork failed: $!";
+        }
+        elsif ($pid == 0) {
+            my $dbh = MLS::Database->new({db => 'feeds'});
+            my $storage = MLS::Storage->new({ use_s3 => 0, bucket => 'dfo-photos' });
+
+            $module_path->new({
+              dbh => $dbh,
+              partition => [$_*2, $_*2+1],
+              storage_client => $storage,
+            })->go();
+
+            exit(0);
+        }
+    }
+
+    my $i = 1;
+    # parent, wait for children to finish
+    $SIG{CHLD} = sub {
+      print "Child [$i] died...\n";
+      exit if ($i++ == 5);
+    };
+
+    while (1) {
+        sleep 10;
+    }
+}
+else {
+    my $dbh = MLS::Database->new({db => 'feeds'});
+    my $storage = MLS::Storage->new({ use_s3 => 0, bucket => 'dfo-photos' });
+
+    $module_path->new({
+      dbh => $dbh,
+      rets => $rets,
+      storage_client => $storage,
+    })->go();
+}
 
 exit(0);
 

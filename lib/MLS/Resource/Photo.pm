@@ -79,6 +79,20 @@ sub mutated {
     "m.remote_id = $primary_key",
   );
 
+  # partition should be an arrayref with digits
+  # note: on some boards the right most digit may all be the same
+  # note2: this is only intended for nwmls as it does not use rets
+  # behavior on boards that use rets is undefined as multiple logins may not work
+  if ($self->{partition}) {
+    my $digits_sql =  join ',',
+                      map {$dbh->quote($_)} @{$self->{partition}};
+
+    push @conditions, "RIGHT(m.remote_id, 1)" . " IN (" . $digits_sql . ")";
+
+    # force peak time to gather only important photos
+    $MLS::Config::PEAK_TIME = 1;
+  }
+
   my $cols = 'm.remote_id, m.remote_img_mod_ts, m.local_img_mod_ts';
   my $mutation_table = "$MLS::Config::MLS.mutation as m";
   my $resource_table = "$MLS::Config::MLS." . $dbh->quote_identifier($MLS::Config::RESOURCE) . ' as p';
