@@ -47,8 +47,6 @@ sub fetch_row {
       pkey_val   => $remote_id,
     };
 
-    return;
-
     # is this an update, or insert?
     my $local_row = $self->{local_rows}->{ $remote_id };
     $local_row ? $self->update($history_data, \%data, $local_row) : $self->insert(\%data);
