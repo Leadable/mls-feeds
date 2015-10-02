@@ -6,8 +6,6 @@ use base 'MLS::Resource::Row';
 use Mojo::UserAgent;
 use Mojo::JSON qw(j);
 
-use Data::Dumper;
-
 sub fetch_row {
     my ($self, $row_metdata, $class_id) = @_;
 
@@ -48,6 +46,8 @@ sub fetch_row {
       status_new => $result->{ $self->{remote_status_col} },
       pkey_val   => $remote_id,
     };
+
+    return;
 
     # is this an update, or insert?
     my $local_row = $self->{local_rows}->{ $remote_id };
