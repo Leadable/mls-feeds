@@ -26,6 +26,8 @@ sub login {
 
     my $rets = new librets::RetsSession($self->{login_url});
 
+    # default timeout of 15 minutes
+    $rets->SetTimeout(60*15);
     $rets->SetRetsVersion($self->{rets_version}) if ($self->{rets_version});
     $rets->SetUserAgent($self->{user_agent})   if ($self->{user_agent});
 
