@@ -112,12 +112,13 @@ eval {
                     die "fork failed: $!";
                 }
                 elsif ($pid == 0) {
+                    my $fork_dbh = MLS::Database->new({db => 'feeds'});
+                    my $fork_photo_storage = MLS::Storage->new({ use_s3 => 0, bucket => 'dfo-photos' });
+
                     $photo_module->new({
-                        dbh            => $dbh,
-                        rets           => $rets,
-                        monitor        => $monitor,
+                        dbh            => $fork_dbh,
                         partition      => [$_*2, $_*2+1],
-                        storage_client => $photo_storage,
+                        storage_client => $fork_photo_storage,
                     })->go();
 
                     exit(0);
