@@ -1,4 +1,4 @@
-DROP VIEW IF EXISTS nwmls.view_warmack;
+DROP VIEW IF EXISTS nwmls.view_warmack CASCADE;
 CREATE OR REPLACE VIEW nwmls.view_warmack AS
   SELECT
    97::integer as area_id,
