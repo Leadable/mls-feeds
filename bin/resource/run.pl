@@ -100,12 +100,41 @@ eval {
     })->go();
 
     if (%MLS::Config::IMG_MOD_TS_COLUMN) {
-        $photo_module->new({
-            dbh => $dbh,
-            rets => $rets,
-            monitor => $monitor,
-            storage_client => $photo_storage
-        })->go();
+
+        # special case for nwmls - should always run in partition mode
+        if ($MLS::Config::MLS eq 'nwmls') {
+            print "Partition mode active\n";
+            foreach (0..4) {
+
+                my $pid = fork;
+
+                if (! defined $pid) {
+                    die "fork failed: $!";
+                }
+                elsif ($pid == 0) {
+                    $photo_module->new({
+                        dbh            => $dbh,
+                        rets           => $rets,
+                        monitor        => $monitor,
+                        partition      => [$_*2, $_*2+1],
+                        storage_client => $photo_storage,
+                    })->go();
+
+                    exit(0);
+                }
+            }
+
+            # parent, wait for children to finish
+            while (wait() != -1) {}
+        }
+        else {
+            $photo_module->new({
+                dbh => $dbh,
+                rets => $rets,
+                monitor => $monitor,
+                storage_client => $photo_storage
+            })->go();
+        }
     }
 
     if (%MLS::Config::ADDR_COLUMNS) {
