@@ -22,7 +22,7 @@ sub search_remote {
     return;
   }
 
-  my $search = "(ClassSourceKey=$source_key)";
+  my $search = qq|((ClassSourceKey=$source_key),(MediaType="Image"))|;
 
   my $rets = $self->{rets};
 
