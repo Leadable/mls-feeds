@@ -104,6 +104,12 @@ eval {
         # special case for nwmls - should always run in partition mode
         if ($MLS::Config::MLS eq 'nwmls') {
             print "Partition mode active\n";
+
+            # FOR NOW - ignore child signal which is set in the monitor
+            # which means when any of these children exited, the parent would exit
+            # but need to find a better fix because the handler in monitor
+            # is important for interrupting the offpeak process which could stay alive for days
+            $SIG{CHLD} = 'IGNORE';
             foreach (0..4) {
 
                 my $pid = fork;
