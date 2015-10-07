@@ -7,7 +7,7 @@ use DBI;
 use Mojo::UserAgent;
 use Getopt::Long;
 use Pod::Usage;
-use POSIX qw(_exit);
+use POSIX qw(_exit :sys_wait_h);
 
 use MLS::Storage;
 use MLS::Monitor;
@@ -105,11 +105,8 @@ eval {
         if ($MLS::Config::MLS eq 'nwmls') {
             print "Partition mode active\n";
 
-            # FOR NOW - ignore child signal which is set in the monitor
-            # which means when any of these children exited, the parent would exit
-            # but need to find a better fix because the handler in monitor
-            # is important for interrupting the offpeak process which could stay alive for days
-            $SIG{CHLD} = 'IGNORE';
+            my @child_pids;
+
             foreach (0..4) {
 
                 my $pid = fork;
@@ -129,10 +126,17 @@ eval {
 
                     exit(0);
                 }
+                else {
+                    push @child_pids, $pid;
+                }
             }
 
             # parent, wait for children to finish
-            while (wait() != -1) {}
+            # cannot use the usual while (wait() != -1) {}
+            # since monitor child process will still be running
+            foreach (@child_pids) {
+                while (waitpid($_, WNOHANG) != -1) {}
+            }
         }
         else {
             $photo_module->new({

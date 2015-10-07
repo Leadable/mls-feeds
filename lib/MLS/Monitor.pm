@@ -96,9 +96,13 @@ sub start {
   }
   else {
     $SIG{CHLD} = sub {
-      # This is a special exit which does wait for END to process
-      # which librets can hang, causing the process to wait forever
-      POSIX::_exit(1);
+      # only time we care about exiting in this handler is if a switch
+      # from offpeak -> peak occurs. otherwise IGNORE the signal
+      if (!$MLS::Config::PEAK_TIME && MLS::Resource::Utils::is_peak_time()) {
+        # This is a special exit which does wait for END to process
+        # which librets can hang, causing the process to wait forever
+        POSIX::_exit(1);
+      }
     };
 
     # capture STDOUT, STDIN to log file
