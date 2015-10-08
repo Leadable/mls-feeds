@@ -33,6 +33,11 @@ sub is_container_running {
 # cleanup old containers, not always removed by docker for some reason
 `docker rm -f mls-feeds-$mls`;
 
+my $off_peak = '';
+if ($ENV{FORCE_OFFPEAK}) {
+    $off_peak = q|-e FORCE_OFFPEAK=1|;
+}
+
 my @tools_env = map {"-e $_='$tools->{$_}'"} keys %$tools;
 my @live_env  = map {"-e $_='$feeds->{$_}'"} keys %$feeds;
 
@@ -65,6 +70,7 @@ foreach my $params (@params_list) {
             q|docker run|,
             @tools_env,
             @live_env,
+            $off_peak,
             qq|-e MLS_DB_HOST='$ENV{MLS_DB_HOST}'|,
             qq|-e MLS_TIMEZONE='$ENV{MLS_TIMEZONE}'|,
             qq|--link mls-db-$mls:postgres|,
