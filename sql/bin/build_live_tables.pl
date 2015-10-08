@@ -150,6 +150,11 @@ if (!$index_only) {
 # indexes
 foreach my $area (@areas) {
   print "Build indexes on [$area]\n";
+
+  # add the columns with comments to our list of indexable columns
+  my $comment_cols = get_commented_cols($dbh_feeds, $MLS, $area);
+  map {$INDEXABLE_COLUMNS{$_} = 1} @$comment_cols;
+
   $dbh_feeds->do(generate_index_sql($area));
 }
 
@@ -240,6 +245,29 @@ sub generate_index_sql {
 
   my $sql = join "\n", @indexes;
   return $sql;
+}
+
+sub get_commented_cols {
+  my ($dbh, $mls, $view) = @_;
+
+  my $sql = qq|
+    SELECT
+      a.attname As column_name, d
+    FROM
+        pg_class As c
+        INNER JOIN pg_attribute As a ON c.oid = a.attrelid
+        LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
+            LEFT JOIN pg_tablespace t ON t.oid = c.reltablespace
+        LEFT JOIN pg_description As d ON (d.objoid = c.oid AND d.objsubid = a.attnum)
+    WHERE
+        c.relkind IN('t', 'v') AND  n.nspname = '$mls' AND c.relname = '$view' and d is not null
+    ORDER BY
+        n.nspname, c.relname, a.attname;
+  |;
+
+  my $rs = $dbh->selectcol_arrayref($sql);
+
+  return $rs;
 }
 
 1;
