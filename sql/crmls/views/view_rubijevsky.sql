@@ -1,9 +1,9 @@
 DROP VIEW IF EXISTS crmls.view_rubijevsky cascade;
 CREATE OR REPLACE VIEW crmls.view_rubijevsky AS
   SELECT
-   68::integer as area_id,
+   98::integer as area_id,
    vl.*,
-   array(select jsonb_array_elements_text(__geo_places#>'{68,"Neighborhood"}')::text) as __geo_neigh
+   array(select jsonb_array_elements_text(__geo_places#>'{98,"Neighborhood"}')::text) as __geo_neigh
   FROM
     (SELECT * FROM crmls.view_property 
       WHERE 

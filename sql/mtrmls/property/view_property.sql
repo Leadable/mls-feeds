@@ -4,7 +4,7 @@ CREATE OR REPLACE VIEW mtrmls.view_property AS
 SELECT
   'mtrmls'::text as mls,
   __removed_at,
-  (__removed_at is null) as __active,
+  (__removed_at IS NULL AND "ListingStatusID" IN ('Pending','Closed','Active')) AS __active,
   __inserted_at,
   last_transaction_completed_at,
   __modified_at,
