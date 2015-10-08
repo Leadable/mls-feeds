@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW trend.view_property AS
 SELECT
   'trend'::text as mls,
   __removed_at,
-  (__removed_at is null) as __active,
+  (__removed_at is null AND "LocaleListingStatus" NOT IN ('EXPIRED', 'WITHDRAWN')) as __active,
   __inserted_at as age,
   __inserted_at,
   __modified_at,

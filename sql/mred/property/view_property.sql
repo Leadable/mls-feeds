@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW mred.view_property AS
 SELECT
   'mred'::text as mls,
   __removed_at,
-  (__removed_at IS NULL) as __active,
+  (__removed_at IS NULL AND "ST" NOT IN ('Cancelled', 'Expired')) as __active,
   (__inserted_at - '1 hour'::interval) as age,
   __inserted_at,
   __modified_at,
