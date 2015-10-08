@@ -7,7 +7,7 @@ BEGIN;
     ALTER TABLE millmls."Property" ADD COLUMN "Agent_Remarks" text;
     COMMENT ON COLUMN millmls."Property"."Agent_Remarks" IS 'Special Remarks';
      
-    ALTER TABLE millmls."Property" ADD COLUMN "Apx_Acreage" integer;
+    ALTER TABLE millmls."Property" ADD COLUMN "Apx_Acreage" numeric;
     COMMENT ON COLUMN millmls."Property"."Apx_Acreage" IS 'Apx Acreage';
      
     ALTER TABLE millmls."Property" ADD COLUMN "Apx_SqFt" integer;
