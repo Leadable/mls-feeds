@@ -6,7 +6,7 @@ use MLS::Resource::Retsiq::crmls::Config;
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
 
-@MLS::Config::AREAS = qw(donovan glick_la_county paxson rubijevsky young);
+@MLS::Config::AREAS = qw(glick_la_county rubijevsky);
 
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'LargePhoto';
