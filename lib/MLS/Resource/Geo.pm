@@ -53,7 +53,7 @@ sub go {
   $self->{primary_key} = $MLS::Config::PRIMARY_KEY{$self->{column_identifier}};
 
   $self->{mapbox_api_key} = 'pk.eyJ1IjoibGlzdGluZ3AiLCJhIjoiOFVKOENBTSJ9.fcoVMMQ5M0HQDSR0owQ8OQ';
-  $self->{bing_api_key}   = 'Asl-yPi17OedkMXozh7V2Qh_UGBKxnoCUQzN7CsXBcPrngsn3CpT8_1I6TlpTPgc';
+  $self->{bing_api_key}   = 'AvEfQDnMk3WZVhmC1cEnfmD39ogIcnRULgvzkLrnEtl6LbfyN0MnutYipqF4pnzV';
 
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
@@ -213,7 +213,7 @@ sub get_user_agent {
 sub http_request {
   my ($self, $service, $url) = @_;
 
-  my $attempts = 10;
+  my $attempts = 3;
   my $tx;
 
   while ($attempts--) {
@@ -239,7 +239,7 @@ sub http_request {
     }
     else {
       http_fail($tx, $ua);
-      sleep 10;
+      sleep 2;
       die if (!$attempts);
     }
   }
