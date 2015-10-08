@@ -53,7 +53,7 @@ sub go {
   $self->{primary_key} = $MLS::Config::PRIMARY_KEY{$self->{column_identifier}};
 
   $self->{mapbox_api_key} = 'pk.eyJ1IjoibGlzdGluZ3AiLCJhIjoiOFVKOENBTSJ9.fcoVMMQ5M0HQDSR0owQ8OQ';
-  $self->{bing_api_key}   = 'AgY1iwb6H-_GidP_6n9GaPGlOPbdeuDJguMoGVKsbGrj8lfqury1agX4UEeXjZu4';
+  $self->{bing_api_key}   = 'Asl-yPi17OedkMXozh7V2Qh_UGBKxnoCUQzN7CsXBcPrngsn3CpT8_1I6TlpTPgc';
 
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
