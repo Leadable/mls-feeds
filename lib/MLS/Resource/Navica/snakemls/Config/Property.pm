@@ -25,7 +25,7 @@ $MLS::Config::OBJECT = 'Photo';
 %MLS::Config::STATUS_COLUMN = ( SystemName => 'Property_Status' );
 
 # RETS Resource price column
-%MLS::Config::PRICE_COLUMN = ( SystemName => 'List_Price' );
+%MLS::Config::PRICE_COLUMN = ( SystemName => 'List_Price', CLSE => 'Selling_Price' );
 
 %MLS::Config::ADDR_COLUMNS = (
   street   => 'Address',

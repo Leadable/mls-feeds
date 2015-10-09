@@ -466,7 +466,7 @@ BEGIN;
     ALTER TABLE snakemls."Property" ADD COLUMN "Min_Trm_Lse" text;
     COMMENT ON COLUMN snakemls."Property"."Min_Trm_Lse" IS 'Min. Term of Lease Wanted';
      
-    ALTER TABLE snakemls."Property" ADD COLUMN "Mo_Lsed_Rate" integer;
+    ALTER TABLE snakemls."Property" ADD COLUMN "Mo_Lsed_Rate" numeric;
     COMMENT ON COLUMN snakemls."Property"."Mo_Lsed_Rate" IS 'Monthly Leased Rate';
      
     ALTER TABLE snakemls."Property" ADD COLUMN "Net_Oper_Incm" text;
@@ -523,7 +523,7 @@ BEGIN;
     ALTER TABLE snakemls."Property" ADD COLUMN "Pending_Date" text;
     COMMENT ON COLUMN snakemls."Property"."Pending_Date" IS 'Pending Date';
      
-    ALTER TABLE snakemls."Property" ADD COLUMN "Pr_SqFt_Annually" integer;
+    ALTER TABLE snakemls."Property" ADD COLUMN "Pr_SqFt_Annually" numeric;
     COMMENT ON COLUMN snakemls."Property"."Pr_SqFt_Annually" IS '$/SqFt Annually';
      
     ALTER TABLE snakemls."Property" ADD COLUMN "Priority_Date" text;
@@ -547,7 +547,7 @@ BEGIN;
     ALTER TABLE snakemls."Property" ADD COLUMN "Remarks" text;
     COMMENT ON COLUMN snakemls."Property"."Remarks" IS 'Public Info';
      
-    ALTER TABLE snakemls."Property" ADD COLUMN "Rntl_Rate" integer;
+    ALTER TABLE snakemls."Property" ADD COLUMN "Rntl_Rate" numeric;
     COMMENT ON COLUMN snakemls."Property"."Rntl_Rate" IS 'Rental Rate';
      
     ALTER TABLE snakemls."Property" ADD COLUMN "Selling_Date" text;
