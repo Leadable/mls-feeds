@@ -42,11 +42,11 @@ my $search = MLS::Resource::Utils::get_search_interval();
     RES  => { StandardName => 'ResidentialProperty',    'SearchRequest' => $search },
     MFAM => { StandardName => 'MultiFamily',            'SearchRequest' => $search },
     RLND => { StandardName => 'LotsAndLand',            'SearchRequest' => $search },
-    FARM => { StandardName => 'ResidentialProperty',    'SearchRequest' => $search },
+    FARM => { StandardName => 'ResidentialProperty',    'SearchRequest' => $search, ignore => 1 },
     RNTL => { StandardName => 'ResidentialProperty',    'SearchRequest' => $search },
-    COMM => { StandardName => 'CommonInterest',         'SearchRequest' => $search },
-    CLSE => { StandardName => 'CommonInterest',         'SearchRequest' => $search },
-    CLND => { StandardName => 'CommonInterest',         'SearchRequest' => $search },
+    COMM => { StandardName => 'CommonInterest',         'SearchRequest' => $search , ignore => 1},
+    CLSE => { StandardName => 'Commercial_Lease',       'SearchRequest' => $search, ignore => 1 },
+    CLND => { StandardName => 'Commercial_Land',        'SearchRequest' => $search, ignore => 1 },
 );
 
 1;
