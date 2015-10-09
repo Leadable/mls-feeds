@@ -787,7 +787,7 @@ BEGIN;
     ALTER TABLE snakemls."Property" ADD COLUMN "off_Number" integer;
     COMMENT ON COLUMN snakemls."Property"."off_Number" IS 'Listing Office';
      
-    ALTER TABLE snakemls."Property" ADD COLUMN "off_name" integer;
+    ALTER TABLE snakemls."Property" ADD COLUMN "off_name" text;
     COMMENT ON COLUMN snakemls."Property"."off_name" IS 'Office Name';
      
     ALTER TABLE snakemls."Property" ADD COLUMN "rets_la_email" text;
