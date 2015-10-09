@@ -40,6 +40,8 @@ sub search_remote {
     my $results = $tx->res->json or
         die "Response is not JSON!";
 
+    $results = [sort {$a->{ImageOrder} <=> $b->{ImageOrder}} @$results];
+
     my $objectKey = $row->{remote_id} . '';
     my $path = substr($objectKey, -3, 3) . '/' . $objectKey;
 
