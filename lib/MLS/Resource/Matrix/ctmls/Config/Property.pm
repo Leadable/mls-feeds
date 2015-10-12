@@ -45,7 +45,7 @@ $MLS::Config::MV_ACTIVE_COLS = q|
       ELSE 'for_sale'::text
     END as listing_type,
     (__removed_at is null) as __active,
-    matrix_unique_id AS listing_id,
+    matrix_unique_id::text AS listing_id,
     "CloseDate" as sold_date
   FROM ctmls."Property"
 |;
