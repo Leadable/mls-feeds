@@ -1,11 +1,11 @@
-package MLS::Resource::Matrix::ctmls::Config;
+package MLS::Resource::Matrix::ctmls2::Config;
 
 use strict;
 
 use MLS::Rets;
 
 # MLS identifier
-$MLS::Config::MLS = 'ctmls';
+$MLS::Config::MLS = 'ctmls2';
 
 # RETS session object
 $MLS::Config::RETS = MLS::Rets->new({

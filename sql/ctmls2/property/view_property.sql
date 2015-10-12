@@ -1,9 +1,9 @@
--- View: ctmls.view_property
+-- View: ctmls2.view_property
 
--- DROP VIEW ctmls.view_property;
-DROP VIEW IF EXISTS ctmls.view_property CASCADE;
-CREATE OR REPLACE VIEW ctmls.view_property AS 
-SELECT 'ctmls'::text AS mls,
+-- DROP VIEW ctmls2.view_property;
+DROP VIEW IF EXISTS ctmls2.view_property CASCADE;
+CREATE OR REPLACE VIEW ctmls2.view_property AS 
+SELECT 'ctmls2'::text AS mls,
   __removed_at,
   __removed_at IS NULL AS __active,
   __class_name,
@@ -141,7 +141,7 @@ SELECT 'ctmls'::text AS mls,
   "AreaNum" AS feature_market_area,
   "AmenitiesIncluded" AS "feature_amenities_included[]"
  FROM
-  ctmls."Property" p, ctmls.mutation m
+  ctmls2."Property" p, ctmls2.mutation m
  WHERE
   p."matrix_unique_id"::text = m.remote_id AND
   m.last_transaction_completed_at is not null

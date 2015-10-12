@@ -1,4 +1,4 @@
-package MLS::Resource::Matrix::ctmls::Mutation;
+package MLS::Resource::Matrix::ctmls2::Mutation;
 
 use strict;
 use base "MLS::Resource::Matrix::Mutation";

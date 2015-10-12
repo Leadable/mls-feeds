@@ -1,13 +1,13 @@
-package MLS::Resource::Matrix::ctmls::Config::Property;
+package MLS::Resource::Matrix::ctmls2::Config::Property;
 use strict;
 
-use MLS::Resource::Matrix::ctmls::Config;
+use MLS::Resource::Matrix::ctmls2::Config;
 use MLS::Resource::Utils;
 
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
 
-@MLS::Config::AREAS = qw(linda_davis lisa_barall);
+@MLS::Config::AREAS = qw(linda_davis lisa_barall_matt);
 
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'LargePhoto';
@@ -59,7 +59,7 @@ $MLS::Config::MV_ACTIVE_COLS = q|
     (__removed_at is null) as __active,
     matrix_unique_id::text AS listing_id,
     "CloseDate" as sold_date
-  FROM ctmls."Property"
+  FROM ctmls2."Property"
 |;
 
 # RETS Resource Classes
