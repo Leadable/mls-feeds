@@ -35,6 +35,21 @@ $MLS::Config::OBJECT = 'LargePhoto';
   zip      => 'PostalCode',
 );
 
+# Four columns needed to make mv_active, listing_type, sold_date, __active, listing_id
+# These should be identical to the definitions in view_property
+$MLS::Config::MV_ACTIVE_COLS = q|
+  SELECT
+    CASE "TransactionType"
+      WHEN 'Rent'::text  THEN 'for_rent'::text
+      WHEN 'Lease'::text THEN 'for_rent'::text
+      ELSE 'for_sale'::text
+    END as listing_type,
+    (__removed_at is null) as __active,
+    matrix_unique_id AS listing_id,
+    "CloseDate" as sold_date,
+  FROM ctmls."Property"
+|;
+
 # RETS Resource Classes
 my $search = MLS::Resource::Utils::get_search_interval();
 %MLS::Config::CLASSES = (
