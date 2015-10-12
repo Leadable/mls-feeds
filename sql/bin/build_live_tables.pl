@@ -235,9 +235,8 @@ sub generate_index_sql {
           $idx_type = 'BTREE';
         }
 
-        my $index_name = $dbh_feeds->quote_identifier(
-          join '_', ('idx', $area, $col->{col_name}, $id++)
-        );
+        my $index_name = join '_', ('idx', $area, $col->{col_name}, $id++);
+        $index_name = $dbh_feeds->quote_identifier(shorten_index_name($index_name));
 
         my $col_name = $dbh_feeds->quote_identifier($col->{col_name});
 
@@ -250,6 +249,18 @@ sub generate_index_sql {
 
   my $sql = join "\n", @indexes;
   return $sql;
+}
+
+sub shorten_index_name {
+  my $str = shift;
+
+  # chop off characters (leaving on the numeric suffix)
+  # until we're under the limit
+  while (length $str > 63) {
+    $str =~ s/(.*).(_\d+)/$1$2/;
+  }
+
+  return $str;
 }
 
 sub get_commented_cols {
