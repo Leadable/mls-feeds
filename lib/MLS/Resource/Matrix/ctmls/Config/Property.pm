@@ -40,9 +40,21 @@ $MLS::Config::OBJECT = 'LargePhoto';
 $MLS::Config::MV_ACTIVE_COLS = q|
   SELECT
     CASE "TransactionType"
-      WHEN 'Rent'::text  THEN 'for_rent'::text
-      WHEN 'Lease'::text THEN 'for_rent'::text
-      ELSE 'for_sale'::text
+      WHEN 'Rent'::text THEN
+        CASE "Status"
+          WHEN 'Closed'::text THEN 'leased'::text
+          ELSE 'for_rent'::text
+        END
+      WHEN 'Lease'::text THEN
+        CASE "Status"
+          WHEN 'Closed'::text THEN 'leased'::text
+          ELSE 'for_rent'::text
+        END
+      ELSE
+        CASE "Status"
+          WHEN 'Closed'::text THEN 'sold'::text
+          ELSE 'for_sale'::text
+        END
     END as listing_type,
     (__removed_at is null) as __active,
     matrix_unique_id::text AS listing_id,
