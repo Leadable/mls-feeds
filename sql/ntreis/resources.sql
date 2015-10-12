@@ -753,6 +753,79 @@ BEGIN;
      
     ALTER TABLE ntreis."Property" ADD COLUMN "ZoningCommercial" text;
     COMMENT ON COLUMN ntreis."Property"."ZoningCommercial" IS 'Zoning Commercial';
+
+    CREATE TABLE ntreis."PropertySubTable"() ;
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "DiningAreaLength" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."DiningAreaLength" IS 'Dining Area Length';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "DiningAreaWidth" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."DiningAreaWidth" IS 'Dining Area Width';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "KitchenLength" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."KitchenLength" IS 'Kitchen Length';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "KitchenWidth" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."KitchenWidth" IS 'Kitchen Width';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "Lease" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."Lease" IS 'Lease';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "Listing_MUI" bigint;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."Listing_MUI" IS 'Listing MUI';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "LivingAreaLength" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."LivingAreaLength" IS 'Living Area Length';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "LivingAreaWidth" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."LivingAreaWidth" IS 'Living Area Width';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "MasterBedLength" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."MasterBedLength" IS 'Master Bed Length';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "MasterBedWidth" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."MasterBedWidth" IS 'Master Bed Width';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "MatrixModifiedDT" text;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."MatrixModifiedDT" IS 'Matrix Modified DT';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "NumberOfBathsFull" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."NumberOfBathsFull" IS 'Number Of Baths Full';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "NumberOfBathsHalf" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."NumberOfBathsHalf" IS 'Number Of Baths Half';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "NumberOfBeds" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."NumberOfBeds" IS 'Number Of Beds';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "NumberOfUnits" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."NumberOfUnits" IS 'Number Of Units';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "RoomDescription" text;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."RoomDescription" IS 'Room Description';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "RoomDimensions" text;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."RoomDimensions" IS 'Room Dimensions';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "RoomFeatures" text[];
+    COMMENT ON COLUMN ntreis."PropertySubTable"."RoomFeatures" IS 'Room Features';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "RoomLength" text;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."RoomLength" IS 'Room Length';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "RoomLevel" text;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."RoomLevel" IS 'Room Level';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "RoomType" text;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."RoomType" IS 'Room Type';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "RoomWidth" text;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."RoomWidth" IS 'Room Width';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "SqFt" integer;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."SqFt" IS 'Sq Ft';
+     
+    ALTER TABLE ntreis."PropertySubTable" ADD COLUMN "matrix_unique_id" bigint PRIMARY KEY;
+    COMMENT ON COLUMN ntreis."PropertySubTable"."matrix_unique_id" IS 'Matrix Unique Id';
      
 
 COMMIT;
