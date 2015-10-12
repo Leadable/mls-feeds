@@ -152,10 +152,15 @@ foreach my $area (@areas) {
   print "Build indexes on [$area]\n";
 
   # add the columns with comments to our list of indexable columns
-  my $comment_cols = get_commented_cols($dbh_feeds, $MLS, $area);
-  map {$INDEXABLE_COLUMNS{$_} = 1} @$comment_cols;
+  my @index_cols = (@{get_commented_cols($dbh_feeds, $area)}, keys %INDEXABLE_COLUMNS);
 
-  $dbh_feeds->do(generate_index_sql($area));
+  # prune duplicates
+  my %seen;
+  foreach (@index_cols) {
+    $seen{$_}++;
+  }
+
+  $dbh_feeds->do(generate_index_sql($area, \%seen));
 }
 
 print "\n[DONE]\n\n";
@@ -205,7 +210,7 @@ sub generate_table_sql {
 }
 
 sub generate_index_sql {
-  my $area = shift;
+  my ($area, $index_cols) = @_;
 
   my @indexes;
   my $id = 1;
@@ -217,7 +222,7 @@ sub generate_index_sql {
 
   foreach my $table (@tables) {
       foreach my $col (@$schema) {
-        next if (!$INDEXABLE_COLUMNS{$col->{col_name}});
+        next if (!$index_cols->{$col->{col_name}});
 
         my $idx_type;
         if ($col->{col_type} eq 'geometry') {
@@ -248,7 +253,7 @@ sub generate_index_sql {
 }
 
 sub get_commented_cols {
-  my ($dbh, $mls, $view) = @_;
+  my ($dbh, $area) = @_;
 
   my $sql = qq|
     SELECT
@@ -260,7 +265,7 @@ sub get_commented_cols {
             LEFT JOIN pg_tablespace t ON t.oid = c.reltablespace
         LEFT JOIN pg_description As d ON (d.objoid = c.oid AND d.objsubid = a.attnum)
     WHERE
-        c.relkind IN('t', 'v') AND  n.nspname = '$mls' AND c.relname = '$view' and d is not null
+        c.relkind IN('t', 'v') AND  n.nspname = '$MLS' AND c.relname = '$area' and d is not null
     ORDER BY
         n.nspname, c.relname, a.attname;
   |;
