@@ -15,7 +15,12 @@ $MLS::Config::RETS = MLS::Rets->new({
   user_agent => 'Raelstrom-1.0',
 });
 
-$MLS::Config::Mutation::OFFSET_SIZE = 2500;
-$MLS::Config::Row::OFFSET_SIZE = 2500;
+if (!$MLS::Config::Mutation::OFFSET_SIZE) {
+    $MLS::Config::Mutation::OFFSET_SIZE = 2500;
+}
+
+if (!$MLS::Config::Row::OFFSET_SIZE) {
+    $MLS::Config::Row::OFFSET_SIZE = 2500;
+}
 
 1;
