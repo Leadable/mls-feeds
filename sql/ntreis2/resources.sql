@@ -754,7 +754,7 @@ BEGIN;
     ALTER TABLE ntreis2."Property" ADD COLUMN "ZoningCommercial" text;
     COMMENT ON COLUMN ntreis2."Property"."ZoningCommercial" IS 'Zoning Commercial';
 
-    CREATE TABLE ntreis2."PropertySubTable"() ;
+    CREATE TABLE ntreis2."PropertySubTable"() INHERITS (property);
     ALTER TABLE ntreis2."PropertySubTable" ADD COLUMN "DiningAreaLength" integer;
     COMMENT ON COLUMN ntreis2."PropertySubTable"."DiningAreaLength" IS 'Dining Area Length';
      
