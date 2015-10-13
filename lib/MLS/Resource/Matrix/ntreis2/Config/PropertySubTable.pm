@@ -1,7 +1,7 @@
-package MLS::Resource::Matrix::ntreis::Config::PropertySubTable;
+package MLS::Resource::Matrix::ntreis2::Config::PropertySubTable;
 use strict;
 
-use MLS::Resource::Matrix::ntreis::Config;
+use MLS::Resource::Matrix::ntreis2::Config;
 use MLS::Resource::Utils;
 
 # ID of the Rets Property Resource

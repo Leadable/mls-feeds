@@ -1,11 +1,11 @@
-package MLS::Resource::Matrix::ntreis::Config;
+package MLS::Resource::Matrix::ntreis2::Config;
 
 use strict;
 
 use MLS::Rets;
 
 # MLS identifier
-$MLS::Config::MLS = 'ntreis';
+$MLS::Config::MLS = 'ntreis2';
 
 # RETS session object
 $MLS::Config::RETS = MLS::Rets->new({
