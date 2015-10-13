@@ -41,8 +41,8 @@ sub remote_search {
     }
 
     while (MLS::Rets::HasNext($results)) {
-      my $row_mod_ts = $results->GetString( $MLS::Config::ROW_MOD_TS_COLUMN{SystemName} );
-      my $img_mod_ts = %MLS::Config::IMG_MOD_TS_COLUMN ? $results->GetString( $MLS::Config::IMG_MOD_TS_COLUMN{SystemName} ) : '';
+      my $row_mod_ts = $results->GetString( $self->{row_mod_col} );
+      my $img_mod_ts = $self->{row_mod_col} ? $results->GetString( $self->{img_mod_col} ) : '';
 
       my %data = (
         remote_row_mod_ts => $row_mod_ts,
@@ -50,7 +50,7 @@ sub remote_search {
         class => $class_id
       );
 
-      $remote->{ $results->GetString( $MLS::Config::PRIMARY_KEY{SystemName} ) } = \%data;
+      $remote->{ $results->GetString( $self->{primary_key_col} ) } = \%data;
 
       $sanity_count++;
     }

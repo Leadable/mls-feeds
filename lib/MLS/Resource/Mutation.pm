@@ -79,13 +79,18 @@ sub do_rets_search {
 
   my $rets = $self->{rets};
 
+  # classes may use different columns for price/status
+  $self->{primary_key_col} = $MLS::Config::PRIMARY_KEY{$class_id}       || $MLS::Config::PRIMARY_KEY{SystemName};
+  $self->{row_mod_col}     = $MLS::Config::ROW_MOD_TS_COLUMN{$class_id} || $MLS::Config::ROW_MOD_TS_COLUMN{SystemName};
+  $self->{img_mod_col}     = $MLS::Config::IMG_MOD_TS_COLUMN{$class_id} || $MLS::Config::IMG_MOD_TS_COLUMN{SystemName};
+
   my @select_fields = (
-    $MLS::Config::PRIMARY_KEY{SystemName},
-    $MLS::Config::ROW_MOD_TS_COLUMN{SystemName}
+    $self->{primary_key_col},
+    $self->{row_mod_col}
   );
 
-  if ($MLS::Config::IMG_MOD_TS_COLUMN{SystemName}) {
-    push @select_fields, $MLS::Config::IMG_MOD_TS_COLUMN{SystemName};
+  if ($self->{img_mod_col}) {
+    push @select_fields, $self->{img_mod_col};
   }
 
   my @searches;
@@ -306,7 +311,7 @@ sub resurrect_remote_rows {
     $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
 
-    my $pkey_ident = $MLS::Config::PRIMARY_KEY{SystemName};
+    my $pkey_ident = $self->{primary_key_col};
 
     $sql = 'UPDATE ' . $MLS::Config::MLS . '."' . $MLS::Config::RESOURCE . '" SET __removed_at = NULL WHERE ' . $dbh->quote_identifier($pkey_ident) .' = ' . $dbh->quote($remote_id);
     $self->{temp_log} = "$sql\n";
