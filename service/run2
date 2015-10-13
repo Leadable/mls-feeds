@@ -30,9 +30,6 @@ sub is_container_running {
     return `docker inspect --format="{{ .State.Running }}" $label` eq "true\n";
 }
 
-# cleanup old containers, not always removed by docker for some reason
-`docker rm -f mls-feeds-$mls`;
-
 my $off_peak = '';
 if ($ENV{FORCE_OFFPEAK}) {
     $off_peak = q|-e FORCE_OFFPEAK=1|;
@@ -60,6 +57,9 @@ else {
 my $start_time = time;
 
 foreach my $params (@params_list) {
+    # cleanup old containers, not always removed by docker for some reason
+    `docker rm -f mls-feeds-$mls`;
+
     my $pid = fork;
     if (! defined $pid) {
         die "Error forking\n";
