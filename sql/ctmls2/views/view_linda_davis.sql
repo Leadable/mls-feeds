@@ -1,6 +1,6 @@
 DROP VIEW IF EXISTS ctmls2.view_linda_davis CASCADE;
 CREATE OR REPLACE VIEW ctmls2.view_linda_davis AS
-  SELECT *, 39::integer as area_id FROM ctmls2.view_property WHERE county IN ('New London', 'Middlesex')
+  SELECT *, 32::integer as area_id FROM ctmls2.view_property WHERE county IN ('New London', 'Middlesex')
 ;
 
 COMMENT ON COLUMN ctmls2.view_linda_davis.city_st IS '{ "location": true, "label": "City", "label_plural": "Cities", "rank": 10 }';

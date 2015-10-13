@@ -1,6 +1,6 @@
 DROP VIEW IF EXISTS ctmls2.view_lisa_barall_matt CASCADE;
 CREATE OR REPLACE VIEW ctmls2.view_lisa_barall_matt AS
-  SELECT *, 35::integer as area_id FROM ctmls2.view_property
+  SELECT *, 31::integer as area_id FROM ctmls2.view_property
 ;
 
 COMMENT ON COLUMN ctmls2.view_lisa_barall_matt.city_st IS '{ "location": true, "label": "City", "label_plural": "Cities", "rank": 10 }';
