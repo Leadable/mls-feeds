@@ -106,7 +106,7 @@ sub get_search_interval {
     }
     else {
         print "Off-Peak Hours\n";
-        $search = "($ts_name=1900-01-01T00:00:00+)";
+        $search = "($ts_name=2012-01-01T00:00:00+)";
     }
 
     return $search;
