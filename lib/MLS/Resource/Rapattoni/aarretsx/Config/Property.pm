@@ -37,6 +37,35 @@ $MLS::Config::OBJECT = 'Photo';
   zip      => 'ZipCode',
 );
 
+# Four columns needed to make mv_active, listing_type, sold_date, __active, listing_id
+# These should be identical to the definitions in view_property
+$MLS::Config::MV_ACTIVE_COLS = q|
+  SELECT
+    CASE "Status"
+        WHEN 'Rented'::text THEN 'leased'::text
+        WHEN 'Sold'::text   THEN 'sold'::text
+        ELSE
+        CASE __class_name
+            WHEN 'RENT'::text THEN 'for_rent'::text
+            WHEN 'COMM'::text THEN
+                CASE 'PropertyType'::text
+                    WHEN 'Residential Lease'::text THEN 'for_rent'::text
+                    WHEN 'Commercial Lease'::text  THEN 'for_rent'::text
+                    ELSE 'for_sale'::text
+                END
+            ELSE 'for_sale'::text
+        END
+    END AS listing_type,
+    (__removed_at is null) as __active,
+    "Property"."ListingRid"::text AS listing_id,
+    CASE "Property"."SellingDate"
+        WHEN '1800-01-01'::text THEN null::text
+        WHEN '1900-01-01'::text THEN null::text
+        ELSE "Property"."SellingDate"
+    END AS sold_date
+  FROM aarretsx."Property"
+|;
+
 # RETS Resource Classes
 my $search = '((ListingRid=1+),' . MLS::Resource::Utils::get_search_interval . ')';
 %MLS::Config::CLASSES = (
