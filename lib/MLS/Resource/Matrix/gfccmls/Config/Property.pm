@@ -40,9 +40,23 @@ $MLS::Config::OBJECT = 'Large';
 
 # Four columns needed to make mv_active, listing_type, sold_date, __active, listing_id
 # These should be identical to the definitions in view_property
-# $MLS::Config::MV_ACTIVE_COLS = q|
-
-# |;
+$MLS::Config::MV_ACTIVE_COLS = q|
+  SELECT
+    CASE coalesce("Status", "STATUS")
+      WHEN 'Sold'   THEN 'sold'
+      WHEN 'Rented' THEN 'leased'
+      ELSE
+        CASE
+          WHEN coalesce("RENT_TYPE", "Rent_Type") IS NOT NULL THEN 'for_rent'
+          ELSE 'for_sale'
+        END
+    END as listing_type,
+    coalesce("Closed_Date", "CLOSED_DATE") as sold_date,
+    "Matrix_Unique_ID"::text as listing_id,
+    (__removed_at IS NULL AND COALESCE("Status", "STATUS") NOT IN ('Expired', 'Cancelled', 'Withdrawn')) as __active
+  FROM
+    gfccmls."Property"
+|;
 
 # RETS Resource Classes
 my $search = MLS::Resource::Utils::get_search_interval();
