@@ -38,6 +38,28 @@ $MLS::Config::OBJECT = 'LargePhoto';
   zip      => 'PostalCode',
 );
 
+# Four columns needed to make mv_active, listing_type, sold_date, __active, listing_id
+# These should be identical to the definitions in view_property
+$MLS::Config::MV_ACTIVE_COLS = q|
+  SELECT
+    CASE "Status"
+        WHEN 'Sold' THEN
+          CASE "PropertyType"
+            WHEN 'Residential Lease' THEN 'leased'
+            ELSE 'sold'
+          END
+        ELSE
+          CASE "PropertyType"
+            WHEN 'Residential Lease' THEN 'for_rent'
+            ELSE 'for_sale'
+          END
+    END as listing_type,
+    (__removed_at is null and "Status" NOT IN ('Withdrawn', 'Withdrawn Sublisting', 'Expired', 'Cancelled')) as __active,
+    "Matrix_Unique_ID"::text as listing_id,
+    null::text as sold_date
+  FROM ntreis2."Property"
+|;
+
 # RETS Resource Classes
 my $search = MLS::Resource::Utils::get_search_interval();
 %MLS::Config::CLASSES = (
