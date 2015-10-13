@@ -25,12 +25,12 @@ $MLS::Config::OBJECT = 'Large';
 %MLS::Config::STATUS_COLUMN = ( SystemName => 'STATUS', RESI => 'Status' );
 
 # RETS Resource price column
-%MLS::Config::PRICE_COLUMN = ( SystemName => 'ListPrice' );
+%MLS::Config::PRICE_COLUMN = ( SystemName => 'ListPrice', RESI => 'Listprice' );
 
 %MLS::Config::ADDR_COLUMNS = (
   street   => {default => 'STREET',          RESI => 'Street'},
   number   => {default => 'STREET_NO',       RESI => 'Street_No'},
-  suffix   => {default => 'STREET_TYPE',     RESI => 'Street_Type',
+  suffix   => {default => 'STREET_TYPE',     RESI => 'Street_Type'},
   post_dir => {default => 'STREET_POST_DIR', RESI => 'Street_Post_Dir'},
   prefix   => {default => 'STREET_DIR',      RESI => 'Street_Dir'},
   city     => 'Town',
