@@ -42,7 +42,7 @@ sub remote_search {
 
     while (MLS::Rets::HasNext($results)) {
       my $row_mod_ts = $results->GetString( $self->{row_mod_col} );
-      my $img_mod_ts = $self->{row_mod_col} ? $results->GetString( $self->{img_mod_col} ) : '';
+      my $img_mod_ts = $self->{img_mod_col} ? $results->GetString( $self->{img_mod_col} ) : '';
 
       my %data = (
         remote_row_mod_ts => $row_mod_ts,
