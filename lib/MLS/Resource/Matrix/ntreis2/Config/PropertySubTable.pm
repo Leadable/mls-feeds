@@ -21,6 +21,6 @@ my $search = MLS::Resource::Utils::get_search_interval();
 );
 
 $MLS::Config::Mutation::OFFSET_SIZE = 100000;
-$MLS::Config::Row::OFFSET_SIZE = 10000;
+$MLS::Config::Row::OFFSET_SIZE      = 100000;
 
 1;
