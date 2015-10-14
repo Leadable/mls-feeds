@@ -94,30 +94,41 @@ sub go {
       next if $self->geocode_mapbox($remote_row);
     };
 
-    $error = 1 if ($@);
+    if ($@) {
+      print $@;
+      $error = 1;
+    }
 
     eval {
       next if $self->geocode_bing($remote_row);
     };
 
-    $error = 1 if ($@);
+    if ($@) {
+      print $@;
+      $error = 1;
+    }
 
     eval {
       next if $self->geocode_google($remote_row);
     };
 
-    $error = 1 if ($@);
-
-    # at least one error, try again later
-    if ($error) {
-      $self->{totals}{fail}++;
-      next;
+    if ($@) {
+      print $@;
+      $error = 1;
     }
 
     # if we got here none of the geocoders found an address
-    $self->{totals}{fail}++;
-    $self->update_local_row($remote_row);
-    $self->update_mutation_row($remote_row->{remote_id});
+
+    if ($error) {
+      # at least one error, try again later
+      $self->{totals}{fail}++;
+    }
+    else {
+      # no error
+      $self->{totals}{fail}++;
+      $self->update_local_row($remote_row);
+      $self->update_mutation_row($remote_row->{remote_id});
+    }
   }
 
   $self->finish();
@@ -206,7 +217,7 @@ sub get_geocoder {
   my ($self, $service) = @_;
 
   my $rs = $self->{dbh_tools}->selectall_arrayref(qq|SELECT * FROM geocode_proxy where service = '$service' AND count < "limit";|, {Slice => {}});
-  return if (!$rs);
+  return if (!$rs || ! scalar @$rs);
 
   # pick a proxy server at random
   my $proxy = $rs->[rand @$rs];
@@ -236,17 +247,20 @@ sub http_request {
   my $tx;
 
   while ($attempts--) {
+    # use tmp var to append key so original doesnt get modified and cached
+    my $req_url = $url;
+
     if ($service eq 'google') {
-      $url .= "&key=$key";
+      $req_url .= "&key=$key";
     }
     elsif ($service eq 'mapbox') {
-      $url .= '&access_token=' . $self->{mapbox_api_key};
+      $req_url .= '&access_token=' . $self->{mapbox_api_key};
     }
     elsif ($service eq 'bing') {
-      $url .= "&key=$key";
+      $req_url .= "&key=$key";
     }
 
-    $tx = $ua->get($url);
+    $tx = $ua->get($req_url);
 
     if ($tx->success) {
       return $tx->success;
