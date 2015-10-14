@@ -53,7 +53,6 @@ sub go {
   $self->{primary_key} = $MLS::Config::PRIMARY_KEY{$self->{column_identifier}};
 
   $self->{mapbox_api_key} = 'pk.eyJ1IjoibGlzdGluZ3AiLCJhIjoiOFVKOENBTSJ9.fcoVMMQ5M0HQDSR0owQ8OQ';
-  $self->{bing_api_key}   = 'AvEfQDnMk3WZVhmC1cEnfmD39ogIcnRULgvzkLrnEtl6LbfyN0MnutYipqF4pnzV';
 
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
@@ -88,19 +87,35 @@ sub go {
       next; 
     }
 
+    # Try each service until one succeeds
+    my $error = 0;
+
     eval {
       next if $self->geocode_mapbox($remote_row);
-      next if $self->geocode_bing($remote_row);
-      next if $self->geocode_google($remote_row);
-      $self->{totals}{fail}++;
     };
 
-    if ($@) {
+    $error = 1 if ($@);
+
+    eval {
+      next if $self->geocode_bing($remote_row);
+    };
+
+    $error = 1 if ($@);
+
+    eval {
+      next if $self->geocode_google($remote_row);
+    };
+
+    $error = 1 if ($@);
+
+    # at least one error, try again later
+    if ($error) {
       $self->{totals}{fail}++;
       next;
     }
 
     # if we got here none of the geocoders found an address
+    $self->{totals}{fail}++;
     $self->update_local_row($remote_row);
     $self->update_mutation_row($remote_row->{remote_id});
   }
@@ -187,17 +202,14 @@ sub http_fail {
   print "\n";
 }
 
-sub get_user_agent {
-  my $self = shift;
+sub get_geocoder {
+  my ($self, $service) = @_;
 
-  if (!$self->{proxy_servers}) {
-    my $rs = $self->{dbh_tools}->selectall_arrayref('SELECT * FROM geocode_proxy', {Slice => {}});
-    die "No proxy servers in table" if (!$rs);
-    $self->{proxy_servers} = $rs;
-  }
+  my $rs = $self->{dbh_tools}->selectall_arrayref(qq|SELECT * FROM geocode_proxy where service = '$service' AND count < "limit";|, {Slice => {}});
+  return if (!$rs);
 
   # pick a proxy server at random
-  my $proxy = $self->{proxy_servers}->[rand @{$self->{proxy_servers}}];
+  my $proxy = $rs->[rand @$rs];
 
   my $ua = Mojo::UserAgent->new();
   $ua->proxy->http("http://$proxy->{hostname}:8080")->https("http://$proxy->{hostname}:8080");
@@ -205,34 +217,36 @@ sub get_user_agent {
   # do not use proxy for bing, mapbox
   $ua->proxy->not([qw(virtualearth.net mapbox.com)]);
 
-  $self->{google_api_key} = $proxy->{api_token};
-
-  return $ua;
+  return {
+    id  => $proxy->{id},
+    key => $proxy->{api_token},
+    ua  => $ua,
+  };
 }
 
 sub http_request {
-  my ($self, $service, $url) = @_;
+  my ($self, $opts) = @_;
+
+  my $ua      = $opts->{ua};
+  my $url     = $opts->{url};
+  my $key     = $opts->{key};
+  my $service = $opts->{service};
 
   my $attempts = 3;
   my $tx;
 
   while ($attempts--) {
-    my $ua = $self->get_user_agent;
-
-    my $req_url = $url;
-
-    # add the key to the url before we search so it doesn't muck with the cache
     if ($service eq 'google') {
-      $req_url .= '&key=' . $self->{google_api_key};
+      $url .= "&key=$key";
     }
     elsif ($service eq 'mapbox') {
-      $req_url .= '&access_token=' . $self->{mapbox_api_key};
+      $url .= '&access_token=' . $self->{mapbox_api_key};
     }
     elsif ($service eq 'bing') {
-      $req_url .= '&key=' . $self->{bing_api_key};
+      $url .= "&key=$key";
     }
 
-    $tx = $ua->get($req_url);
+    $tx = $ua->get($url);
 
     if ($tx->success) {
       return $tx->success;
@@ -268,18 +282,33 @@ sub request {
     }
   }
 
-  my $res = $self->http_request($service, $url);
+  my $geocoder;
+
+  if ($service eq 'mapbox') {
+    $geocoder = {
+      key => $self->{mapbox_api_key},
+      ua  => Mojo::UserAgent->new(),
+    };
+  }
+  else {
+    $geocoder = $self->get_geocoder($service);
+    die "No available geocoders available for service: [$service]\n" if (!$geocoder);
+  }
+
+  my $res = $self->http_request({
+    ua      => $geocoder->{ua},
+    url     => $url,
+    key     => $geocoder->{key},
+    service => $service,
+  });
 
   my $json = $res->json or
     die "Response is not JSON!";
 
-  # special case for google requests, retry other geocoders if query limit hit
-  my $google_attempts = 20;
-  while ($service eq 'google' && $json->{status} eq 'OVER_QUERY_LIMIT' && $google_attempts--) {
-    $res = http_request($service, $url);
-
-    $json = $res->json or
-      die "Response is not JSON!";
+  if ($service ne 'mapbox') {
+    # add to counter for the geocoder used
+    $sql = "UPDATE geocode_proxy SET count = count + 1 WHERE id = $geocoder->{id};";
+    $self->{dbh_tools}->do($sql);
   }
 
   if ($row) {
