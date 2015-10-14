@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW gfccmls.view_property AS
 SELECT
   'gfccmls'::text as mls,
   __removed_at,
-  (__removed_at IS NULL) as __active,
+  (__removed_at IS NULL AND COALESCE("Status", "STATUS") NOT IN ('Expired', 'Cancelled', 'Withdrawn')) as __active,
   __inserted_at as age,
   __inserted_at,
   __modified_at,
@@ -17,6 +17,13 @@ SELECT
   __status_updated_at,
   __status_history_times,
   __status_history_vals,
+  __geo_places,
+  __photo_urls,
+  coalesce("Listingdate", "ListingDate") as __list_date,
+  last_transaction_completed_at,
+  "DOM" as days_to_close,
+  coalesce("Closed_Date", "CLOSED_DATE") as sold_date,
+  coalesce("ClosePrice", "Closeprice") as sold_price,
   "Matrix_Unique_ID" as listing_id,
   coalesce("Mlsnumber", "MLSNumber") as mlsnum,
   coalesce("Status", "STATUS") as status,
@@ -30,9 +37,18 @@ SELECT
     WHEN 'Cont. To Show' THEN 'Under Contract - Continue to Show'
     ELSE NULL::text
   END as under_contract_description,
-  coalesce(__image_count, "Photocount", "PHOTOCOUNT", 0) as image_count,
+  COALESCE(array_length(__photo_urls, 1), 0) as image_count,
   coalesce("Listprice", "ListPrice") as price,
   coalesce("No_Bedrooms", "NO_BEDROOMS") as beds,
+  CASE coalesce("Status", "STATUS")
+    WHEN 'Sold'   THEN 'sold'
+    WHEN 'Rented' THEN 'leased'
+    ELSE
+      CASE
+        WHEN coalesce("RENT_TYPE", "Rent_Type") IS NOT NULL THEN 'for_rent'
+        ELSE 'for_sale'
+      END
+  END as listing_type,
   CASE __class_name
     WHEN 'LAND' THEN 'Lots & Land'
     WHEN 'RESI' THEN "Prop_Type"
@@ -120,5 +136,9 @@ SELECT
   coalesce("Waterfront_Desc", "WATERFRONT_DESC") as "feature_waterfront_description[]",
   "Water" as "feature_water[]",
   coalesce("Zoning", "ZONING") as "feature_zoning"
-FROM gfccmls."Property"
+FROM
+  gfccmls."Property" as p, gfccmls.mutation as m
+WHERE
+  p."Matrix_Unique_ID"::text = m.remote_id AND
+  m.last_transaction_completed_at is not null
 ;

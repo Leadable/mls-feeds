@@ -3,25 +3,9 @@ CREATE OR REPLACE VIEW gfccmls.view_bunny AS
   SELECT
    23::integer as area_id,
    vl.*,
-   neigh_places.label as __geo_neigh
+   array(select jsonb_array_elements_text(__geo_places#>'{23,"Neighborhood"}')::text) as __geo_neigh
   FROM
-    (select * from gfccmls.view_listings WHERE county = 'Fairfield') vl
-    LEFT OUTER JOIN
-      (
-        SELECT * FROM
-          (
-            SELECT
-              vl.mlsnum AS mlsnum,
-              places.category as category,
-              array_agg(places.label) AS label
-            FROM
-              (select * from gfccmls.view_listings WHERE county = 'Fairfield') vl
-              JOIN (select * from gfccmls.places where area_id = 23) as places ON ST_Contains(ST_SETSRID(places.way, 4326), vl.__geo_geom)
-            GROUP BY mlsnum, category
-          ) mls_places
-        WHERE category = 'Neighborhood'
-      )
-    neigh_places ON neigh_places.mlsnum = vl.mlsnum
+    (select * from gfccmls.view_property WHERE county = 'Fairfield') vl
 ;
 
 COMMENT ON COLUMN gfccmls.view_bunny.city_st
@@ -83,6 +67,3 @@ COMMENT ON COLUMN gfccmls.view_bunny."feature_style[]"
   IS '{ "advanced": true, "label": "Style", "input": "checkbox-group", "rank": 110 }';
 COMMENT ON COLUMN gfccmls.view_bunny."feature_waterfront_description[]"
   IS '{ "advanced": true, "label": "Waterfront Description", "input": "checkbox-group", "rank": 120 }';
-
--- invalidate cache
-UPDATE area SET config_version = NOW() WHERE id = 23;
