@@ -19,6 +19,7 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
     "Property".__status_updated_at,
     "Property".__status_history_times,
     "Property".__status_history_vals,
+    __geo_places,
     __photo_urls,
     "EntryDate" as __list_date,
     CASE "Property"."SellingDate"

@@ -65,8 +65,8 @@ SELECT
       CASE "OWN"
         WHEN 'Fee Simple' THEN 'Single Family'
         WHEN 'Fee Simple w/ HO Assn.' THEN 'Single Family'
-        WHEN 'Condo' THEN 'Condo'
-        WHEN 'Condo,Co-op' THEN 'Condo'
+        WHEN 'Condo' THEN 'Condo/Townhome'
+        WHEN 'Condo,Co-op' THEN 'Condo/Townhome'
         WHEN 'Co-op' THEN NULL
       END
     END as type,

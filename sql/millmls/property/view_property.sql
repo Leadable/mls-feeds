@@ -25,7 +25,7 @@ CREATE OR REPLACE VIEW millmls.view_property AS
     last_transaction_completed_at,
     null::int as days_to_close,
     null::text as sold_date,
-    null::text as sold_price,
+    null::int as sold_price,
     ("Property_Status" = 'Contingency Contract') as under_contract,
     CASE "Property_Status"
       WHEN 'Contingency Contract' THEN 'Under Contract'
