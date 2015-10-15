@@ -18,6 +18,7 @@ SELECT
   __status_history_vals,
   "List_Date" as __list_date,
   last_transaction_completed_at,
+  __photo_urls,
   null::int as days_to_close,
   "Selling_Date" as sold_date,
   "Selling_Price" as sold_price,
@@ -33,23 +34,7 @@ SELECT
   "List_Price" as price,
   "Bedroom" as beds,
   (COALESCE("Full_Bath"::integer, 0) + COALESCE("Three_qtr_bath"::integer, 0) + COALESCE("Half_Bath"::integer, 0)) as baths_total,
-  CASE "Property_Type"
-    WHEN 'Land Undeveloped'          THEN 'Land'
-    WHEN 'Land Developed'            THEN 'Land'
-    WHEN 'Duplex'                    THEN 'Multi-Family Properties'
-    WHEN 'Triplex'                   THEN 'Multi-Family Properties'
-    WHEN 'Fourplex'                  THEN 'Multi-Family Properties'
-    WHEN '5-10 Units'                THEN 'Multi-Family Properties'
-    WHEN '11+ Units'                 THEN 'Multi-Family Properties'
-    WHEN 'Multi-Family (2-4) Rental' THEN 'Multi-Family Properties'
-    WHEN 'Fractional Ownership'      THEN 'Multi-Family Properties'
-    WHEN 'Single Family Rental'      THEN 'Single Family Homes'
-    WHEN 'Single Family'             THEN 'Single Family Homes'
-    WHEN 'Recreation/Cabin'          THEN 'Single Family Homes'
-    WHEN 'Manufactured w/Land'       THEN 'Mfd/Mobile/Modular Homes'
-    WHEN 'Manufactured w/o Land'     THEN 'Mfd/Mobile/Modular Homes'
-    WHEN 'Condo/Townhm/Twin'         THEN 'Condos / Townhomes / Co-Ops'
-  END as type,
+  "Property_Type" as type,
   CASE __class_name
     WHEN 'RNTL' THEN 'for_rent'
     ELSE 'for_sale'

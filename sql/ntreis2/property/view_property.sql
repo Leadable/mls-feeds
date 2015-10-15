@@ -262,11 +262,11 @@ SELECT
   "WillSubdivide" as "feature_will_subdivide",
   "YearBuiltDetails" as "feature_year_built_details",
   "Zoning" as "feature_zoning[]"
-
 FROM
-  ntreis2."Property" p, ntreis2.mutation m, rooms r
+  ntreis2."Property" p
+  LEFT OUTER JOIN rooms r ON p."Matrix_Unique_ID" = r.listing_id,
+  ntreis2.mutation m
 WHERE
-  p."Matrix_Unique_ID" = r.listing_id AND
   p."Matrix_Unique_ID"::text = m.remote_id AND
   m.last_transaction_completed_at is not null AND
   p."PermitInternetYN" and p."StateOrProvince" = 'TX'
