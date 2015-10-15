@@ -228,9 +228,6 @@ sub get_geocoder {
   my $ua = Mojo::UserAgent->new();
   $ua->proxy->http("http://$proxy->{hostname}:8080")->https("http://$proxy->{hostname}:8080");
 
-  # do not use proxy for bing, mapbox
-  $ua->proxy->not([qw(virtualearth.net mapbox.com)]);
-
   return {
     id  => $proxy->{id},
     key => $proxy->{api_token},
