@@ -54,6 +54,9 @@ sub go {
 
   $self->{mapbox_api_key} = 'pk.eyJ1IjoibGlzdGluZ3AiLCJhIjoiOFVKOENBTSJ9.fcoVMMQ5M0HQDSR0owQ8OQ';
 
+  # prune geocode_log
+  $self->{dbh_tools}->do(q|delete from geocode_log where "timestamp" < (now() - '2 days'::interval);|);
+
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
 
@@ -216,7 +219,7 @@ sub http_fail {
 sub get_geocoder {
   my ($self, $service) = @_;
 
-  my $rs = $self->{dbh_tools}->selectall_arrayref(qq|SELECT * FROM geocode_proxy where service = '$service' AND count < "limit";|, {Slice => {}});
+  my $rs = $self->{dbh_tools}->selectall_arrayref(qq|SELECT id, hostname, api_token from geocode_stats WHERE available AND service = '$service';|, {Slice => {}});
   return if (!$rs || ! scalar @$rs);
 
   # pick a proxy server at random
@@ -320,8 +323,8 @@ sub request {
     die "Response is not JSON!";
 
   if ($service ne 'mapbox') {
-    # add to counter for the geocoder used
-    $sql = "UPDATE geocode_proxy SET count = count + 1 WHERE id = $geocoder->{id};";
+    # add to geocode_log table
+    $sql = "INSERT INTO geocode_log (geocoder_id) VALUES ($geocoder->{id})";
     $self->{dbh_tools}->do($sql);
   }
 
