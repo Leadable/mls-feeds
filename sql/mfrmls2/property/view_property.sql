@@ -1,6 +1,6 @@
--- mfrmls mls view
-DROP VIEW IF EXISTS mfrmls.view_property CASCADE;
-CREATE OR REPLACE VIEW mfrmls.view_property AS
+-- mfrmls2 mls view
+DROP VIEW IF EXISTS mfrmls2.view_property CASCADE;
+CREATE OR REPLACE VIEW mfrmls2.view_property AS
 --WITH rooms AS (
 --  SELECT
 --    "Listing_MUI" as listing_id,
@@ -10,7 +10,7 @@ CREATE OR REPLACE VIEW mfrmls.view_property AS
 --    MAX(CASE WHEN "RoomLevel" = 'Upper' THEN "RoomType" ELSE null::text[] END) as "feature_rooms_upper[]",
 --    MAX(CASE WHEN "RoomLevel" = 'Third' THEN "RoomType" ELSE null::text[] END) as "feature_rooms_third_floor[]"
 --  FROM
---    mfrmls."PropertySubTable"
+--    mfrmls2."PropertySubTable"
 --  GROUP BY
 --    "Listing_MUI"
 --)
@@ -20,7 +20,7 @@ SELECT
 --  r."feature_rooms_main[]",
 --  r."feature_rooms_upper[]",
 --  r."feature_rooms_third_floor[]",
-  'mfrmls'::text as mls,
+  'mfrmls2'::text as mls,
   __removed_at,
   (__removed_at is null) as __active,
   __inserted_at,
@@ -286,7 +286,7 @@ SELECT
   "SpecialTaxDistTampaYN"::boolean as feature_tax_special_dist_tampa,
   "FloodZoneCode" as feature_flood_zone_code
 FROM
-  mfrmls."Property" p, mfrmls.mutation m
+  mfrmls2."Property" p, mfrmls2.mutation m
 --LEFT OUTER JOIN rooms r ON p."Matrix_Unique_ID" = r.listing_id
 WHERE 
   p."StateOrProvince" = 'Florida' AND

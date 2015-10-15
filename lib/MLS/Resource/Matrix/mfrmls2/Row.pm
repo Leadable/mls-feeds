@@ -1,4 +1,4 @@
-package MLS::Resource::Matrix::mfrmls::Row;
+package MLS::Resource::Matrix::mfrmls2::Row;
 
 use strict;
 use base 'MLS::Resource::Matrix::Row';

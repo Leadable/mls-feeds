@@ -1,11 +1,11 @@
-package MLS::Resource::Matrix::mfrmls::Config;
+package MLS::Resource::Matrix::mfrmls2::Config;
 
 use strict;
 
 use MLS::Rets;
 
 # MLS identifier
-$MLS::Config::MLS = 'mfrmls';
+$MLS::Config::MLS = 'mfrmls2';
 
 # RETS session object
 $MLS::Config::RETS = MLS::Rets->new({

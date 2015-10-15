@@ -1,7 +1,7 @@
-package MLS::Resource::Matrix::mfrmls::Config::Property;
+package MLS::Resource::Matrix::mfrmls2::Config::Property;
 use strict;
 
-use MLS::Resource::Matrix::mfrmls::Config;
+use MLS::Resource::Matrix::mfrmls2::Config;
 use MLS::Resource::Utils;
 
 # ID of the Rets Property Resource
@@ -47,7 +47,7 @@ $MLS::Config::MV_ACTIVE_COLS = q|
       (__removed_at is null) as __active,
       "Matrix_Unique_ID"::text as listing_id,
       "CloseDate" as sold_date
-  FROM mfrmls."Property"
+  FROM mfrmls2."Property"
 |;
 
 %MLS::Config::ADDR_COLUMNS = (
