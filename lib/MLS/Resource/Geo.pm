@@ -103,15 +103,6 @@ sub go {
     }
 
     eval {
-      next if $self->geocode_bing($remote_row);
-    };
-
-    if ($@) {
-      print $@;
-      $error = 1;
-    }
-
-    eval {
       next if $self->geocode_google($remote_row);
     };
 
