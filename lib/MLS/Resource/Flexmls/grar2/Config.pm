@@ -15,7 +15,7 @@ $MLS::Config::RETS = MLS::Rets->new({
   user_agent => 'ListPage/1.7',
 });
 
-$MLS::Config::Mutation::OFFSET_SIZE = 20000;
+$MLS::Config::Mutation::OFFSET_SIZE = 10000;
 $MLS::Config::Row::OFFSET_SIZE = 10000;
 
 1;
