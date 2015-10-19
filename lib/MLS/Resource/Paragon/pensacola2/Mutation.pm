@@ -1,4 +1,4 @@
-package MLS::Resource::Paragon::pensacola::Mutation;
+package MLS::Resource::Paragon::pensacola2::Mutation;
 
 use strict;
 use base "MLS::Resource::Paragon::Mutation";

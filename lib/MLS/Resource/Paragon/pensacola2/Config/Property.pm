@@ -1,7 +1,7 @@
-package MLS::Resource::Paragon::pensacola::Config::Property;
+package MLS::Resource::Paragon::pensacola2::Config::Property;
 use strict;
 
-use MLS::Resource::Paragon::pensacola::Config;
+use MLS::Resource::Paragon::pensacola2::Config;
 
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';

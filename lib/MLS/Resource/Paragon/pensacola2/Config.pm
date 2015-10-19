@@ -1,11 +1,11 @@
-package MLS::Resource::Paragon::pensacola::Config;
+package MLS::Resource::Paragon::pensacola2::Config;
 
 use strict;
 
 use MLS::Rets;
 
 # MLS identifier
-$MLS::Config::MLS = 'pensacola';
+$MLS::Config::MLS = 'pensacola2';
 
 # RETS session object
 $MLS::Config::RETS = MLS::Rets->new({

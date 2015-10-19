@@ -1,4 +1,4 @@
-package MLS::Resource::Paragon::pensacola::Photo;
+package MLS::Resource::Paragon::pensacola2::Photo;
 
 use strict;
 use base 'MLS::Resource::Paragon::Photo';

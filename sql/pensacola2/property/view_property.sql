@@ -1,7 +1,7 @@
-DROP VIEW IF EXISTS pensacola.view_property CASCADE;
-CREATE OR REPLACE VIEW pensacola.view_property AS
+DROP VIEW IF EXISTS pensacola2.view_property CASCADE;
+CREATE OR REPLACE VIEW pensacola2.view_property AS
 SELECT
-  'pensacola'::text as mls,
+  'pensacola2'::text as mls,
   __removed_at,
   (__removed_at is null) as __active,
   __class_name,
@@ -177,7 +177,7 @@ SELECT
   coalesce("LFD_INTERIOR_1", "LFD_INTERIOR_104", "LFD_INTERIOR_78") as "feature_interior_features[]"
 
 FROM 
-  pensacola."Property" as p, pensacola.mutation as m
+  pensacola2."Property" as p, pensacola2.mutation as m
 WHERE
   "L_ListingID"::text = m.remote_id and
   m.last_transaction_completed_at is not null
