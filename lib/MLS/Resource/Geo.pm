@@ -72,6 +72,20 @@ sub go {
     $self->{places_table} = 1;
   }
 
+  # check if limited geocoding services are available
+  my %geo_services = (
+    bing   => 1,
+    google => 1,
+  );
+
+  foreach my $service (keys %geo_services) {
+    my $geocoder = $self->get_geocoder($service);
+    if (!$geocoder) {
+      print "No available geocoders for [$service]\n";
+      delete $geo_services{$service};
+    }
+  }
+
   my $i = 0;
   foreach my $remote_row (@$mutated) {
     $self->{totals}{total}++;
@@ -102,13 +116,26 @@ sub go {
       $error = 1;
     }
 
-    eval {
-      next if $self->geocode_google($remote_row);
-    };
+    if ($geo_services{bing}) {
+      eval {
+        next if $self->geocode_bing($remote_row);
+      };
 
-    if ($@) {
-      print $@;
-      $error = 1;
+      if ($@) {
+        print $@;
+        $error = 1;
+      }
+    }
+
+    if ($geo_services{google}) {
+      eval {
+        next if $self->geocode_google($remote_row);
+      };
+
+      if ($@) {
+        print $@;
+        $error = 1;
+      }
     }
 
     # if we got here none of the geocoders found an address
