@@ -220,7 +220,7 @@ CREATE VIEW beaches.view_property AS
       WHEN 'No Hopa'        THEN 'No'
       ELSE null::text
     END as "feature_hopa",
-    "LIST_148" as "feature_mem_eq"
+    "LIST_148" as "feature_membership_equity"
 
 
 FROM beaches."Property" as p, beaches.mutation as m WHERE p."LIST_1"::text = m.remote_id::text AND m.last_transaction_completed_at is not null
@@ -368,6 +368,6 @@ UNION ALL
       WHEN 'No HOPA'    THEN 'No'
       ELSE null::text
     END as "feature_hopa",
-    "MPR_160" as "feature_mem_eq"
+    "MPR_160" as "feature_membership_equity"
 FROM ragfl."Property" as p, ragfl.mutation as m WHERE p.sysid::text = m.remote_id::text AND m.last_transaction_completed_at is not null
 ;  
