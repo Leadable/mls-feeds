@@ -28,7 +28,23 @@ sub login {
 
     # default timeout of 15 minutes
     $rets->SetTimeout(60*15);
-    $rets->SetRetsVersion($self->{rets_version}) if ($self->{rets_version});
+
+    if ($self->{rets_version} eq '1.0') {
+        $rets->SetRetsVersion($librets::RETS_1_0);
+    }
+    elsif ($self->{rets_version} eq '1.5') {
+        $rets->SetRetsVersion($librets::RETS_1_5);
+    }
+    elsif ($self->{rets_version} eq '1.7.2') {
+        $rets->SetRetsVersion($librets::RETS_1_7_2);
+    }
+    elsif ($self->{rets_version} eq '1.8') {
+        $rets->SetRetsVersion($librets::RETS_1_8);
+    }
+    elsif ($self->{rets_version} eq '1.8.0') {
+        $rets->SetRetsVersion($librets::RETS_1_8_0);
+    }
+
     $rets->SetUserAgent($self->{user_agent})   if ($self->{user_agent});
 
     my $retries_left = $self->{NumRetry} + 1;
