@@ -103,6 +103,15 @@ sub go {
     }
 
     eval {
+      next if $self->geocode_bing($remote_row);
+    };
+
+    if ($@) {
+      print $@;
+      $error = 1;
+    }
+
+    eval {
       next if $self->geocode_google($remote_row);
     };
 
@@ -422,6 +431,9 @@ sub geocode_bing {
   );
 
   $self->{temp_error} = "$url\n";
+
+  # attempt to rate limit bing requests
+  sleep 1;
 
   my $response = $self->request('bing', $url);
   my $json = $response->{json};
