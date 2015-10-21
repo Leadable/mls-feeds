@@ -27,7 +27,7 @@ GetOptions(
 
 pod2usage(1) if ($help || !$MLS);
 
-my $dbh_feeds = MLS::Database->new({db => 'feeds'});
+my $dbh_feeds = MLS::Database->new({db => 'feeds', no_print_error => 1});
 
 # needed for the raw psql command
 my $host = $ENV{POSTGRES_PORT_5432_TCP_ADDR};

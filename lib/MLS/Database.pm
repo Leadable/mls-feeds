@@ -74,8 +74,11 @@ sub AUTOLOAD {
     }
     elsif ($@) {
       # general error or out of retries, let caller handle it
-      print "SQL: [$arg1]\n";
-      Carp::confess;
+      if (!$self->{no_print_error}) {
+        print "SQL: [$arg1]\n";
+        Carp::confess;
+      }
+
       die $@;
     }
     else {
