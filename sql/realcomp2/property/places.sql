@@ -1,0 +1,32 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.3.5
+-- Dumped by pg_dump version 9.4.0
+-- Started on 2015-10-20 14:31:16 EDT
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+SET search_path = realcomp2, pg_catalog;
+
+--
+-- TOC entry 8355 (class 0 OID 80923250)
+-- Dependencies: 482
+-- Data for Name: places; Type: TABLE DATA; Schema: realcomp2; Owner: -
+--
+
+INSERT INTO places (id, mls, category, label, way, area_id) VALUES (7908, 'realcomp2', 'MLS Territory', 'view_clarkston', '010600002031BF0D00010000000103000000010000000D000000FCFFFFBF02EC54C0035F979140704540000000406BE554C053DB07DB5773454000000080D3E254C0ECA4BB298875454000000040CBDF54C0BF05DAAED1764540000000403ACB54C0288843356775454000000080F9CB54C0537E8F9E085B4540000000C01AD454C03E2B2DAF315A45400000004069D854C005D0C007AB5345400000004062EE54C04FC134BDFC5145400000000038EF54C0B1B0E26BB65C4540FCFFFF7F9DEB54C0ADB54E48BF614540FCFFFF3FBFEB54C0CDF69D4342684540FCFFFFBF02EC54C0035F979140704540', 90);
+
+
+-- Completed on 2015-10-20 14:31:21 EDT
+
+--
+-- PostgreSQL database dump complete
+--
+
