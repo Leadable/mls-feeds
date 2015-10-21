@@ -35,6 +35,20 @@ $MLS::Config::OBJECT = 'Photo';
   zip      => 'L_Zip',
 );
 
+# Four columns needed to make mv_active, listing_type, sold_date, __active, listing_id
+# These should be identical to the definitions in view_property
+$MLS::Config::MV_ACTIVE_COLS = q|
+  SELECT
+    CASE "L_Status"
+      WHEN 'SOLD' THEN 'sold'
+      ELSE 'for_sale'
+    END as listing_type,
+    (__removed_at IS NULL AND "L_Status" NOT IN ('EXPIRED', 'WITHDRAWN', 'CANCELLED')) as __active,
+    "L_ListingID"::text as listing_id,
+    "L_ClosingDate" as sold_date
+  FROM sandicor2."Property"
+|;
+
 # RETS Resource Classes
 my $search = MLS::Resource::Utils::get_search_interval();
 %MLS::Config::CLASSES = (
