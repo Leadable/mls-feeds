@@ -1,0 +1,27 @@
+DROP VIEW IF EXISTS tricitymls2.view_lane;
+CREATE OR REPLACE VIEW tricitymls2.view_lane AS SELECT *, 28::integer as area_id FROM tricitymls2.view_property;
+
+COMMENT ON COLUMN tricitymls2.view_lane.city_st IS '{ "location": true, "label": "City", "label_plural": "Cities", "rank": 10 }';
+COMMENT ON COLUMN tricitymls2.view_lane.zip IS '{ "location": true, "label": "Zip Code", "label_plural": "Zip Codes", "rank": 30 }';
+COMMENT ON COLUMN tricitymls2.view_lane.county IS '{ "location": true, "label": "County", "label_plural": "Counties", "rank": 20 }';
+COMMENT ON COLUMN tricitymls2.view_lane.ranch_style IS '{ "feature": true, "label": "Rambler" }';
+COMMENT ON COLUMN tricitymls2.view_lane.one_story IS '{ "feature": true, "label": "One Story" }';
+COMMENT ON COLUMN tricitymls2.view_lane.basement IS '{ "feature": true, "label": "Basement" }';
+COMMENT ON COLUMN tricitymls2.view_lane.fireplace IS '{ "feature": true, "label": "Fireplace" }';
+COMMENT ON COLUMN tricitymls2.view_lane.fenced_yard IS '{ "feature": true, "label": "Fenced Yard" }';
+COMMENT ON COLUMN tricitymls2.view_lane.pool IS '{ "feature": true, "label": "Pool" }';
+COMMENT ON COLUMN tricitymls2.view_lane.patio_deck_porch IS '{ "feature": true, "label": "Patio/Deck/Porch" }';
+COMMENT ON COLUMN tricitymls2.view_lane.walk_in_closets IS '{ "feature": true, "label": "Walk-in Closets" }';
+COMMENT ON COLUMN tricitymls2.view_lane.garage IS '{ "feature": true, "label": "Garage" }';
+COMMENT ON COLUMN tricitymls2.view_lane.subdivision IS '{ "location": true, "label": "Subdivision", "label_plural": "Subdivisions", "rank": 35 }';
+COMMENT ON COLUMN tricitymls2.view_lane.school_district IS '{ "location": true, "label": "School Dist", "label_plural": "School Dist", "rank": 59 }';
+COMMENT ON COLUMN tricitymls2.view_lane."feature_basement[]" IS '{ "advanced": true, "label": "Basement", "input": "checkbox-group", "rank": 10 }';
+COMMENT ON COLUMN tricitymls2.view_lane."feature_garage[]" IS '{ "advanced": true, "label": "Garage", "input": "checkbox-group", "rank": 40 }';
+COMMENT ON COLUMN tricitymls2.view_lane."feature_property_desc[]" IS '{ "advanced": true, "label": "Property Description", "input": "checkbox-group", "rank": 5 }';
+COMMENT ON COLUMN tricitymls2.view_lane.feature_style IS '{ "advanced": true, "label": "Style", "input": "checkbox-group", "rank": 70 }';
+COMMENT ON COLUMN tricitymls2.view_lane.feature_new_construction IS '{ "advanced": true, "label": "New Construction", "input": "checkbox-group", "rank": 80 }';
+COMMENT ON COLUMN tricitymls2.view_lane."feature_exterior_features[]" IS '{ "advanced": true, "label": "Exterior Features", "input": "checkbox-group", "rank": 20 }';
+COMMENT ON COLUMN tricitymls2.view_lane."feature_fireplace[]" IS '{ "advanced": true, "label": "Fireplace", "input": "checkbox-group", "rank": 30 }';
+COMMENT ON COLUMN tricitymls2.view_lane."feature_interior_features[]" IS '{ "advanced": true, "label": "Interior Features", "input": "checkbox-group", "rank": 50 }';
+COMMENT ON COLUMN tricitymls2.view_lane."feature_pool[]" IS '{ "advanced": true, "label": "Pool", "input": "checkbox-group", "rank": 60 }';
+COMMENT ON COLUMN tricitymls2.view_lane.feature_neighborhood IS '{ "location": true, "label": "Neighborhood", "label_plural": "Neighborhoods", "rank": 37 }';
