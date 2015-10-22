@@ -340,7 +340,7 @@ sub fetch_remote {
     }
     print "\n";
 
-    die "ERROR: Expected record count was [$expected_count] but received [$i]\n" if ($expected_count - $i > 10);
+    warn "ERROR: Expected record count was [$expected_count] but received [$i]\n" if ($expected_count != $i);
   };
 
   if (ref $@ eq 'librets::RetsReplyException') {
