@@ -39,9 +39,18 @@ $MLS::Config::OBJECT = 'Photo';
 # These should be identical to the definitions in view_property
 $MLS::Config::MV_ACTIVE_COLS = q|
   SELECT
-    CASE "L_Status"
-      WHEN 'SOLD' THEN 'sold'
-      ELSE 'for_sale'
+    CASE __class_name
+      WHEN 'RT_4' THEN
+        CASE "L_Status"
+          WHEN 'SOLD'   THEN 'leased'
+          WHEN 'RENTED' THEN 'leased'
+          ELSE 'for_rent'
+        END
+      ELSE
+        CASE "L_Status"
+          WHEN 'SOLD'   THEN 'sold'
+          ELSE 'for_sale'
+        END
     END as listing_type,
     (__removed_at IS NULL AND "L_Status" NOT IN ('EXPIRED', 'WITHDRAWN', 'CANCELLED')) as __active,
     "L_ListingID"::text as listing_id,

@@ -24,9 +24,18 @@ SELECT
   "LM_Int4_15" as days_to_close,
   "L_ClosingDate" as sold_date,
   "L_SoldPrice" as sold_price,
-  CASE "L_Status"
-    WHEN 'SOLD' THEN 'sold'
-    ELSE 'for_sale'
+  CASE __class_name
+    WHEN 'RT_4' THEN
+      CASE "L_Status"
+        WHEN 'SOLD'   THEN 'leased'
+        WHEN 'RENTED' THEN 'leased'
+        ELSE 'for_rent'
+      END
+    ELSE
+      CASE "L_Status"
+        WHEN 'SOLD'   THEN 'sold'
+        ELSE 'for_sale'
+      END
   END as listing_type,
   "L_ListingID" as listing_id,
   "L_ListingID" as mlsnum,
@@ -54,7 +63,13 @@ SELECT
       END
     --WHEN 'RI_2' THEN 'Multi Family'
     WHEN 'LN_3' THEN 'Lots & Land'
-    WHEN 'RT_4' THEN 'Rental'
+    WHEN 'RT_4' THEN
+      CASE
+        WHEN "LFD_Ownership_20" && ARRAY['Condominium', 'Coop'] THEN 'Condo'
+        WHEN "L_Type_" = 'Rowhome' THEN 'Rowhome'
+        WHEN "L_Type_" = 'Townhome' THEN 'Townhome'
+        ELSE 'Single Family'
+      END
     ELSE null::text
   END as type,
   "LM_Int2_3" as baths_total,
