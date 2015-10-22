@@ -1,9 +1,9 @@
-DROP VIEW IF EXISTS sandicor2.view_padula;
+DROP VIEW IF EXISTS sandicor2.view_padula CASCADE;
 CREATE OR REPLACE VIEW sandicor2.view_padula AS
   SELECT
     49::integer as area_id,
     vl.*,
-    array(select jsonb_array_elements_text(__geo_places#>'{49,"Neighborhood"}')::text) as neighborhood
+    (select jsonb_array_elements_text(__geo_places#>'{49,"Neighborhood"}')::text) as neighborhood
   FROM
     sandicor2.view_property vl
 ;

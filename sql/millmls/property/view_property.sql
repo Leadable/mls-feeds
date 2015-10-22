@@ -23,15 +23,18 @@ CREATE OR REPLACE VIEW millmls.view_property AS
     __photo_urls,
     "List_Date" as __list_date,
     last_transaction_completed_at,
-    null::int as days_to_close,
-    null::text as sold_date,
-    null::int as sold_price,
+    "dom_computed" as days_to_close,
+    "Selling_Date" as sold_date,
+    "Selling_Price" as sold_price,
     ("Property_Status" = 'Contingency Contract') as under_contract,
     CASE "Property_Status"
       WHEN 'Contingency Contract' THEN 'Under Contract'
       ELSE NULL
     END as under_contract_description,
-    'for_sale'::text as "listing_type",
+    CASE "Property_Status"
+      WHEN 'Sold' THEN 'sold'
+      ELSE 'for_sale'
+    END as "listing_type",
     "Property_Type" as "type",
     "Property_Status" as status,
     "Full_Bath" as baths_total,

@@ -44,7 +44,6 @@ SELECT
     WHEN __class_name = 'LD_2' THEN 'Lots & Land'
     WHEN "L_Keyword3" = 'Condo' THEN 'Condo'
     WHEN "L_Keyword3" = 'Townhouse' THEN 'Townhouse'
-    WHEN "L_SaleRent" = 'For Rent' THEN 'Rental'
     ELSE 'Single Family'
   END as type,
   (coalesce("LM_Int1_1", 0) + coalesce("LM_Int1_2", 0)) as baths_total,

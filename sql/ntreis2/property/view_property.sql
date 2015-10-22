@@ -55,7 +55,7 @@ SELECT
   "Status" as under_contract_description,
   "Matrix_Unique_ID" as listing_id,
   "MLSNumber"::text as mlsnum,
-  COALESCE(array_length(__photo_urls, 1), 0) as image_count,
+  COALESCE("PhotoCount", 0) as image_count,
   "ListPrice" as price,
   "BedsTotal" as beds,
   "ListOfficeName" as office_name,
@@ -115,9 +115,9 @@ SELECT
     WHEN "StreetDirSuffix" is null THEN ''
     ELSE ' ' || "StreetDirSuffix"
   END as address_line1,
-  "City" || ' ' || "StateOrProvince" || ', ' || "PostalCode" as address_line2,
-  "City" ||  ', ' || "StateOrProvince" as city_st,
-  initcap("City") ||  ', ' || "StateOrProvince" as city,
+  regexp_replace("City", '\s*$', '') || ' ' || "StateOrProvince" || ', ' || "PostalCode" as address_line2,
+  regexp_replace("City", '\s*$', '') ||  ', ' || "StateOrProvince" as city_st,
+  regexp_replace(initcap("City"), '\s*$', '') ||  ', ' || "StateOrProvince" as city,
   "PostalCode" as zip,
   "SqFtTotal" as square_feet,
   "YearBuilt" as year_built,
