@@ -16,6 +16,6 @@ $MLS::Config::RETS = MLS::Rets->new({
 });
 
 # $MLS::Config::Mutation::OFFSET_SIZE = 100000;
-$MLS::Config::Row::OFFSET_SIZE = 250;
+$MLS::Config::Row::OFFSET_SIZE = 100;
 
 1;
