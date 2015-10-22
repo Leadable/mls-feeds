@@ -20,7 +20,7 @@ sub go {
   my ($self) = @_;
 
   print "----Syncing listing rows----\n\n";
-  $self->{totals} = { new => 0, updated => 0, dupes => 0, error => 0, };
+  $self->{totals} = { new => 0, updated => 0, error => 0, };
   $self->fetch_pg_col_info();
 
   my $dbh = $self->{dbh};
@@ -92,14 +92,12 @@ sub go {
 
           $self->monitor('new', $self->{totals}{new});
           $self->monitor('updated', $self->{totals}{updated});
-          $self->monitor('dupes', $self->{totals}{dupes});
           $self->monitor('error', $self->{totals}{error});
         }
       }
 
       $self->monitor('new', $self->{totals}{new});
       $self->monitor('updated', $self->{totals}{updated});
-      $self->monitor('dupes', $self->{totals}{dupes});
       $self->monitor('error', $self->{totals}{error});
 
       print "\n";
@@ -352,7 +350,6 @@ sub fetch_remote {
 
   $self->monitor('new', $self->{totals}{new});
   $self->monitor('updated', $self->{totals}{updated});
-  $self->monitor('dupes', $self->{totals}{dupes});
   $self->monitor('error', $self->{totals}{error});
 }
 
@@ -465,7 +462,7 @@ sub insert {
   if ($@ =~ /unique constraint/) {
     warn "Duplicate primary key found\n";
     warn Dumper $data;
-    $self->{totals}{dupes}++;
+    $self->{totals}{error}++;
     die $@;
   }
   elsif ($@) {
