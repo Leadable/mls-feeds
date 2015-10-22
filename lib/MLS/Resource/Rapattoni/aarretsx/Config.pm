@@ -13,7 +13,7 @@ $MLS::Config::RETS = MLS::Rets->new({
   username     => 'IDXAnn',
   password     => 'xio',
   user_agent   => 'IDXIO-1.0',
-  rets_version => $librets::RETS_1_7_2,
+  rets_version => '1.7.2',
 });
 
 $MLS::Config::Row::OFFSET_SIZE = 300;
