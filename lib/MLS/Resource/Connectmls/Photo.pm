@@ -42,6 +42,12 @@ sub search_remote {
     my $resultdata = $objectDescriptor->GetDataAsString();
     my $ext = $MLS::Resource::Photo::extensions{$contentType};
 
+    # only use media types defined in the extensions hash
+    if (!$ext) {
+      $objectDescriptor = $response->NextObject();
+      next;
+    }
+
     my ($fh, $filename) = tempfile(
       TEMPLATE => "$objectId-XXXXXXXXXXXX",
       DIR      => $dir,

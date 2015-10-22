@@ -9,7 +9,6 @@ $| = 1;
 our %extensions = (
  'image/jpeg' => "jpg",
  'image/gif' => "gif",
- 'text/xml' => "xml"
 );
 
 sub new {
