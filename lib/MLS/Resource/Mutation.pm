@@ -292,12 +292,11 @@ sub resurrect_remote_rows {
 
   print "Looking for resurrected rows.\n";
 
-  $dbh->set_autocommit(0);
-
   my $dbh = $self->{dbh};
   my ($local, $remote) = ($self->{local}, $self->{remote});
 
   my $i = 0;
+  $dbh->set_autocommit(0);
 
   foreach my $remote_id (keys %$remote) {
     my $remote_row = $remote->{ $remote_id };
