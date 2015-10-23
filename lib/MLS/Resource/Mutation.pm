@@ -69,7 +69,7 @@ sub fetch_remote {
     }
     else {
       # NWMLS
-      $self->{primary_key_col} = $self->{$MLS::Config::PRIMARY_KEY{SystemName};
+      $self->{primary_key_col} = $self->{$MLS::Config::PRIMARY_KEY{SystemName}};
       $self->remote_search($class_id);
     }
   }
