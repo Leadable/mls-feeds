@@ -69,7 +69,7 @@ sub fetch_remote {
     }
     else {
       # NWMLS
-      $self->{primary_key_col} = $self->{$MLS::Config::PRIMARY_KEY{SystemName}};
+      $self->{primary_key_col} = $MLS::Config::PRIMARY_KEY{SystemName};
       $self->remote_search($class_id);
     }
   }
@@ -292,6 +292,8 @@ sub resurrect_remote_rows {
 
   print "Looking for resurrected rows.\n";
 
+  $dbh->set_autocommit(0);
+
   my $dbh = $self->{dbh};
   my ($local, $remote) = ($self->{local}, $self->{remote});
 
@@ -309,19 +311,22 @@ sub resurrect_remote_rows {
     );
 
     my $sql = "UPDATE $MLS::Config::MLS.mutation SET remote_removed_at = NULL WHERE " . join(' AND ', @conditions);
-    $self->{temp_error} = "$sql\n";
     $dbh->do($sql);
 
     my $pkey_ident = $self->{primary_key_col};
 
-    $sql = 'UPDATE ' . $MLS::Config::MLS . '."' . $MLS::Config::RESOURCE . '" SET __removed_at = NULL WHERE ' . $dbh->quote_identifier($pkey_ident) .' = ' . $dbh->quote($remote_id);
-    $self->{temp_log} = "$sql\n";
+    $sql = 'UPDATE ' . $MLS::Config::MLS . '."' . $MLS::Config::RESOURCE . '" SET __removed_at = NULL WHERE ' .
+           $dbh->quote_identifier($pkey_ident) .' = ' . $dbh->quote($remote_id);
     $dbh->do($sql);
+
+    $dbh->commit;
 
     $self->{totals}->{resurrected}++;
     print ".";
     print "[$i]\n" if (++$i % 100 == 0);
   }
+
+  $dbh->set_autocommit(1);
 
   print "\n";
   $self->monitor('resurrected', $self->{totals}->{resurrected});
