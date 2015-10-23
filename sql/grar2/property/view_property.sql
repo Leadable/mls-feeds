@@ -29,21 +29,13 @@ SELECT
   CASE __class_name
         WHEN 'F'::text THEN
         CASE "LIST_15"
-            WHEN 'Pending'::text           THEN 'for_rent'::text
-            WHEN 'Active Contingent'::text THEN 'for_rent'::text
-            WHEN 'Contingent'::text        THEN 'for_rent'::text
-            WHEN 'Active'::text            THEN 'for_rent'::text
-            WHEN 'Closed'::text            THEN 'leased'::text
-            ELSE NULL::text
+            WHEN 'Sold'::text THEN 'leased'::text
+            ELSE 'for_rent'
         END
         ELSE
         CASE "LIST_15"
-            WHEN 'Pending'::text           THEN 'for_sale'::text
-            WHEN 'Active Contingent'::text THEN 'for_sale'::text
-            WHEN 'Contingent'::text        THEN 'for_sale'::text
-            WHEN 'Active'::text            THEN 'for_sale'::text
-            WHEN 'Closed'::text            THEN 'sold'::text
-            ELSE NULL::text
+            WHEN 'Sold'::text THEN 'sold'::text
+            ELSE 'for_sale'
         END
   END AS listing_type,
   "UNBRANDEDIDXVIRTUALTOUR" as virtual_tour,
@@ -64,7 +56,11 @@ SELECT
       END
     WHEN 'B' THEN 'Lots & Land'
     WHEN 'E' THEN 'Multi Family'
-    WHEN 'F' THEN 'Rental'
+    WHEN 'F' THEN
+      CASE "LIST_111"
+        WHEN 'Condo/Coop' THEN 'Condo'
+        ELSE 'Single Family'
+      END
   END as type,
   "LIST_78" as remarks,
   CASE -- street #

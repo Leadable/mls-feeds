@@ -48,6 +48,7 @@ SELECT
     WHEN 'Residential - Condo/Townhouse' THEN 'Condo/Townhouse'
     WHEN 'Residential - Single Family' THEN 'Single Family'
     WHEN 'Residential - Mobile Home/Manufactured' THEN null::text
+    WHEN 'Rental' THEN 'Single Family'
     ELSE "LIST_55"
   END as type,
   "LIST_68" as baths_total,

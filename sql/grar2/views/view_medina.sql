@@ -9,6 +9,8 @@ CREATE OR REPLACE VIEW grar2.view_medina AS
     (select * from grar2.view_property where price >= 100000) vl
 ;
 
+-- note because of this price restriction, all rentals are excluded
+
 COMMENT ON COLUMN grar2.view_medina.city_st IS '{ "group": "City", "location": true, "label": "MLS City", "label_plural": "MLS City", "rank": 10 }';
 COMMENT ON COLUMN grar2.view_medina.zip IS '{ "location": true, "label": "Zip", "label_plural": "Zip", "rank": 30 }';
 COMMENT ON COLUMN grar2.view_medina.subdivision IS '{ "location": true, "label": "Sudiv", "label_plural": "Sudiv", "rank": 90 }';
