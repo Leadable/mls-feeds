@@ -381,7 +381,7 @@ sub geocode_mapbox {
 
   $self->{totals}{mapbox}{total}++;
 
-  my $url = sprintf('http://api.tiles.mapbox.com/v4/geocode/mapbox.places/%s.json?'
+  my $url = sprintf('https://api.mapbox.com/geocoding/v5/mapbox.places/%s.json?'
     , url_escape($remote_row->{remote_address})
   );
 
