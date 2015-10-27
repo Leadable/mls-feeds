@@ -48,7 +48,17 @@ SELECT
             WHEN 'Res Developed Lots'::text THEN 'Residential Lots'::text
             WHEN 'Land/Farm'::text THEN 'Land'::text
             WHEN 'Multi-Dwelling Units'::text THEN 'Multi Family'::text
-            WHEN 'Rental'::text THEN 'Rental'::text
+            WHEN 'Rental'::text THEN
+            CASE "PropertySubType"
+                WHEN 'Detached'::text THEN 'Townhouse'::text
+                WHEN 'Attached'::text THEN 'Townhouse'::text
+                WHEN 'Triplex'::text THEN 'Multi Family'::text
+                WHEN 'Duplex'::text THEN 'Multi Family'::text
+                WHEN 'Quadraplex'::text THEN 'Multi Family'::text
+                WHEN 'Zero-Lot Line'::text THEN 'Townhouse'::text
+                WHEN 'Single Fam Res'::text THEN 'Single Family'::text
+                ELSE NULL::text
+            END
             WHEN 'Residential Attached'::text THEN
             CASE "PropertySubType"
                 WHEN 'Built As Townhouse'::text THEN 'Townhouse'::text
