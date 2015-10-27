@@ -41,7 +41,12 @@ $MLS::Config::OBJECT = 'HiRes';
 # RETS Resource Classes
 my $search = MLS::Resource::Utils::get_search_interval();
 %MLS::Config::CLASSES = (
-
+    A => { StandardName => 'ResidentialProperty', 'SearchRequest' => $search },
+    B => { StandardName => 'Residential Rental',  'SearchRequest' => $search },
+    C => { StandardName => 'LotsAndLand',         'SearchRequest' => $search },
+    D => { StandardName => 'CommonInterest',      'SearchRequest' => $search, ignore => 1 },
+    E => { StandardName => 'Comm/Industry Lease', 'SearchRequest' => $search, ignore => 1 },
+    F => { StandardName => 'MultiFamily',         'SearchRequest' => $search },
 );
 
 1;
