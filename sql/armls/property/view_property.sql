@@ -43,7 +43,7 @@ CREATE OR REPLACE VIEW armls.view_property AS
             ELSE NULL::text
         END
     END AS listing_type,
-    "LIST_105" AS listing_id,
+    "LIST_1" AS listing_id,
     "LIST_105" AS mlsnum,
     "LIST_15" AS status,
         CASE

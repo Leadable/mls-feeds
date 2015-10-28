@@ -62,7 +62,7 @@ $MLS::Config::MV_ACTIVE_COLS = q|
               ELSE NULL::text
           END
       END AS listing_type,
-  "LIST_105" AS listing_id
+  "LIST_1"::text AS listing_id
   FROM armls."Property"
 |;
 
