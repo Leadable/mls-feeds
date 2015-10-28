@@ -38,6 +38,34 @@ $MLS::Config::OBJECT = 'HiRes';
   zip      => 'LIST_43',
 );
 
+# Four columns needed to make mv_active, listing_type, sold_date, __active, listing_id
+# These should be identical to the definitions in view_property
+$MLS::Config::MV_ACTIVE_COLS = q|
+  SELECT
+  (__removed_at IS NULL AND "LIST_15" NOT IN ('Cancelled', 'Deleted', 'Expired')) AS __active,
+  "LIST_12" as sold_date,
+  CASE __class_name
+          WHEN 'B'::text THEN
+          CASE "LIST_15"
+              WHEN 'Pending'::text           THEN 'for_rent'::text
+              WHEN 'Temp Off Market'::text   THEN 'for_rent'::text
+              WHEN 'Active'::text            THEN 'for_rent'::text
+              WHEN 'Closed'::text            THEN 'leased'::text
+              ELSE NULL::text
+          END
+          ELSE
+          CASE "LIST_15"
+              WHEN 'Pending'::text           THEN 'for_sale'::text
+              WHEN 'Temp Off Market'::text   THEN 'for_sale'::text
+              WHEN 'Active'::text            THEN 'for_sale'::text
+              WHEN 'Closed'::text            THEN 'sold'::text
+              ELSE NULL::text
+          END
+      END AS listing_type,
+  "LIST_105" AS listing_id
+  FROM armls."Property"
+|;
+
 # RETS Resource Classes
 my $search = MLS::Resource::Utils::get_search_interval();
 %MLS::Config::CLASSES = (
