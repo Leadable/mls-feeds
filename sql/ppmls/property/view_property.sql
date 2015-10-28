@@ -58,7 +58,12 @@ SELECT
   "BathsTotal" as baths_total,
   CASE __class_name
     WHEN 'Land' THEN 'Lots & Land'
-    WHEN 'Rental' THEN 'Rental'
+    WHEN 'Rental' THEN
+      CASE "PropertySubType"
+        WHEN 'Condominium' THEN 'Condo'
+        WHEN 'Townhouse' THEN 'Townhouse'
+        ELSE 'Single Family'
+      END
     WHEN 'Resi' THEN
       CASE "PropertySubType"
         WHEN 'Condominium' THEN 'Condo'
