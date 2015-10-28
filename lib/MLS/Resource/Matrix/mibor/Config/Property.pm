@@ -38,6 +38,22 @@ $MLS::Config::OBJECT = 'LargePhoto';
   zip      => 'PostalCode',
 );
 
+# Four columns needed to make mv_active, listing_type, sold_date, __active, listing_id
+# These should be identical to the definitions in view_property
+$MLS::Config::MV_ACTIVE_COLS = q|
+  SELECT
+    (__removed_at is null AND "Status" NOT IN ('Expired', 'Withdrawn')) as __active,
+    "Matrix_Unique_ID"::text as listing_id,
+    "CloseDate" as sold_date,
+    CASE
+        WHEN "Status" = 'Leased' THEN 'leased'
+        WHEN "Status" = 'Sold' THEN 'sold'
+        WHEN "LeasePrice" IS NOT NULL THEN 'for_rent'
+        ELSE 'for_sale'
+    END as listing_type
+  FROM mibor."Property"
+|;
+
 # RETS Resource Classes
 my $search = MLS::Resource::Utils::get_search_interval();
 %MLS::Config::CLASSES = (
