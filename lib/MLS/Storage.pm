@@ -79,6 +79,16 @@ sub store_file {
   }
 }
 
+sub delete_file {
+  my ($self, $path) = @_;
+
+  die "Missing path to delete" if (!$path);
+
+  my $res = $self->{azure_obj}->delete_blob($path);
+
+  return $res;
+}
+
 sub _make_s3_client{
   my $bucket = shift;
 

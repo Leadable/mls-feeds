@@ -83,7 +83,26 @@ foreach my $db (@dbs) {
     print "[$mls] DONE\n";
 }
 
-print "backup finished, going back to sleep\n";
+print "backups are done, starting tools maintenance tasks\n";
+
+`docker rm -f mls-maintenance-$mls`;
+
+@cmd = (
+    q|docker run|,
+    @tools_env,
+    qq|-e MLS_DB_HOST='$ENV{MLS_DB_HOST}'|,
+    qq|-e MLS_TIMEZONE='$ENV{MLS_TIMEZONE}'|,
+    qq|-e MLS_NAME='$mls'|,
+    q|-v ~/mls-feeds/:/opt/mls-feeds|,
+    qq|--name=mls-maintenance-$mls|,
+    q|--rm|,
+    q|leadable/mls-feeds|,
+    qq|perl /opt/mls-feeds/sql/bin/tools_maintenance.pl|,
+);
+
+`@cmd`;
+
+print "finished, going back to sleep\n";
 
 # sleep 1 hour before exiting so this doesn't run again until tomorrow
 sleep 3600;

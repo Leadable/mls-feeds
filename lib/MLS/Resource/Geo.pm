@@ -54,9 +54,6 @@ sub go {
 
   $self->{mapbox_api_key} = 'pk.eyJ1IjoibGlzdGluZ3AiLCJhIjoiOFVKOENBTSJ9.fcoVMMQ5M0HQDSR0owQ8OQ';
 
-  # prune geocode_log
-  $self->{dbh_tools}->do(q|delete from geocode_log where "timestamp" < (now() - '2 days'::interval);|);
-
   my $mutated = $self->mutated();
   return $self->finish() unless $mutated;
 
