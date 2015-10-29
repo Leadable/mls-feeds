@@ -87,7 +87,7 @@ print "backups are done, starting tools maintenance tasks\n";
 
 `docker rm -f mls-maintenance-$mls`;
 
-@cmd = (
+my @cmd = (
     q|docker run|,
     @tools_env,
     qq|-e MLS_DB_HOST='$ENV{MLS_DB_HOST}'|,
