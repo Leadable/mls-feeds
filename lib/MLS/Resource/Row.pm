@@ -324,14 +324,16 @@ sub fetch_remote {
   };
 
   if ($@) {
+    my $err = $@;
+
     print "Error while parsing results\n";
     $dbh->rollback;
 
-    if (ref $@ eq 'librets::RetsReplyException') {
-      die "librets::RetsException: " . $@->GetFullReport();
+    if (ref $err eq 'librets::RetsReplyException') {
+      die "librets::RetsException: " . $err->GetFullReport();
     }
-    elsif ($@) {
-      die $@;
+    elsif ($err) {
+      die $err;
     }
   }
 
