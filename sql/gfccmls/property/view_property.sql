@@ -135,7 +135,8 @@ SELECT
   "UTILITIES_AVAIL" as "feature_utilities_available",
   coalesce("Waterfront_Desc", "WATERFRONT_DESC") as "feature_waterfront_description[]",
   "Water" as "feature_water[]",
-  coalesce("Zoning", "ZONING") as "feature_zoning"
+  coalesce("Zoning", "ZONING") as "feature_zoning",
+  null::boolean as one_story
 FROM
   gfccmls."Property" as p, gfccmls.mutation as m
 WHERE

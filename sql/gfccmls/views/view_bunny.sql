@@ -41,6 +41,7 @@ COMMENT ON COLUMN gfccmls.view_bunny.waterfront IS '{ "feature": true, "label": 
 COMMENT ON COLUMN gfccmls.view_bunny.ranch_style IS '{ "feature": true, "label": "Ranch Style" }';
 COMMENT ON COLUMN gfccmls.view_bunny.pool IS '{ "feature": true, "label": "Pool" }';
 COMMENT ON COLUMN gfccmls.view_bunny.patio_deck_porch IS '{ "feature": true, "label": "Patio/Deck/Porch" }';
+COMMENT ON COLUMN gfccmls.view_bunny.one_story IS '{ "feature": true, "label": "One Story" }';
 --
 -- advanced
 COMMENT ON COLUMN gfccmls.view_bunny."feature_amenities[]"

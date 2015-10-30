@@ -23,7 +23,7 @@ SELECT
   "UD" as modification_timestamp,
   "ST" as status,
   "VIRT" as virtual_tour,
-  "ST" IN ('PF', 'PI', 'P') as under_contract,
+  "ST" IN ('Pending Feasability', 'Pending Inspection', 'Pending') as under_contract,
   'Under Contract - ' || "ST" as under_contract_description,
   "LN" as listing_id,
   "LN"::text as mlsnum,
