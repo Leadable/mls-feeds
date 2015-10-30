@@ -10,6 +10,7 @@ use File::Path qw(mkpath);
 use Encode qw(encode_utf8);
 use MLS::Resource::Utils;
 use Mojo::UserAgent;
+use Time::HiRes qw(sleep);
 
 $| = 1;
 
@@ -430,7 +431,7 @@ sub geocode_bing {
   $self->{temp_error} = "$url\n";
 
   # attempt to rate limit bing requests
-  sleep 1;
+  sleep 0.2;
 
   my $response = $self->request('bing', $url);
   my $json = $response->{json};
