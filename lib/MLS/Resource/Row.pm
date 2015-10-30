@@ -357,7 +357,7 @@ sub update {
 
     if ($price_val != $price_newval) {
 
-      if ($price_val) {
+      if ($price_val > 0) {
         # __percent_reduced
         my $amount_reduced = $price_val - $price_newval;
         my $percent_reduced = $amount_reduced / $price_val * 100;
