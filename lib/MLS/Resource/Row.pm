@@ -20,7 +20,7 @@ sub go {
   my ($self) = @_;
 
   print "----Syncing listing rows----\n\n";
-  $self->{totals} = { new => 0, updated => 0, error => 0, };
+  $self->{totals} = { new => 0, updated => 0, };
   $self->fetch_pg_col_info();
 
   my $dbh = $self->{dbh};
@@ -92,13 +92,11 @@ sub go {
 
           $self->monitor('new', $self->{totals}{new});
           $self->monitor('updated', $self->{totals}{updated});
-          $self->monitor('error', $self->{totals}{error});
         }
       }
 
       $self->monitor('new', $self->{totals}{new});
       $self->monitor('updated', $self->{totals}{updated});
-      $self->monitor('error', $self->{totals}{error});
 
       print "\n";
     }
@@ -272,85 +270,73 @@ sub fetch_remote {
 
     my $i = 0;
     while (MLS::Rets::HasNext($results)) {
-      eval {
-        my $rets_columns = $results->GetColumns();
+      my $rets_columns = $results->GetColumns();
 
-        my %data = ( __class_name => $dbh->quote($class_id), __modified_at => 'NOW()', __removed_at => 'NULL' );
+      my %data = ( __class_name => $dbh->quote($class_id), __modified_at => 'NOW()', __removed_at => 'NULL' );
 
-        foreach my $column (@$rets_columns) {
-          my $value = $results->GetString($column);
+      foreach my $column (@$rets_columns) {
+        my $value = $results->GetString($column);
 
-          my $pg_col_name = $rets_table_info->{ $column }->{$self->{column_identifier}};
-          my $pg_col_type = $pg_col_info->{ $pg_col_name }->{type};
+        my $pg_col_name = $rets_table_info->{ $column }->{$self->{column_identifier}};
+        my $pg_col_type = $pg_col_info->{ $pg_col_name }->{type};
 
-          unless ($value) {
-            $data{ $pg_col_name } = 'NULL';
-            next;
-          }
-
-          if ($pg_col_type eq 'text[]') {
-            my @vals = split(',', $value);
-            $data{ $pg_col_name } = 'ARRAY[' . join(',', map( $dbh->quote($_), @vals)) . ']::text[]';
-          }
-          elsif (($pg_col_type eq 'integer' || $pg_col_type eq 'numeric') && $value eq '.') {
-            $data{ $pg_col_name } = $dbh->quote(0);
-          }
-          else {
-            $data{ $pg_col_name } = $dbh->quote($value);
-          }
+        unless ($value) {
+          $data{ $pg_col_name } = 'NULL';
+          next;
         }
 
-        my $pkey_val = $results->GetString($MLS::Config::PRIMARY_KEY{SystemName});
-        my $local_row = $local_rows->{ $pkey_val };
-
-        my $history_data = {pkey_val => $pkey_val};
-
-        if (%MLS::Config::PRICE_COLUMN) {
-          $history_data->{price_new} = $results->GetString($self->{remote_price_col});
+        if ($pg_col_type eq 'text[]') {
+          my @vals = split(',', $value);
+          $data{ $pg_col_name } = 'ARRAY[' . join(',', map( $dbh->quote($_), @vals)) . ']::text[]';
         }
-
-        if (%MLS::Config::STATUS_COLUMN) {
-          $history_data->{status_new} = $results->GetString($self->{remote_status_col});
+        elsif (($pg_col_type eq 'integer' || $pg_col_type eq 'numeric') && $value eq '.') {
+          $data{ $pg_col_name } = $dbh->quote(0);
         }
-
-        $local_row ? $self->update($history_data, \%data, $local_row) : $self->insert(\%data);
-        $self->update_mutation_table($pkey_val, $results, $class_id);
-      };
-
-      if ($@) {
-        print "Error while parsing results:\n";
-        $self->{totals}{error}++;
-        $dbh->rollback;
-
-        if (ref $@ eq 'librets::RetsReplyException') {
-          print "librets::RetsException: " . $@->GetFullReport();
-        }
-        elsif ($@) {
-          print $@;
+        else {
+          $data{ $pg_col_name } = $dbh->quote($value);
         }
       }
-      else {
-        $dbh->commit;
+
+      my $pkey_val = $results->GetString($MLS::Config::PRIMARY_KEY{SystemName});
+      my $local_row = $local_rows->{ $pkey_val };
+
+      my $history_data = {pkey_val => $pkey_val};
+
+      if (%MLS::Config::PRICE_COLUMN) {
+        $history_data->{price_new} = $results->GetString($self->{remote_price_col});
       }
 
+      if (%MLS::Config::STATUS_COLUMN) {
+        $history_data->{status_new} = $results->GetString($self->{remote_status_col});
+      }
+
+      $local_row ? $self->update($history_data, \%data, $local_row) : $self->insert(\%data);
+      $self->update_mutation_table($pkey_val, $results, $class_id);
+
+      $dbh->commit;
       print '.';
       print "[$i]\n" if (++$i % 100 == 0);
     }
+
     print "\n";
 
     warn "ERROR: Expected record count was [$expected_count] but received [$i]\n" if ($expected_count != $i);
   };
 
-  if (ref $@ eq 'librets::RetsReplyException') {
-    die "librets::RetsException: " . $@->GetFullReport();
-  }
-  elsif ($@) {
-    die $@;
+  if ($@) {
+    print "Error while parsing results\n";
+    $dbh->rollback;
+
+    if (ref $@ eq 'librets::RetsReplyException') {
+      die "librets::RetsException: " . $@->GetFullReport();
+    }
+    elsif ($@) {
+      die $@;
+    }
   }
 
   $self->monitor('new', $self->{totals}{new});
   $self->monitor('updated', $self->{totals}{updated});
-  $self->monitor('error', $self->{totals}{error});
 }
 
 sub update {
