@@ -1223,4 +1223,112 @@ BEGIN;
     COMMENT ON COLUMN mibor."Property"."Zoning" IS 'Zoning';
      
 
+  CREATE TABLE mibor."PropertySubTable"() ;
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "InputEntryOrder" integer;
+    COMMENT ON COLUMN mibor."PropertySubTable"."InputEntryOrder" IS 'Input Entry Order';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "IsDeleted" boolean;
+    COMMENT ON COLUMN mibor."PropertySubTable"."IsDeleted" IS 'Is Deleted';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "Listing_MUI" bigint;
+    COMMENT ON COLUMN mibor."PropertySubTable"."Listing_MUI" IS 'Listing MUI';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "MatrixModifiedDT" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."MatrixModifiedDT" IS 'Matrix Modified DT';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "RoomDimensions" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."RoomDimensions" IS 'Room Dimensions';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "RoomFloors" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."RoomFloors" IS 'Room Floors';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "RoomLevel" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."RoomLevel" IS 'Room Level';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "RoomType" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."RoomType" IS 'Room Type';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "RoomWindowTreatments" boolean;
+    COMMENT ON COLUMN mibor."PropertySubTable"."RoomWindowTreatments" IS 'Room Window Treatments';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitBasement" boolean;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitBasement" IS 'Unit Basement';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitBedroom2" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitBedroom2" IS 'Unit Bedroom 2';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitBedroom3" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitBedroom3" IS 'Unit Bedroom 3';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitBedroom4" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitBedroom4" IS 'Unit Bedroom 4';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitBreakfastRoom" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitBreakfastRoom" IS 'Unit Breakfast Room';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitDiningRoom" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitDiningRoom" IS 'Unit Dining Room';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitFamilyRoom" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitFamilyRoom" IS 'Unit Family Room';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitGarage" boolean;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitGarage" IS 'Unit Garage';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitGreatRoom" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitGreatRoom" IS 'Unit Great Room';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitKitchen" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitKitchen" IS 'Unit Kitchen';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitLevels" decimal;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitLevels" IS 'Unit Levels';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitLivingRoom" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitLivingRoom" IS 'Unit Living Room';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitMasterBedroom" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitMasterBedroom" IS 'Unit Master Bedroom';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitMiscellaneous" text[];
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitMiscellaneous" IS 'Unit Miscellaneous';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitNumofBathrooms" decimal;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitNumofBathrooms" IS 'Unit Numof Bathrooms';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitNumofBedrooms" integer;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitNumofBedrooms" IS 'Unit Numof Bedrooms';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitNumofRooms" integer;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitNumofRooms" IS 'Unit Numof Rooms';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitNumofUnits" integer;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitNumofUnits" IS 'Unit Numof Units';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitOptRoom1Dim" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitOptRoom1Dim" IS 'Unit Opt Room 1 Dim';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitOptRoom2Dim" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitOptRoom2Dim" IS 'Unit Opt Room 2 Dim';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitOptRoom3Dim" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitOptRoom3Dim" IS 'Unit Opt Room 3 Dim';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitRent" integer;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitRent" IS 'Unit Rent';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitRentFrequency" text;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitRentFrequency" IS 'Unit Rent Frequency';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitSqFt" integer;
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitSqFt" IS 'Unit Sq Ft';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "UnitUtilities" text[];
+    COMMENT ON COLUMN mibor."PropertySubTable"."UnitUtilities" IS 'Unit Utilities';
+     
+    ALTER TABLE mibor."PropertySubTable" ADD COLUMN "matrix_unique_id" bigint PRIMARY KEY;
+    COMMENT ON COLUMN mibor."PropertySubTable"."matrix_unique_id" IS 'Matrix Unique Id';
+     
+
 COMMIT;
+
