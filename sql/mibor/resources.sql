@@ -1223,7 +1223,7 @@ BEGIN;
     COMMENT ON COLUMN mibor."Property"."Zoning" IS 'Zoning';
      
 
-  CREATE TABLE mibor."PropertySubTable"() ;
+  CREATE TABLE mibor."PropertySubTable"() INHERITS (property);
     ALTER TABLE mibor."PropertySubTable" ADD COLUMN "InputEntryOrder" integer;
     COMMENT ON COLUMN mibor."PropertySubTable"."InputEntryOrder" IS 'Input Entry Order';
      
