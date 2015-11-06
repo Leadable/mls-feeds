@@ -17,7 +17,6 @@ my $tools = {
 my @tools_env = map {"-e $_='$tools->{$_}'"} keys %$tools;
 
 my $db = "mls-db-$mls";
-my $mls = $1;
 
 print "pg_dumpall [$mls]\n";
 
