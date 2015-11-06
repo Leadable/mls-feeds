@@ -3,7 +3,6 @@
 use strict;
 
 die 'MLS_DB_HOST must be set'  if (!$ENV{MLS_DB_HOST});
-die 'MLS_TIMEZONE must be set' if (!$ENV{MLS_TIMEZONE});
 
 my $mls = $ARGV[0];
 
@@ -46,7 +45,6 @@ q|docker run|,
 @tools_env,
 qq|-e BACKUP_FILE='/opt/backups/$mls.sql.gz'|,
 qq|-e MLS_DB_HOST='$ENV{MLS_DB_HOST}'|,
-qq|-e MLS_TIMEZONE='$ENV{MLS_TIMEZONE}'|,
 qq|-e MLS_NAME='$mls'|,
 q|-v ~/mls-feeds/:/opt/mls-feeds|,
 q|-v /mnt/backup_staging/:/opt/backups|,
