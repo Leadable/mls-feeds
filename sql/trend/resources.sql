@@ -1705,5 +1705,81 @@ BEGIN;
     ALTER TABLE trend."Property" ADD COLUMN "ZoningCode" text;
     COMMENT ON COLUMN trend."Property"."ZoningCode" IS 'ZoningCode';
      
+CREATE TABLE trend."Media"() ;
+    ALTER TABLE trend."Media" ADD COLUMN "County" text;
+    COMMENT ON COLUMN trend."Media"."County" IS 'County';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "ExternalSystemID" text;
+    COMMENT ON COLUMN trend."Media"."ExternalSystemID" IS 'ExternalSystemID';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "ListingID" text;
+    COMMENT ON COLUMN trend."Media"."ListingID" IS 'ListingID';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "LocaleListingStatus" text;
+    COMMENT ON COLUMN trend."Media"."LocaleListingStatus" IS 'LocaleListingStatus';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropItemNumber" integer;
+    COMMENT ON COLUMN trend."Media"."PropItemNumber" IS 'LIS_MEDVW_MED_ITEM_NUMBER';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaBytes" bigint;
+    COMMENT ON COLUMN trend."Media"."PropMediaBytes" IS 'LIS_MEDVW_MED_MED_SIZE';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaCaption" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaCaption" IS 'LIS_MEDVW_MED_CAPTION';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaCreatedTimestamp" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaCreatedTimestamp" IS 'SYS_LIS_UID_CREATED_TMS';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaDescription" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaDescription" IS 'LIS_MEDVW_MED_DESCRIPTION';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaDisplayOrder" integer;
+    COMMENT ON COLUMN trend."Media"."PropMediaDisplayOrder" IS 'LIS_MEDVW_MED_DISPLAY_ORDER';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaExternalKey" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaExternalKey" IS 'LIS_MEDVW_MED_EXTERNAL_SYSTEM_ID';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaFileName" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaFileName" IS 'LIS_MEDVW_MED_FILE_NAME';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaKey" bigint PRIMARY KEY;
+    COMMENT ON COLUMN trend."Media"."PropMediaKey" IS 'LIS_MEDVW_MED_MED_ID';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaModificationTimestamp" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaModificationTimestamp" IS 'SYS_LIS_UID_MODIFIED_TMS';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaSize" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaSize" IS 'LIS_MEDVW_MED_MEDS_ID';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaSubSystemLocale" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaSubSystemLocale" IS 'PropSubSysLocId';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaSystemLocale" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaSystemLocale" IS 'PropSysLocId';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaType" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaType" IS 'LIS_MEDVW_MED_MEDT_ID';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaURL" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaURL" IS 'LIS_MEDVW_FC_URL';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaURLThumb" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaURLThumb" IS 'PropMediaURLThumb';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaVendorID" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaVendorID" IS 'SYS_MEDV_PTY_IDENTIFIER';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaVendorIDType" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaVendorIDType" IS 'SYS_MEDV_PTY_IDT_ID';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMediaVendorName" text;
+    COMMENT ON COLUMN trend."Media"."PropMediaVendorName" IS 'SYS_MEDV_PTY_NAME';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropMimeType" text;
+    COMMENT ON COLUMN trend."Media"."PropMimeType" IS 'LIS_MEDVW_MED_MT_ID';
+     
+    ALTER TABLE trend."Media" ADD COLUMN "PropObjectKey" bigint;
+    COMMENT ON COLUMN trend."Media"."PropObjectKey" IS 'LIS_MEDVW_ID';
+     
 
 COMMIT;
