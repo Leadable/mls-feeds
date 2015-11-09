@@ -28,7 +28,7 @@ SELECT
   "LN" as listing_id,
   "LN"::text as mlsnum,
   "SDT" as sold_date,
-  "SP" as sold_price,
+  "SP"::numeric as sold_price,
   COALESCE(array_length(__photo_urls, 1), 0) as image_count,
   "LP" as price,
   "BR" as beds,
@@ -94,7 +94,7 @@ SELECT
   "EL"  as elementary_school,
   "JH"  as middle_school,
   "SH"  as high_school,
-  (select "SchoolDistrictDescription" from nwmls.school where "SchoolDistrictCode" = "SD") as school_district,
+  "SD" as school_district,
   (
     (__class_name = 'COND' AND ("UNF" && ARRAY['B']))
     OR (__class_name = 'FARM' AND ("IMP" && ARRAY['R', 'Q']))

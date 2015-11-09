@@ -68,7 +68,18 @@ CREATE OR REPLACE VIEW armls.view_property AS
                 WHEN "LIST_9" = 'Townhouse'::text THEN 'Condo/Townhouse'::text
                 ELSE 'Other'::text
             END
-            WHEN 'B'::text THEN 'Rental'::text
+            WHEN 'B'::text THEN
+            CASE
+                WHEN "LIST_9" = 'Single Family - Detached'::text THEN 'Single Family'::text
+                WHEN "LIST_9" = 'Patio Home'::text THEN 'Condo/Townhouse'::text
+                WHEN "LIST_9" = 'Mfg/Mobile Housing'::text THEN 'Other'::text
+                WHEN "LIST_9" = 'Modular/Pre-Fab'::text THEN 'Other'::text
+                WHEN "LIST_9" = 'Gemini/Twin Home'::text THEN 'Condo/Townhouse'::text
+                WHEN "LIST_9" = 'Loft Style'::text THEN 'Condo/Townhouse'::text
+                WHEN "LIST_9" = 'Apartment Style/Flat'::text THEN 'Condo/Townhouse'::text
+                WHEN "LIST_9" = 'Townhouse'::text THEN 'Condo/Townhouse'::text
+                ELSE 'Other'::text
+            END
             WHEN 'C'::text THEN 'Lots & Land'::text
             WHEN 'F'::text THEN 'Other'::text
             ELSE 'Other'::text

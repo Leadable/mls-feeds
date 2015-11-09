@@ -138,7 +138,8 @@ SELECT
   "Styles" as "feature_styles[]",
   null::text as year_built
 FROM
-  trend."Property", trend.mutation as m
+  trend."Property", trend.mutation as m, trend."Media" as media
 WHERE __class_name IN ('LOT', 'RES', 'RNT') and
-  "ListingKey"::text = m.remote_id and m.last_transaction_completed_at is not null
+  "ListingKey"::text = m.remote_id and m.last_transaction_completed_at is not null and
+  media."ListingID" = "ListingKey"::text
 ;

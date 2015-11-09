@@ -1705,13 +1705,13 @@ BEGIN;
     ALTER TABLE trend."Property" ADD COLUMN "ZoningCode" text;
     COMMENT ON COLUMN trend."Property"."ZoningCode" IS 'ZoningCode';
      
-CREATE TABLE trend."Media"() ;
+CREATE TABLE trend."Media"() INHERITS (property);
     ALTER TABLE trend."Media" ADD COLUMN "County" text;
     COMMENT ON COLUMN trend."Media"."County" IS 'County';
      
     ALTER TABLE trend."Media" ADD COLUMN "ExternalSystemID" text;
     COMMENT ON COLUMN trend."Media"."ExternalSystemID" IS 'ExternalSystemID';
-     
+
     ALTER TABLE trend."Media" ADD COLUMN "ListingID" text;
     COMMENT ON COLUMN trend."Media"."ListingID" IS 'ListingID';
      

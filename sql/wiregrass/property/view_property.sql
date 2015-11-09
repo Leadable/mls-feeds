@@ -51,7 +51,7 @@ SELECT
   __geo_modified_at,
   __geo_latitude as latitude,
   __geo_longitude as longitude,
-  "L_SquareFeet" as square_feet,
+  "L_SquareFeet"::integer as square_feet,
   "LM_Int4_1" as year_built,
   "L_NumAcres" as acres,
   "LFD_BASEMENT_16" is not null as "basement",
