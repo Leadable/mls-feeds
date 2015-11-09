@@ -14,7 +14,7 @@ $MLS::Config::RESOURCE = 'Media';
 %MLS::Config::ROW_MOD_TS_COLUMN = ( SystemName => 'PropMediaModificationTimestamp');
 
 # RETS Resource Classes
-my $search = MLS::Resource::Utils::get_search_interval();
+my $search = MLS::Resource::Utils::get_search_interval({offpeak_monthly => 1});
 %MLS::Config::CLASSES = (
   PROP_MEDIA => { StandardName => 'TREND Property Media', 'SearchRequest' => $search },
 );
