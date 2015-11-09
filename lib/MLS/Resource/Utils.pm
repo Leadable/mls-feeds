@@ -100,7 +100,7 @@ sub get_search_interval {
                     $end_year++;
                 }
 
-                push @$search, "($ts_name=$start_year-$start_month-01-$end_year-$end_month-01)";
+                push @$search, "($ts_name=$start_year-$start_month-01T00:00:00-$end_year-$end_month-01T00:00:00)";
             }
         }
     }
