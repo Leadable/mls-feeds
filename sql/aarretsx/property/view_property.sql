@@ -60,6 +60,7 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
         ELSE "Property"."SellingDate"
     END AS sold_date,
     "Property"."SellingPrice" as sold_price,
+    "Property"."ListingOfficeName" as office_name,
     "Property"."VirtualTourURL" AS virtual_tour,
     "Property"."Status" AS status,
     "Property"."ListingRid"::text AS listing_id,

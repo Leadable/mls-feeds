@@ -2,38 +2,42 @@ DROP VIEW IF EXISTS trend.view_property CASCADE;
 CREATE OR REPLACE VIEW trend.view_property AS
 SELECT
   'trend'::text as mls,
-  __removed_at,
-  (__removed_at is null AND "LocaleListingStatus" NOT IN ('EXPIRED', 'WITHDRAWN')) as __active,
-  __inserted_at as age,
-  __inserted_at,
-  __modified_at,
+  p.__removed_at,
+  (p.__removed_at is null AND p."LocaleListingStatus" NOT IN ('EXPIRED', 'WITHDRAWN')) as __active,
+  p.__inserted_at as age,
+  p.__inserted_at,
+  p.__modified_at,
   last_transaction_completed_at,
-  __geo_geom,
-  __geo_outlier,
-  __geo_places,
-  __price_updated_at,
-  __price_history_times,
-  __price_history_vals,
-  __percent_reduced,
-  __status_updated_at,
-  __status_history_times,
-  __status_history_vals,
-  __photo_urls,
-  "ListingKey"::text as listing_id,
-  "ListingID" as mlsnum,
-  "SourceCreationTimestamp" as __list_date,
+  p.__geo_geom,
+  p.__geo_outlier,
+  p.__geo_places,
+  p.__price_updated_at,
+  p.__price_history_times,
+  p.__price_history_vals,
+  p.__percent_reduced,
+  p.__status_updated_at,
+  p.__status_history_times,
+  p.__status_history_vals,
+  p.__photo_urls,
+  CASE media."PropMimeType"
+    WHEN 'URL' THEN media."PropMediaURL"
+    ELSE null::text
+  END as virtual_tour,
+  p."ListingKey"::text as listing_id,
+  p."ListingID" as mlsnum,
+  p."SourceCreationTimestamp" as __list_date,
   null::integer as days_to_close,
   "CloseDate" as sold_date, -- sold data not available
   "ClosePrice" as sold_price,
-  "LocaleListingStatus" as status,
+  p."LocaleListingStatus" as status,
   false as comments_disabled,
-  "LocaleListingStatus" IN ('PENDING', 'CONTRACT') as under_contract,
-  CASE "LocaleListingStatus"
+  p."LocaleListingStatus" IN ('PENDING', 'CONTRACT') as under_contract,
+  CASE p."LocaleListingStatus"
     WHEN 'PENDING'  THEN 'Under Contract'
     WHEN 'CONTRACT' THEN 'Under Contract'
     ELSE null::text
   END as under_contract_description,
-  CASE __class_name
+  CASE p.__class_name
     WHEN 'RNT' THEN 'for_rent'
     WHEN 'COM' THEN
       CASE "AnnualLeasePrice"
@@ -42,7 +46,7 @@ SELECT
       END
     ELSE 'for_sale'
   END as listing_type,
-  coalesce(__image_count, "TotalPhotos", 0) as image_count,
+  coalesce("TotalPhotos", 0) as image_count,
   "ListPrice" as price,
   "Beds" as beds,
   "BathsFull" as baths_total,
@@ -77,11 +81,11 @@ SELECT
   "PostalCode" as zip,
   initcap("FullStreetAddress") as address_line1,
   COALESCE(initcap("CityName"), '') || ', ' || COALESCE("State", '') || ' ' || COALESCE("PostalCode", '') as address_line2,
-  initcap("County") as county,
+  initcap(p."County") as county,
   null::text as township,
-  __geo_modified_at,
-  __geo_latitude as latitude,
-  __geo_longitude as longitude,
+  p.__geo_modified_at,
+  p.__geo_latitude as latitude,
+  p.__geo_longitude as longitude,
   "NetSQFT" as square_feet,
   "LotAreaAcre" as acres,
   "Basement" as basement,
@@ -138,8 +142,11 @@ SELECT
   "Styles" as "feature_styles[]",
   null::text as year_built
 FROM
-  trend."Property", trend.mutation as m, trend."Media" as media
-WHERE __class_name IN ('LOT', 'RES', 'RNT') and
-  "ListingKey"::text = m.remote_id and m.last_transaction_completed_at is not null and
-  media."ListingID" = "ListingKey"::text
+  trend."Property" p
+  LEFT OUTER JOIN trend."Media" media ON "ListingKey" = media."PropObjectKey" AND media.__removed_at IS NULL,
+  trend.mutation as m
+WHERE
+  p.__class_name IN ('LOT', 'RES', 'RNT') and
+  "ListingKey"::text = m.remote_id and
+  m.last_transaction_completed_at is not null
 ;

@@ -48,7 +48,7 @@ SELECT
   last_transaction_completed_at,
   null::text as days_to_close,
   null::text as sold_date,
-  null::text as sold_price,
+  null::numeric as sold_price,
   "Status" as status,
   "VirtualTourURLUnbranded" as virtual_tour,
   ("Status" IN ('Active Contingent', 'Active Kick Out', 'Active Option Contract', 'Pending')) as under_contract,
