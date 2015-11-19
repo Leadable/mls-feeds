@@ -3,69 +3,70 @@ DROP VIEW IF EXISTS mtrmls.view_property CASCADE;
 CREATE OR REPLACE VIEW mtrmls.view_property AS
 SELECT
   'mtrmls'::text as mls,
-  __removed_at,
-  (__removed_at IS NULL AND "ListingStatusID" IN ('Pending','Closed','Active')) AS __active,
-  __inserted_at,
+  p.__removed_at,
+  (p.__removed_at IS NULL AND p."ListingStatusID" IN ('Pending','Closed','Active')) AS __active,
+  p.__inserted_at,
   last_transaction_completed_at,
-  __modified_at,
-  __price_updated_at,
-  __percent_reduced,
-  __geo_geom,
-  __geo_outlier,
-  __geo_modified_at,
-  __geo_places,
-  __price_history_times,
-  __price_history_vals,
-  __photo_urls,
-  (__inserted_at - '1 hour'::interval) as age,
-  __status_updated_at,
-  __status_history_times,
-  __status_history_vals,
-  "ListingStatusID" as status,
-  CASE __class_name
+  p.__modified_at,
+  p.__price_updated_at,
+  p.__percent_reduced,
+  p.__geo_geom,
+  p.__geo_outlier,
+  p.__geo_modified_at,
+  p.__geo_places,
+  p.__price_history_times,
+  p.__price_history_vals,
+  p.__photo_urls,
+  (p.__inserted_at - '1 hour'::interval) as age,
+  p.__status_updated_at,
+  p.__status_history_times,
+  p.__status_history_vals,
+  p."ListingStatusID" as status,
+  CASE p.__class_name
         WHEN 'RNT'::text THEN
-        CASE "ListingStatusID"
+        CASE p."ListingStatusID"
             WHEN 'Active'::text            THEN 'for_rent'::text
             WHEN 'Pending'::text           THEN 'for_rent'::text
             WHEN 'Closed'::text            THEN 'leased'::text
             ELSE NULL::text
         END
         ELSE
-        CASE "ListingStatusID"
+        CASE p."ListingStatusID"
             WHEN 'Active'::text            THEN 'for_sale'::text
             WHEN 'Pending'::text           THEN 'for_sale'::text
             WHEN 'Closed'::text            THEN 'sold'::text
             ELSE NULL::text
         END
   END AS listing_type,
+ MAX(media."URL") as virtual_tour,
   "ListDate" as __list_date,
   date_part('days', "ClosedDate"::timestamp without time zone - "ListDate"::timestamp without time zone)::integer as days_to_close,
   "ClosedDate" as sold_date,
   "SalesPrice" as sold_price,
-  ("ListingStatusID" = 'Pending' OR ("ListingStatusID" = 'Active' AND "ContingencyType" is not null and "ContingencyType" <> 'None')) as under_contract,
+  (p."ListingStatusID" = 'Pending' OR (p."ListingStatusID" = 'Active' AND "ContingencyType" is not null and "ContingencyType" <> 'None')) as under_contract,
   "ContingencyType"::text || ' Contingency' as under_contract_description,
-  "MlsNum" as listing_id,
-  "MlsNum" as mlsnum,
+  p."MlsNum" as listing_id,
+  p."MlsNum" as mlsnum,
   "PictureCount" as image_count,
   COALESCE("ListPrice", "LeasePerMonth") as price,
   "TotalBedrooms" as beds,
   "TotalFullBaths" as baths_total,
-  CASE "PropertyClassID"
+  CASE p."PropertyClassID"
     WHEN 'Rental'::text THEN
       CASE "PropertySubType"
         WHEN 'Site Built'::text         THEN 'Residential'::text
         WHEN 'Condominium'::text        THEN 'Condominium'::text
         ELSE 'Apartment'::text
       END
-    ELSE "PropertyClassID"
+    ELSE p."PropertyClassID"
   END as type,
   COALESCE("Remarks", '') as remarks,
   "StreetAddressDisplay" as address_line1,
   COALESCE(trim(initcap("City")), '') || ', TN ' || COALESCE("ZipCode", '') as address_line2,
   trim(initcap("City")) || ', TN' as city,
   "ZipCode" as zip,
-  __geo_latitude as latitude,
-  __geo_longitude as longitude,
+  p.__geo_latitude as latitude,
+  p.__geo_longitude as longitude,
   "SqFtTotal" as square_feet,
   "YearBuilt" as year_built,
   "Acres" as acres,
@@ -224,14 +225,19 @@ SELECT
   as __minor_area,
   NULL::text as area,
 
-  "ModDate" as modification_timestamp,
+  p."ModDate" as modification_timestamp,
   "OfficeListOfficeName" as office_name,
   true as display_address
-FROM mtrmls."Property" as p, mtrmls.mutation as m
-  WHERE
+FROM
+  mtrmls."Property" as p
+  LEFT OUTER JOIN mtrmls."Media" media ON p."MlsNum" = media."MlsNum" AND media.__removed_at IS NULL AND media."MediaType" = 'Tour',
+  mtrmls.mutation as m
+WHERE
     p."MlsNum" = m.remote_id and
+    m.resource = 'Property' and
     m.last_transaction_completed_at is not null and (
      p."PropertyClassID" IN ('Condominium', 'Land-Lots-Farms', 'Rental', 'Residential') and
      p."PropertySubType" <> 'Manufactured-Mobile' and p."State" = 'Tennessee'
     )
+GROUP BY p."MlsNum", last_transaction_completed_at
 ;
