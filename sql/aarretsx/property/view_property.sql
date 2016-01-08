@@ -74,8 +74,16 @@ CREATE OR REPLACE VIEW aarretsx.view_property AS
     "Property"."Bedrooms" AS beds,
     "Property"."FullBathrooms" AS baths_total,
         CASE "Property"."PropertyType"
-            WHEN 'Residential'::text THEN "Property"."PropertySubtype1"
-            WHEN 'Rental'::text      THEN "Property"."PropertySubtype1"
+            WHEN 'Residential'::text THEN 
+                CASE "Property"."PropertySubtype1"
+                    WHEN 'Single Family Residence'::text THEN 'Single Family'::text
+                    ELSE "Property"."PropertySubtype1"
+                END
+            WHEN 'Rental'::text THEN
+                CASE "Property"."PropertySubtype1"
+                    WHEN 'Single Family Residence'::text THEN 'Single Family'::text
+                    ELSE "Property"."PropertySubtype1"
+                END
             ELSE "Property"."PropertyType"
         END AS type,
     COALESCE("Property"."MarketingRemarks", ''::text) AS remarks,

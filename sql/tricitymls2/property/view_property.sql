@@ -32,9 +32,9 @@ SELECT
   "L_ListingID" as listing_id,
   "L_ListingID" as mlsnum,
   "L_Status" as status,
-  ("L_Status" IN ('Active U/C Take BU Offers','Active U/C W/ Bump')) as under_contract,
+  ("L_Status" IN ('Pndng Inspect/Feasibility', 'Pending Appraisal/Closing', '3_1', 'Active U/C W/ Bump')) as under_contract,
   CASE
-    WHEN ("L_Status" IN ('Active U/C Take BU Offers','Active U/C W/ Bump')) THEN 'Under Contract'
+    WHEN ("L_Status" IN ('Pndng Inspect/Feasibility', 'Pending Appraisal/Closing', '3_1', 'Active U/C W/ Bump')) THEN 'Under Contract'
     ELSE null::text
   END as under_contract_description,
   "L_AskingPrice" as price,

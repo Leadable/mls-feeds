@@ -43,7 +43,7 @@ SELECT
   date_part('days', "ClosedDate"::timestamp without time zone - "ListDate"::timestamp without time zone)::integer as days_to_close,
   "ClosedDate" as sold_date,
   "SalesPrice" as sold_price,
-  (p."ListingStatusID" = 'Pending' OR (p."ListingStatusID" = 'Active' AND "ContingencyType" is not null and "ContingencyType" <> 'None')) as under_contract,
+  (p."ListingStatusID" = 'Pending') as under_contract,
   "ContingencyType"::text || ' Contingency' as under_contract_description,
   p."MlsNum" as listing_id,
   p."MlsNum" as mlsnum,

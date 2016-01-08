@@ -66,6 +66,7 @@ SELECT
         WHEN 'Residential Lease' THEN 'leased'
         ELSE 'sold'
       END
+    WHEN 'Leased' THEN 'leased'
     ELSE
       CASE "PropertyType"
         WHEN 'Residential Lease' THEN 'for_rent'
@@ -85,11 +86,13 @@ SELECT
       END
     WHEN 'Residential Lease' then
       CASE "PropertySubType"
-        WHEN 'RES-Condo' THEN 'Condo'
-        WHEN 'RES-Townhouse' THEN 'Townhouse'
-        WHEN 'RES-Half Duplex' THEN 'Half Duplex'
-        WHEN 'RES-Single Family' THEN 'Single Family'
-        WHEN 'RES-Farm/Ranch' THEN 'Farm/Ranch'
+        WHEN 'LSE-Apartment' THEN 'Condo'
+        WHEN 'LSE-Condo/Townhome' THEN 'Condo'
+        WHEN 'LSE-Duplex' THEN 'Condo'
+        WHEN 'LSE-Fourplex' THEN 'Condo'
+        WHEN 'LSE-House' THEN 'Single Family'
+        WHEN 'LSE-Mobile' THEN 'Single Family'
+        WHEN 'LSE-Triplex' THEN 'Condo'
       END
     ELSE 'Other'::text
   END as type,
