@@ -10,7 +10,7 @@ BEGIN;
     ALTER TABLE nneren."Property" ADD COLUMN "AVMYN" text;
     COMMENT ON COLUMN nneren."Property"."AVMYN" IS 'AVM Y/N';
      
-    ALTER TABLE nneren."Property" ADD COLUMN "AcresCommon" numeric;
+    ALTER TABLE nneren."Property" ADD COLUMN "AcresCommon" integer;
     COMMENT ON COLUMN nneren."Property"."AcresCommon" IS 'Acres - Common';
      
     ALTER TABLE nneren."Property" ADD COLUMN "AgentStatus" text;
@@ -34,7 +34,7 @@ BEGIN;
     ALTER TABLE nneren."Property" ADD COLUMN "ApxFinSqFtTotal" integer;
     COMMENT ON COLUMN nneren."Property"."ApxFinSqFtTotal" IS 'ApxFinSqFtTotal';
      
-    ALTER TABLE nneren."Property" ADD COLUMN "AssessmentAmount" numeric;
+    ALTER TABLE nneren."Property" ADD COLUMN "AssessmentAmount" integer;
     COMMENT ON COLUMN nneren."Property"."AssessmentAmount" IS 'Assessment Amount';
      
     ALTER TABLE nneren."Property" ADD COLUMN "AssignedParkingYN" text;
@@ -238,6 +238,12 @@ BEGIN;
     ALTER TABLE nneren."Property" ADD COLUMN "City" text;
     COMMENT ON COLUMN nneren."Property"."City" IS 'Town';
      
+    ALTER TABLE nneren."Property" ADD COLUMN "CloseDate" text;
+    COMMENT ON COLUMN nneren."Property"."CloseDate" IS 'Date Closed / Sold';
+     
+    ALTER TABLE nneren."Property" ADD COLUMN "ClosePrice" integer;
+    COMMENT ON COLUMN nneren."Property"."ClosePrice" IS 'Selling Price';
+     
     ALTER TABLE nneren."Property" ADD COLUMN "CoListAgent" text;
     COMMENT ON COLUMN nneren."Property"."CoListAgent" IS 'CoList Agent';
      
@@ -259,11 +265,17 @@ BEGIN;
     ALTER TABLE nneren."Property" ADD COLUMN "ConstructionStatus" text;
     COMMENT ON COLUMN nneren."Property"."ConstructionStatus" IS 'New Construction Y/N';
      
+    ALTER TABLE nneren."Property" ADD COLUMN "ContractDate" text;
+    COMMENT ON COLUMN nneren."Property"."ContractDate" IS 'Date Pending';
+     
     ALTER TABLE nneren."Property" ADD COLUMN "County" text;
     COMMENT ON COLUMN nneren."Property"."County" IS 'Address County';
      
     ALTER TABLE nneren."Property" ADD COLUMN "DateChange" text;
     COMMENT ON COLUMN nneren."Property"."DateChange" IS 'Date Change';
+     
+    ALTER TABLE nneren."Property" ADD COLUMN "DateLeased" text;
+    COMMENT ON COLUMN nneren."Property"."DateLeased" IS 'Date Leased';
      
     ALTER TABLE nneren."Property" ADD COLUMN "DatePhoto" text;
     COMMENT ON COLUMN nneren."Property"."DatePhoto" IS 'Date Photo';
@@ -472,7 +484,7 @@ BEGIN;
     ALTER TABLE nneren."Property" ADD COLUMN "GasMeters" integer;
     COMMENT ON COLUMN nneren."Property"."GasMeters" IS 'Gas Meters';
      
-    ALTER TABLE nneren."Property" ADD COLUMN "HERIndex" text;
+    ALTER TABLE nneren."Property" ADD COLUMN "HERIndex" integer;
     COMMENT ON COLUMN nneren."Property"."HERIndex" IS 'Home Energy Rated Index Score';
      
     ALTER TABLE nneren."Property" ADD COLUMN "HalfBath2Level" text;
@@ -562,14 +574,23 @@ BEGIN;
     ALTER TABLE nneren."Property" ADD COLUMN "Latitude" decimal;
     COMMENT ON COLUMN nneren."Property"."Latitude" IS 'Latitude';
      
+    ALTER TABLE nneren."Property" ADD COLUMN "LeaseAgent" text;
+    COMMENT ON COLUMN nneren."Property"."LeaseAgent" IS 'Lease Agent';
+     
     ALTER TABLE nneren."Property" ADD COLUMN "LeaseDol" text;
     COMMENT ON COLUMN nneren."Property"."LeaseDol" IS 'Land Lease Price';
      
     ALTER TABLE nneren."Property" ADD COLUMN "LeaseExpense" decimal;
     COMMENT ON COLUMN nneren."Property"."LeaseExpense" IS 'Lease Expense';
      
+    ALTER TABLE nneren."Property" ADD COLUMN "LeaseFirm" text;
+    COMMENT ON COLUMN nneren."Property"."LeaseFirm" IS 'Lease Firm';
+     
     ALTER TABLE nneren."Property" ADD COLUMN "LeaseListRate" decimal;
     COMMENT ON COLUMN nneren."Property"."LeaseListRate" IS 'LeaseListRate';
+     
+    ALTER TABLE nneren."Property" ADD COLUMN "LeaseOffice" text;
+    COMMENT ON COLUMN nneren."Property"."LeaseOffice" IS 'Lease Office';
      
     ALTER TABLE nneren."Property" ADD COLUMN "LeaseRateType" text;
     COMMENT ON COLUMN nneren."Property"."LeaseRateType" IS 'Lease Rate Type';
@@ -640,7 +661,7 @@ BEGIN;
     ALTER TABLE nneren."Property" ADD COLUMN "LotSizeArea" decimal;
     COMMENT ON COLUMN nneren."Property"."LotSizeArea" IS 'Acres - Total';
      
-    ALTER TABLE nneren."Property" ADD COLUMN "LotSqFt" numeric;
+    ALTER TABLE nneren."Property" ADD COLUMN "LotSqFt" integer;
     COMMENT ON COLUMN nneren."Property"."LotSqFt" IS 'Lot SqFt';
      
     ALTER TABLE nneren."Property" ADD COLUMN "LseAgrU5" text;
@@ -697,7 +718,7 @@ BEGIN;
     ALTER TABLE nneren."Property" ADD COLUMN "MonthlyAssocFees" integer;
     COMMENT ON COLUMN nneren."Property"."MonthlyAssocFees" IS 'Monthly Assoc. Fees';
      
-    ALTER TABLE nneren."Property" ADD COLUMN "MonthlyFee" numeric;
+    ALTER TABLE nneren."Property" ADD COLUMN "MonthlyFee" integer;
     COMMENT ON COLUMN nneren."Property"."MonthlyFee" IS 'Monthly Fee';
      
     ALTER TABLE nneren."Property" ADD COLUMN "MultipleDeedsYN" text;
@@ -747,6 +768,12 @@ BEGIN;
      
     ALTER TABLE nneren."Property" ADD COLUMN "OperatingExpenses" text[];
     COMMENT ON COLUMN nneren."Property"."OperatingExpenses" IS 'Operating Expenses CF';
+     
+    ALTER TABLE nneren."Property" ADD COLUMN "OriginalListingFirmName" text;
+    COMMENT ON COLUMN nneren."Property"."OriginalListingFirmName" IS 'Original Listing Firm Name';
+     
+    ALTER TABLE nneren."Property" ADD COLUMN "OriginalSellingFirmName" text;
+    COMMENT ON COLUMN nneren."Property"."OriginalSellingFirmName" IS 'Original Selling Firm Name';
      
     ALTER TABLE nneren."Property" ADD COLUMN "Other" text;
     COMMENT ON COLUMN nneren."Property"."Other" IS 'Other';
@@ -937,6 +964,15 @@ BEGIN;
     ALTER TABLE nneren."Property" ADD COLUMN "SeasonalYN" text;
     COMMENT ON COLUMN nneren."Property"."SeasonalYN" IS 'Seasonal Y/N';
      
+    ALTER TABLE nneren."Property" ADD COLUMN "SellingAgentFirmID" text;
+    COMMENT ON COLUMN nneren."Property"."SellingAgentFirmID" IS 'Selling Agent Firm ID';
+     
+    ALTER TABLE nneren."Property" ADD COLUMN "SellingAgentID" text;
+    COMMENT ON COLUMN nneren."Property"."SellingAgentID" IS 'Selling Agent ID';
+     
+    ALTER TABLE nneren."Property" ADD COLUMN "SellingAgentOffice" text;
+    COMMENT ON COLUMN nneren."Property"."SellingAgentOffice" IS 'Selling Agent Office';
+     
     ALTER TABLE nneren."Property" ADD COLUMN "SeparateUtilitiesYN" text;
     COMMENT ON COLUMN nneren."Property"."SeparateUtilitiesYN" IS 'Separate Utilities Y/N';
      
@@ -1069,7 +1105,7 @@ BEGIN;
     ALTER TABLE nneren."Property" ADD COLUMN "TrafficCount" integer;
     COMMENT ON COLUMN nneren."Property"."TrafficCount" IS 'Traffic Count';
      
-    ALTER TABLE nneren."Property" ADD COLUMN "TransferFee" numeric;
+    ALTER TABLE nneren."Property" ADD COLUMN "TransferFee" integer;
     COMMENT ON COLUMN nneren."Property"."TransferFee" IS 'Transfer Fee';
      
     ALTER TABLE nneren."Property" ADD COLUMN "Transport" text[];
@@ -1443,6 +1479,3 @@ BEGIN;
      
     ALTER TABLE nneren."Property" ADD COLUMN "Zoning" text;
     COMMENT ON COLUMN nneren."Property"."Zoning" IS 'Zoning';
-     
-
-COMMIT;
