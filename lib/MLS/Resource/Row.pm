@@ -280,6 +280,8 @@ sub fetch_remote {
         my $pg_col_name = $rets_table_info->{ $column }->{$self->{column_identifier}};
         my $pg_col_type = $pg_col_info->{ $pg_col_name }->{type};
 
+        next if (!$pg_col_name);
+
         unless ($value) {
           $data{ $pg_col_name } = 'NULL';
           next;
