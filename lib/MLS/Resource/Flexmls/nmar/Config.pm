@@ -10,7 +10,7 @@ $MLS::Config::MLS = 'nmar';
 # RETS session object
 $MLS::Config::RETS = MLS::Rets->new({
   login_url  => 'http://retsgw.flexmls.com/rets2_1/Login',
-  username   => 'nma.rets.krich',
+  username   => 'mt.rets.krich',
   password   => 'piaba-pterous22',
   user_agent => 'LISTING-PAGES/1.0',
 });
