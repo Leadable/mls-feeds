@@ -9,7 +9,7 @@ $MLS::Config::MLS = 'nneren';
 
 # RETS session object
 $MLS::Config::RETS = MLS::Rets->new({
-  login_url  => 'http://rets.offutt-innovia.com:8080/nne/login',
+  login_url  => 'http://nne.rets.mlxinnovia.com/nne/login',
   username   => '0711mon',
   password   => 'rVLE1KfQmDUl4WmlOYs1',
 });
