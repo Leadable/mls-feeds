@@ -294,6 +294,5 @@ FROM
   mibor.mutation m
 WHERE
   p."Matrix_Unique_ID"::text = m.remote_id AND
-  p."IDXOptInYN" AND
   m.last_transaction_completed_at IS NOT NULL
 ;

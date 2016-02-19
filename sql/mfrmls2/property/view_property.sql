@@ -39,7 +39,7 @@ SELECT
   __status_history_vals,
   "Status" as status,
   "VirtualTourLink" as virtual_tour,
-  ("Status" IN ('Active with Contract')) as under_contract,
+  ("Status" IN ('Active with Contract', 'Pending')) as under_contract,
   "Status" as under_contract_description,
   "Matrix_Unique_ID"::text as listing_id,
   "DaysToClosed" as days_to_close,

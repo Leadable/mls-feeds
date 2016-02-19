@@ -52,6 +52,7 @@ SELECT
     WHEN 'A' THEN
       CASE "LIST_111"
         WHEN 'Condo/Coop' THEN 'Condo'
+        WHEN 'Condominium' THEN 'Condo'
         ELSE 'Single Family'
       END
     WHEN 'B' THEN 'Lots & Land'
@@ -59,6 +60,7 @@ SELECT
     WHEN 'F' THEN
       CASE "LIST_111"
         WHEN 'Condo/Coop' THEN 'Condo'
+        WHEN 'Condominium' THEN 'Condo'
         ELSE 'Single Family'
       END
   END as type,
