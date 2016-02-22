@@ -175,7 +175,7 @@ sub parse_address {
     push(@full, $address{line2}) if $address{line2};
     $address{full} = join(', ', @full);
 
-    my $spec = Geo::StreetAddress::US->parse_address($address{full});
+    my $spec = Geo::StreetAddress::US->parse_location($address{full});
 
     @line1 = ();
     my @line2 = ();
