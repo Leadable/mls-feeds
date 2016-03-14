@@ -8,8 +8,8 @@ docker run --name "sync-searches-move-in-nashville" \
 -e POSTGRES_FEEDS_PASS='zmWWhBDcusTvtq4Bbx5tQW9GAUSMhR3RuyAnghgV' \
 -e POSTGRES_LP_HOST='pgsql-main.lstnp.com' \
 -e POSTGRES_LP_PORT='6000' \
--e POSTGRES_LP_USER='main-read-only' \
--e POSTGRES_LP_PASS='YPKx5hxrSBj4TTdYLDaCNqkDr2KUCU6h5gTS8kDM' \
+-e POSTGRES_LP_USER='u8vhnqc7ffdok2' \
+-e POSTGRES_LP_PASS='paqbsgt0jpd7dpfekalp7a73bb7' \
 -e MLS_NAME='mtrmls' \
 -e MLS_VIEW='view_move_in_nashville_mv_active' \
 -v /home/joe/mls-feeds/:/opt/mls-feeds --rm leadable/mls-feeds \
