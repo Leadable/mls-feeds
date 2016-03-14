@@ -9,7 +9,7 @@ use vars qw{$AUTOLOAD};
 sub new {
   my ($class, $opts) = @_;
 
-  die "specify either feeds or tools in db argument" if ($opts->{db} ne 'feeds' && $opts->{db} ne 'tools' && $opts->{db} ne 'live');
+  die "specify either feeds or tools in db argument" if ($opts->{db} ne 'feeds' && $opts->{db} ne 'tools' && $opts->{db} ne 'lp');
 
   $opts->{NumRetry} ||= 3;
 
@@ -108,8 +108,8 @@ sub set_dbh {
   elsif ($self->{db} eq 'tools') {
     $self->{dbh} = $self->get_tools_dbh;
   }
-  elsif ($self->{db} eq 'live') {
-    $self->{dbh} = $self->get_live_dbh;
+  elsif ($self->{db} eq 'lp') {
+    $self->{dbh} = $self->get_lp_dbh;
   }
   else {
     die "No handler set for [$self->{db}]\n";
@@ -144,14 +144,14 @@ sub get_tools_dbh {
   return DBI->connect($connstr, $user, $pass, { AutoCommit => $self->{AutoCommit}, RaiseError => 1, pg_server_prepare => 0 }) or die $DBI::errstr;
 };
 
-sub get_live_dbh {
+sub get_lp_dbh {
   my $self = shift;
 
-  my $dbname = 'mls-feeds-live';
-  my $host = $ENV{POSTGRES_LIVE_TCP_ADDR};
-  my $port = $ENV{POSTGRES_LIVE_TCP_PORT};
-  my $user = $ENV{POSTGRES_LIVE_USER};
-  my $pass = $ENV{POSTGRES_LIVE_PASS};
+  my $dbname = 'dbkaigoaig2h9j';
+  my $host = $ENV{POSTGRES_LP_HOST};
+  my $port = $ENV{POSTGRES_LP_PORT};
+  my $user = $ENV{POSTGRES_LP_USER};
+  my $pass = $ENV{POSTGRES_LP_PASS};
 
   my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
 

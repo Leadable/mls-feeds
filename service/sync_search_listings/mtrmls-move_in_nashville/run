@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+docker rm -f "sync-searches-move-in-nashville"
+
+docker run --name "sync-searches-move-in-nashville" \
+--link mls-db-mtrmls:postgres \
+-e POSTGRES_LP_HOST='pgsql-main.lstnp.com' \
+-e POSTGRES_LP_PORT='6000' \
+-e POSTGRES_LP_USER='main-read-only' \
+-e POSTGRES_LP_PASS='YPKx5hxrSBj4TTdYLDaCNqkDr2KUCU6h5gTS8kDM' \
+-e MLS_NAME='mtrmls' \
+-e MLS_VIEW='view_move_in_nashville_mv_active' \
+-v /home/joe/mls-feeds/:/opt/mls-feeds --rm leadable/mls-feeds \
+perl /opt/mls-feeds/bin/sync_search_listings.pl
+
+sleep 900
