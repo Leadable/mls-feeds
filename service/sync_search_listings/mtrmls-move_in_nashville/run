@@ -4,6 +4,8 @@ docker rm -f "sync-searches-move-in-nashville"
 
 docker run --name "sync-searches-move-in-nashville" \
 --link mls-db-mtrmls:postgres \
+-e POSTGRES_FEEDS_USER='mls-db-owner' \
+-e POSTGRES_FEEDS_PASS='zmWWhBDcusTvtq4Bbx5tQW9GAUSMhR3RuyAnghgV' \
 -e POSTGRES_LP_HOST='pgsql-main.lstnp.com' \
 -e POSTGRES_LP_PORT='6000' \
 -e POSTGRES_LP_USER='main-read-only' \
