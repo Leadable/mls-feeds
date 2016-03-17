@@ -6,7 +6,7 @@ use MLS::Resource::Paragon::sandicor2::Config;
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';
 
-@MLS::Config::AREAS = qw(padula amg);
+@MLS::Config::AREAS = qw(padula);
 
 # Name of the RETS Resource Photo Object
 $MLS::Config::OBJECT = 'Photo';
