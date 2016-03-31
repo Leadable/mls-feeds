@@ -13,6 +13,8 @@ use MLS::Database;
 my $MLS  = $ENV{MLS_NAME};
 my $VIEW = $ENV{MLS_VIEW};
 
+die 'Missing parameters' if (!$MLS || !$VIEW);
+
 my $dbh = MLS::Database->new({db => 'feeds', no_print_error => 1});
 
 sub get_geo_columns {
@@ -57,14 +59,14 @@ my $geo_cols = get_geo_columns();
 foreach my $geo_col (@$geo_cols) {
     my $select_sql;
 
-    if ($geo_col eq '__geo_neigh') {
-        $select_sql = q|unnest("__geo_neigh")|;
+    if ($geo_col =~ /__geo_/) {
+        $select_sql = qq|unnest("$geo_col")|;
     }
     else {
         $select_sql = qq|"$geo_col"|;
     }
 
-    my $sql = qq|SELECT distinct $select_sql FROM mtrmls.view_move_in_nashville_mv_active;|;
+    my $sql = qq|SELECT distinct $select_sql FROM $MLS.${VIEW}_mv_active;|;
     my $rs = $dbh->selectcol_arrayref($sql);
 
     foreach my $area (@$rs) {
@@ -77,14 +79,14 @@ foreach my $geo_col (@$geo_cols) {
         my $qi_geo_col = $dbh->quote_identifier($geo_col);
 
         my $where_sql;
-        if ($geo_col eq '__geo_neigh') {
+        if ($geo_col =~ /__geo_/) {
             $where_sql = qq|$q_area = ANY ($qi_geo_col)|;
         }
         else {
             $where_sql = qq|$qi_geo_col = $q_area|;
         }
 
-        my $area_sql = qq|SELECT __geo_geom as geom FROM mtrmls.view_move_in_nashville_mv WHERE $where_sql AND __geo_geom IS NOT NULL;|;
+        my $area_sql = qq|SELECT __geo_geom as geom FROM $MLS.${VIEW}_mv WHERE $where_sql AND __geo_geom IS NOT NULL;|;
         my $area_rs = $dbh->selectcol_arrayref($area_sql, {Slice => {}});
 
         next if (! scalar @$area_rs);
@@ -97,7 +99,7 @@ foreach my $geo_col (@$geo_cols) {
             )|;
 
         my $geom_sql = qq|
-            INSERT INTO mtrmls.geom_cache (area_name, view_col, way) VALUES
+            INSERT INTO $MLS.geom_cache (area_name, view_col, way) VALUES
             ($q_area, $q_geo_col, $way_str);
         ;|;
 
@@ -107,7 +109,7 @@ foreach my $geo_col (@$geo_cols) {
 
         if ($@) {
             $geom_sql = qq|
-                UPDATE mtrmls.geom_cache SET way = $way_str WHERE area_name = $q_area AND view_col = $q_geo_col;
+                UPDATE $MLS.geom_cache SET way = $way_str WHERE area_name = $q_area AND view_col = $q_geo_col;
             ;|;
 
             $dbh->do($geom_sql);

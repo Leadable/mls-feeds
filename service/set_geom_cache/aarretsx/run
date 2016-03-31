@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+docker rm -f "set_geom_cache-aarretsx"
+
+docker run --name "set_geom_cache-aarretsx" \
+--link mls-db-aarretsx:postgres \
+-e POSTGRES_FEEDS_USER='mls-db-owner' \
+-e POSTGRES_FEEDS_PASS='zmWWhBDcusTvtq4Bbx5tQW9GAUSMhR3RuyAnghgV' \
+-e MLS_NAME='aarretsx' \
+-e MLS_VIEW='view_caulk' \
+-v /home/joe/mls-feeds/:/opt/mls-feeds --rm leadable/mls-feeds \
+perl /opt/mls-feeds/bin/set_geom_cache.pl
+
+sleep 86400
