@@ -123,7 +123,7 @@ sub populate_table {
     if ($opts->{table} eq 'similar_listings') {
         my $values = 
             join(',', 
-                map {"($hash, '$_->{mlsnum}', NOW(), '$_->{relevance}', '$_->{details}')"} @$listings
+                map {"($hash, '$_->{mlsnum}', '$_->{ts}'::timestamp without time zone, '$_->{relevance}', '$_->{details}')"} @$listings
             );
         $insert_sql = qq|INSERT INTO $MLS.$table (search_hash, mlsnum, ts, relevancy, details) VALUES $values;|;
     }
@@ -218,7 +218,6 @@ sub get_geo_json {
     return $area_dbh->selectcol_arrayref($sql)->[0];
 }
 
-# Only used for debugging
 sub search_close_listings {
     my ($query_params, $all_exact_sql) = @_;
 
@@ -258,7 +257,7 @@ sub search_close_listings {
     my $where_sql = join(' AND ', @conditions);
     my $sql = qq|
         SELECT
-            $SELECT_SQL, $dist as distance
+            $SELECT_SQL, $dist as distance, __inserted_at as ts
         FROM 
             $MLS.$MV_ACTIVE
         WHERE
@@ -471,6 +470,7 @@ sub get_relevant_listings {
         my $relevance = int(($pts/$poss_pts)*100);
         push @result, {
             mlsnum    => $listing->{mlsnum},
+            ts        => $listing->{ts},
             relevance => $relevance,
             details   => j(\@details),
         };
