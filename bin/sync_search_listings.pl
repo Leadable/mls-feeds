@@ -491,9 +491,20 @@ foreach my $search (@$searches) {
     my $query_params = j($search->{query});
 
     # Get the search SQL and run queries to find new and reduced listings
-    my $queries  = get_search_sql($search);
-    my $new_rs     = $area_dbh->selectall_arrayref($queries->{new}, {Slice => {}});
-    my $reduced_rs = $area_dbh->selectall_arrayref($queries->{reduced}, {Slice => {}});
+    my $queries = get_search_sql($search);
+    my $new_rs;
+    my $reduced_rs;
+
+    eval {
+        $new_rs     = $area_dbh->selectall_arrayref($queries->{new}, {Slice => {}});
+        $reduced_rs = $area_dbh->selectall_arrayref($queries->{reduced}, {Slice => {}});
+    };
+
+    if ($@) {
+        print "Error running searches, skipping\n";
+        print Dumper $search;
+        next;
+    }
 
     # Populate tables with the results for each query
     populate_table({
