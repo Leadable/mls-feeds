@@ -86,12 +86,12 @@ sub get_search_sql {
 
     my $new_sql = qq|
         SELECT mlsnum, __inserted_at as ts FROM $MLS.$MV_ACTIVE
-        WHERE $conditions ORDER BY __inserted_at LIMIT 100
+        WHERE $conditions ORDER BY __inserted_at DESC LIMIT 100
     ;|;
 
     my $reduced_sql = qq|
         SELECT mlsnum, __price_updated_at as ts FROM $MLS.$MV_ACTIVE
-        WHERE $conditions AND __percent_reduced > 0 ORDER BY __price_updated_at LIMIT 100
+        WHERE $conditions AND __percent_reduced > 0 ORDER BY __price_updated_at DESC LIMIT 100
     ;|;
 
     my $all_exact_sql = qq|
