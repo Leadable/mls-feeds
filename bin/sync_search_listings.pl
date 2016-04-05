@@ -136,10 +136,11 @@ sub run_search_sql {
         ORDER BY __price_updated_at DESC
     ;|;
 
+    # Do not add a semicolon here!
     my $all_exact_sql = qq|
         SELECT mlsnum FROM $MLS.$MV_ACTIVE
         WHERE $conditions
-    ;|;
+    |;
 
     my $relevant_sql = get_relevant_sql($query_params, $all_exact_sql, $ts);
 
