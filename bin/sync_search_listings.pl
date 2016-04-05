@@ -10,16 +10,21 @@ use DBI;
 use Data::Dumper;
 
 use Mojo::JSON qw(j);
+use Mojo::UserAgent;
 use Scalar::Util qw(looks_like_number);
 use MLS::Database;
 
 $| = 1;
 
-my $MLS  = $ENV{MLS_NAME};
-my $VIEW = $ENV{MLS_VIEW};
-my $MV_ACTIVE = $VIEW . '_mv_active';
+my $MLS        = $ENV{MLS_NAME};
+my $VIEW       = $ENV{MLS_VIEW};
+my $AREA_ID    = $ENV{AREA_ID};
+my $API_KEY    = $ENV{API_KEY};
+my $DOMAIN_URL = $ENV{DOMAIN_URL};
 
-die "Missing parameters" if (!$MLS || !$VIEW);
+die "Missing parameters" if (!$MLS || !$VIEW || !$AREA_ID || !$API_KEY || !$DOMAIN_URL);
+
+my $MV_ACTIVE = $VIEW . '_mv_active';
 
 my $lp_dbh   = MLS::Database->new({db => 'lp'});
 my $area_dbh = MLS::Database->new({db => 'feeds'});
@@ -55,54 +60,119 @@ map {$IGNORE{$_} = 1} @{$COLS->{location}};
 sub get_saved_searches {
     my $mls = $lp_dbh->quote($MLS);
     my $sql = qq|
+        WITH hash_circles AS (
+            SELECT
+                hash_sql, array_agg(c.id) as circle_list,
+                max(conditions_sql) as conditions_sql, max(values_sql) as values_sql, max(query) as query
+            FROM
+                "search" s, member m, circle c, identity i
+            WHERE
+                hash_sql ~ '^[A-f0-9]{32}\$' AND
+                s.member_id = m.id AND
+                m.circle_id = c.id AND
+                i.user_id = m.user_id AND
+                c.buyer_last_request_at > NOW() - '90 days'::interval AND
+                c.area_id = '$AREA_ID' AND
+                NOT c.anonymous
+            GROUP BY
+                hash_sql
+        )
         SELECT
-            hash_sql, s.area_id, max(conditions_sql) as conditions_sql, max(values_sql) as values_sql, max(query) as query
+            hash_sql, json_agg(row_to_json(row(i.email, i.first_name, i.last_name, m.circle_id))) as contact,
+            max(conditions_sql) as conditions_sql, max(values_sql) as values_sql, max(query) as query
         FROM
-            "search" s, member m, circle c, area a
+            member m, "user" u, identity i, hash_circles hc
         WHERE
-            s.hash_sql IS NOT NULL AND
-            s.member_id = m.id AND
-            m.circle_id = c.id AND
-            c.buyer_last_request_at > NOW() - '90 days'::interval AND
-            a.id = s.area_id AND
-            a.mls = $mls
+            m.circle_id = ANY("circle_list") AND
+            m.user_id = u.id AND
+            u.role = 'buyer' AND
+            i.user_id = u.id
         GROUP BY
-            s.hash_sql, s.area_id
+            hash_sql
     ;|;
 
     my $rs = $lp_dbh->selectall_arrayref($sql, {Slice => {}});
     return $rs;
 }
 
-sub get_search_sql {
-    my $search = shift;
+sub run_search_sql {
+    my $opts = shift;
 
-    my $conditions = j($search->{conditions_sql});
-    my $values     = j($search->{values_sql});
+    my $conditions   = $opts->{conditions};
+    my $values       = $opts->{values};
+    my $query_params = $opts->{query_params};
+    my $hash         = $opts->{hash};
 
     $conditions = join(' AND ', @$conditions);
     $conditions =~ s/p\.//g;
     $conditions =~ s/\$(\d+)/'$values->[$1 - 1]'/g;
 
+    my $q_hash = $area_dbh->quote($hash);
+
+    # Find out when we last synced this search (if ever)
+    my $last_synced_sql = qq|SELECT last_synced_at FROM $MLS.sync_search_listings WHERE search_hash = $q_hash;|;
+    my $last_synced_rs = $area_dbh->selectcol_arrayref($last_synced_sql);
+
+    my $ts;
+    if (scalar @$last_synced_rs) {
+        $ts = $area_dbh->quote($last_synced_rs->[0]) . '::timestamp without time zone';
+    }
+    else {
+        $hash = $area_dbh->quote($hash);
+        my $sql = qq|INSERT INTO $MLS.sync_search_listings VALUES ($hash, NOW());|;
+        $area_dbh->do($sql);
+        return;
+    }
+
     my $new_sql = qq|
-        SELECT mlsnum, __inserted_at as ts FROM $MLS.$MV_ACTIVE
-        WHERE $conditions ORDER BY __inserted_at DESC LIMIT 100
+        SELECT * FROM $MLS.$MV_ACTIVE
+        WHERE $conditions AND __inserted_at > $ts
+        ORDER BY __inserted_at DESC
     ;|;
 
     my $reduced_sql = qq|
-        SELECT mlsnum, __price_updated_at as ts FROM $MLS.$MV_ACTIVE
-        WHERE $conditions AND __percent_reduced > 0 ORDER BY __price_updated_at DESC LIMIT 100
+        SELECT * FROM $MLS.$MV_ACTIVE
+        WHERE $conditions AND __inserted_at > $ts AND __percent_reduced > 0
+        ORDER BY __price_updated_at DESC
     ;|;
 
     my $all_exact_sql = qq|
         SELECT mlsnum FROM $MLS.$MV_ACTIVE
         WHERE $conditions
-    |;
+    ;|;
+
+    my $relevant_sql = get_relevant_sql($query_params, $all_exact_sql, $ts);
+
+    my ($start_ts, $new_rs, $reduced_rs, $relevant_rs);
+    eval {
+        $area_dbh->begin_work or die "Could not begin work: [$@]\n";
+        $start_ts   = $area_dbh->selectcol_arrayref("SELECT transaction_timestamp()::timestamp without time zone")->[0];
+
+        $new_rs      = $area_dbh->selectall_arrayref($new_sql, {Slice => {}});
+        $reduced_rs  = $area_dbh->selectall_arrayref($reduced_sql, {Slice => {}});
+
+        if ($relevant_sql) {
+            $relevant_rs = $area_dbh->selectall_arrayref($relevant_sql, {Slice => {}});
+        }
+        else {
+            # Can happen when no location is specified in search, return empty set
+            $relevant_rs = [];
+        }
+
+        $area_dbh->commit;
+    };
+
+    if ($@) {
+        print "Error running searches for [$hash], skipping\n";
+        $area_dbh->rollback;
+        return;
+    }
 
     return {
-        new       => $new_sql,
-        reduced   => $reduced_sql,
-        all_exact => $all_exact_sql,
+        new       => $new_rs,
+        reduced   => $reduced_rs,
+        relevant  => $relevant_rs,
+        ts        => $start_ts,
     };
 }
 
@@ -218,12 +288,12 @@ sub get_geo_json {
     return $area_dbh->selectcol_arrayref($sql)->[0];
 }
 
-sub search_close_listings {
-    my ($query_params, $all_exact_sql) = @_;
+sub get_relevant_sql {
+    my ($query_params, $all_exact_sql, $last_sync_ts) = @_;
 
     # Compute the geom that makes up the location of this search
     my $search_geom = get_search_geom($query_params, $COLS->{location});
-    return [] if (!$search_geom);
+    return if (!$search_geom);
 
     $search_geom = $area_dbh->quote($search_geom) . '::geometry';
     my $dist = qq|ST_Length(ST_Transform(ST_ShortestLine($search_geom, __geo_geom), 2877))/5280|;
@@ -242,6 +312,7 @@ sub search_close_listings {
         q|__geo_geom IS NOT NULL|,
         qq|$dist <= 50|,
         qq|price BETWEEN $lower_price AND $upper_price|,
+        qq|__inserted_at > $last_sync_ts|,
     );
 
     if ($query_params->{type}) {
@@ -257,15 +328,14 @@ sub search_close_listings {
     my $where_sql = join(' AND ', @conditions);
     my $sql = qq|
         SELECT
-            $SELECT_SQL, $dist as distance, __inserted_at as ts
+            $SELECT_SQL, $dist as distance, __inserted_at as ts, *
         FROM 
             $MLS.$MV_ACTIVE
         WHERE
             $where_sql
     ;|;
 
-    my $rs = $area_dbh->selectall_arrayref($sql, {Slice => {}});
-    return $rs;
+    return $sql;
 }
 
 sub create_geojsonio_struct {
@@ -330,14 +400,7 @@ sub compare {
 }
 
 sub get_relevant_listings {
-    my ($query_params, $all_exact_sql) = @_;
-
-    # fix up query params
-    $query_params->{baths_total} = delete $query_params->{baths} if ($query_params->{baths});
-    $query_params->{price_min} = 0        if (!$query_params->{price_min});
-    $query_params->{price_max} = 99999999 if (!$query_params->{price_max});
-
-    my $listings_rs = search_close_listings($query_params, $all_exact_sql);
+    my ($listings_rs, $query_params) = @_;
 
     # Iterate through all listings and score each according to saved search query
     my $i = 0;
@@ -469,10 +532,9 @@ sub get_relevant_listings {
 
         my $relevance = int(($pts/$poss_pts)*100);
         push @result, {
-            mlsnum    => $listing->{mlsnum},
-            ts        => $listing->{ts},
             relevance => $relevance,
-            details   => j(\@details),
+            details   => \@details,
+            listing   => $listing,
         };
     }
 
@@ -480,6 +542,105 @@ sub get_relevant_listings {
     my @return = splice(@sorted, 0, 100);
 
     return \@return;
+}
+
+sub create_event {
+    my $opts = shift;
+
+    my $type         = $opts->{type};
+    my $listing_data = $opts->{listing_data};
+    my $contact_list = $opts->{contact_list};
+    my $search_hash  = $opts->{search_hash};
+
+    my $ua = Mojo::UserAgent->new;
+
+    foreach my $listing (@$listing_data) {
+
+        # Only applies to similar listings (listing_data structured a bit differently)
+        my $relevance = $listing->{relevance};
+        my $details   = $listing->{details};
+
+        if ($type eq 'SIMILAR_LISTING') {
+            $listing = $listing->{listing};
+        }
+
+        my %seen_circles;
+        foreach my $contact (@$contact_list) {
+            my $circle_num = $contact->{circle_id};
+
+            # Do not post multiple events for the same circle/mlsnum
+            next if ($seen_circles{$circle_num}++);
+
+            my $event = {
+                api_key => $API_KEY,
+                type    => $type,
+                hash    => $search_hash,
+                contact => {
+                    email      => $contact->{email},
+                    first_name => $contact->{first_name},
+                    last_name  => $contact->{last_name},
+                },
+                listing => {
+                    url     => qq|http://$DOMAIN_URL/circle/$circle_num/property/search/$AREA_ID/$listing->{mlsnum}|,
+                    api_url => qq|https://api.leadable.com/mls/area/$AREA_ID/mlsnum/$listing->{mlsnum}|,
+                    baths => $listing->{baths_total},
+                    primary_photo => $listing->{__photo_urls}->[0],
+                    property_type => $listing->{type},
+                },
+            };
+
+            my @listing_cols = qw(
+                mls
+                beds
+                acres
+                price
+                state
+                mlsnum
+                status
+                latitude
+                longitude
+                sold_date
+                list_date
+                listing_id
+                sold_price
+                year_built
+                image_count
+                square_feet
+                listing_type
+                address_line1
+                address_line2
+            );
+
+            foreach my $col (@listing_cols) {
+                $event->{listing}{$col} = $listing->{$col};
+            }
+
+            if ($type eq 'SIMILAR_LISTING') {
+                $event->{listing}{relevance} = {
+                    value   => $relevance,
+                    details => $details,
+                };
+            }
+
+            # print Dumper $event;
+
+            my $url = q|https://api.leadable.com/event_queue|;
+            my $tx = $ua->post($url => json => $event);
+            if (!$tx->success) {
+                print Dumper $tx->error;
+            }
+        }
+    }
+}
+
+sub update_ts {
+    my ($hash, $ts) = @_;
+
+    $hash = $area_dbh->quote($hash);
+    $ts   = $area_dbh->quote($ts) . '::timestamp without time zone';
+
+    my $sql = qq|UPDATE $MLS.sync_search_listings SET last_synced_at = $ts WHERE search_hash = $hash;|;
+    $area_dbh->do($sql);
 }
  
 my $searches = get_saved_searches();
@@ -489,43 +650,70 @@ my $i = 0;
 foreach my $search (@$searches) {
     my $hash         = $search->{hash_sql};
     my $query_params = j($search->{query});
+    my $conditions   = j($search->{conditions_sql});
+    my $values       = j($search->{values_sql});
+    my $contact_list = j($search->{contact});
+
+    # fix up query params
+    $query_params->{baths_total} = delete $query_params->{baths} if ($query_params->{baths});
+    $query_params->{price_min} = 0        if (!$query_params->{price_min});
+    $query_params->{price_max} = 99999999 if (!$query_params->{price_max});
 
     # Get the search SQL and run queries to find new and reduced listings
-    my $queries = get_search_sql($search);
-    my $new_rs;
-    my $reduced_rs;
-
-    eval {
-        $new_rs     = $area_dbh->selectall_arrayref($queries->{new}, {Slice => {}});
-        $reduced_rs = $area_dbh->selectall_arrayref($queries->{reduced}, {Slice => {}});
-    };
-
-    if ($@) {
-        print "Error running searches, skipping\n";
-        print Dumper $search;
-        next;
-    }
-
-    # Populate tables with the results for each query
-    populate_table({
-        table    => 'new_listings',
-        listings => $new_rs,
-        hash     => $hash,
+    my $res = run_search_sql({
+        hash         => $hash,
+        query_params => $query_params,
+        conditions   => $conditions,
+        values       => $values,
     });
 
-    populate_table({
-        table    => 'reduced_listings',
-        listings => $reduced_rs,
-        hash     => $hash,
+    next if (!$res);
+
+    my $new      = $res->{new};
+    my $reduced  = $res->{reduced};
+    my $relevant = get_relevant_listings($res->{relevant}, $query_params);
+
+    print "\nHash: [$hash]\n";
+    print "Timestamp: [$res->{ts}]\n";
+    print scalar @$new . " new results\n";
+    print scalar @$reduced . " reduced results\n";
+    print scalar @$relevant . " relevant results\n";
+
+    # fix contact key names (postgres 9.3 limitation)
+    $contact_list = [
+        map {
+            my $contact;
+            $contact->{email}      = $_->{f1};
+            $contact->{first_name} = $_->{f2};
+            $contact->{last_name}  = $_->{f3};
+            $contact->{circle_id}  = $_->{f4};
+            $_ = $contact;
+        } @$contact_list
+    ];
+
+    create_event({
+        type         => 'NEW_LISTING',
+        search_hash  => $hash,
+        listing_data => $new,
+        contact_list => $contact_list,
     });
 
-    my $relevant = get_relevant_listings($query_params, $queries->{all_exact});
-    
-    populate_table({
-        table    => 'similar_listings',
-        listings => $relevant,
-        hash     => $hash,
+    create_event({
+        type         => 'REDUCED_LISTING',
+        search_hash  => $hash,
+        listing_data => $reduced,
+        contact_list => $contact_list,
     });
+
+    create_event({
+        type         => 'SIMILAR_LISTING',
+        search_hash  => $hash,
+        listing_data => $relevant,
+        contact_list => $contact_list,
+    });
+
+    # Update the timestamp for this hash
+    update_ts($hash, $res->{ts});
 
     print '.';
     print "[$i]\n" if (++$i % 100 == 0);
