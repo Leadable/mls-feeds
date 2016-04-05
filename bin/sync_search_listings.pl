@@ -582,12 +582,14 @@ sub create_event {
                     last_name  => $contact->{last_name},
                 },
                 listing => {
-                    url     => qq|http://$DOMAIN_URL/circle/$circle_num/property/search/$AREA_ID/$listing->{mlsnum}|,
-                    api_url => qq|https://api.leadable.com/mls/area/$AREA_ID/mlsnum/$listing->{mlsnum}|,
                     baths => $listing->{baths_total},
                     primary_photo => $listing->{__photo_urls}->[0],
                     property_type => $listing->{type},
                 },
+                links => {
+                    web  => qq|http://$DOMAIN_URL/circle/$circle_num/property/search/$AREA_ID/$listing->{mlsnum}|,
+                    self => qq|https://api.leadable.com/mls/area/$AREA_ID/mlsnum/$listing->{mlsnum}|,
+                }
             };
 
             my @listing_cols = qw(
