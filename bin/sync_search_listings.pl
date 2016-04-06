@@ -585,6 +585,7 @@ sub create_event {
                     baths => $listing->{baths_total},
                     primary_photo => $listing->{__photo_urls}->[0],
                     property_type => $listing->{type},
+                    list_date => $listing->{__list_date},
                 },
                 links => {
                     web  => qq|http://$DOMAIN_URL/circle/$circle_num/property/search/$AREA_ID/$listing->{mlsnum}|,
@@ -603,7 +604,6 @@ sub create_event {
                 latitude
                 longitude
                 sold_date
-                list_date
                 listing_id
                 sold_price
                 year_built
