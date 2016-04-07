@@ -52,6 +52,7 @@ my %IGNORE = (
     price_max    => 1,
     price_min    => 1,
     type         => 1,
+    layout       => 1,
 );
 
 # add location columns to ignore also, treated differently
