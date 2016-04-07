@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+docker rm -f "sync-action-listings-aarretsx"
+
+docker run --name "sync-action-listings-aarretsx" \
+--link mls-db-aarretsx:postgres \
+-e MLS_NAME='aarretsx' \
+-e MLS_VIEW='view_caulk' \
+-e DOMAIN_URL='listing-pages-demo.com' \
+-e API_KEY='cab08ea3-b1c6-44d7-b36c-81e6913bbd04' \
+-v /home/joe/mls-feeds/:/opt/mls-feeds --rm leadable/mls-feeds \
+perl /opt/mls-feeds/bin/sync_action_listings.pl
+
+sleep 300
