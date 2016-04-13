@@ -587,6 +587,7 @@ sub create_event {
                     primary_photo => $listing->{__photo_urls}->[0],
                     property_type => $listing->{type},
                     list_date => $listing->{__list_date},
+                    inserted_at => $listing->{__inserted_at},
                 },
                 links => {
                     web  => qq|http://$DOMAIN_URL/circle/$circle_num/property/search/$AREA_ID/$listing->{mlsnum}|,
@@ -626,7 +627,10 @@ sub create_event {
                 };
             }
 
-            # print Dumper $event;
+            if ($type eq 'REDUCED_LISTING') {
+                $event->{listing}{percent_reduced} = $listing->{__percent_reduced};
+                $event->{listing}{reduced_ts}      = $listing->{__price_updated_at};
+            }
 
             my $url = q|https://api.leadable.com/event_queue|;
             my $tx = $ua->post($url => json => $event);
