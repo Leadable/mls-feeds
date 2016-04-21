@@ -47,7 +47,7 @@ SELECT
   "ContingencyType"::text || ' Contingency' as under_contract_description,
   p."MlsNum" as listing_id,
   p."MlsNum" as mlsnum,
-  "PictureCount" as image_count,
+  COALESCE(array_length(p.__photo_urls, 1), 0) as image_count,
   COALESCE("ListPrice", "LeasePerMonth") as price,
   "TotalBedrooms" as beds,
   "TotalFullBaths" as baths_total,

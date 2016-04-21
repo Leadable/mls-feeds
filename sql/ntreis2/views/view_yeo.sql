@@ -64,3 +64,5 @@ COMMENT ON COLUMN ntreis2.view_yeo."feature_architectural_style[]"
   IS '{ "advanced": true, "label": "Style", "input": "checkbox-group", "rank": 170 }';
 COMMENT ON COLUMN ntreis2.view_yeo."feature_year_built_details"
   IS '{ "advanced": true, "label": "Year Built Details", "input": "checkbox-group", "rank": 180 }';
+COMMENT ON COLUMN ntreis2.view_yeo."feature_number_of_stories"
+  IS '{ "advanced": true, "label": "Number of Stories", "input": "checkbox-group", "rank": 190 }';
