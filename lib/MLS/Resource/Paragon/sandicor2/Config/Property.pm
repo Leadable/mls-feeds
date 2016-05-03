@@ -58,8 +58,6 @@ $MLS::Config::MV_ACTIVE_COLS = q|
   FROM sandicor2."Property"
 |;
 
-exit if (! MLS::Resource::Utils::is_peak_time());
-
 # RETS Resource Classes
 my $search = MLS::Resource::Utils::get_search_interval();
 %MLS::Config::CLASSES = (
