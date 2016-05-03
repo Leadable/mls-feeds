@@ -143,7 +143,16 @@ SELECT
   null::text as year_built
 FROM
   trend."Property" p
-  LEFT OUTER JOIN trend."Media" media ON "ListingKey" = media."PropObjectKey" AND media.__removed_at IS NULL,
+  LEFT OUTER JOIN (
+    SELECT
+      "PropObjectKey", max("PropMimeType") as "PropMimeType", max("PropMediaURL") as "PropMediaURL"
+    FROM
+      trend."Media"
+    WHERE
+      __removed_at IS NULL
+    GROUP BY
+      "PropObjectKey"
+  ) media ON media."PropObjectKey" = "ListingKey",
   trend.mutation as m
 WHERE
   p.__class_name IN ('LOT', 'RES', 'RNT') and
