@@ -73,7 +73,7 @@ foreach my $params (@params_list) {
             $off_peak,
             qq|-e MLS_DB_HOST='$ENV{MLS_DB_HOST}'|,
             qq|-e MLS_TIMEZONE='$ENV{MLS_TIMEZONE}'|,
-            qq|--link mls-db-$mls:postgres|,
+            qq|--link mls-db-$ENV{MLS_DB_HOST}:postgres|,
             q|--privileged|,
             q|-v ~/mls-feeds/:/opt/mls-feeds|,
             qq|--name=mls-feeds-$mls|,
@@ -110,5 +110,8 @@ foreach my $params (@params_list) {
 while (time - $start_time < 300) {
     sleep 1;
 }
+
+# Special for sandicor - sleep for 3 hours to reduce usage
+sleep 10800 if ($ENV{MLS_NAME} eq 'sandicor2');
 
 exit 0;
