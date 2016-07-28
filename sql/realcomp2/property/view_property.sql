@@ -19,6 +19,7 @@ SELECT
   __status_history_vals,
   __geo_places,
   __photo_urls,
+  "MLS" as source_mls,
   null::text as __list_date,
   last_transaction_completed_at,
   null::integer as days_to_close,
