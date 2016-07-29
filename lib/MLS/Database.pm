@@ -133,11 +133,11 @@ sub get_feeds_dbh {
 sub get_tools_dbh {
   my $self = shift;
 
-  my $dbname = 'tools-db';
-  my $host = $ENV{POSTGRES_TOOLS_TCP_ADDR};
-  my $port = $ENV{POSTGRES_TOOLS_TCP_PORT};
-  my $user = $ENV{POSTGRES_TOOLS_USER};
-  my $pass = $ENV{POSTGRES_TOOLS_PASS};
+  my $dbname = 'tools-db-owner';
+  my $host = $ENV{TOOLS_DB_PORT_5432_TCP_ADDR};
+  my $port = $ENV{TOOLS_DB_PORT_5432_TCP_PORT};
+  my $user = $ENV{TOOLS_DB_ENV_POSTGRES_USER};
+  my $pass = $ENV{TOOLS_DB_ENV_POSTGRES_PASSWORD};
 
   my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
 
