@@ -28,10 +28,10 @@ while (1 && !$force) {
 print "starting backup...\n";
 
 my $tools = {
-    POSTGRES_TOOLS_TCP_ADDR => 'leadable-tools-db.cloudapp.net',
-    POSTGRES_TOOLS_TCP_PORT => '6432',
-    POSTGRES_TOOLS_USER     => 'tools-db-owner',
-    POSTGRES_TOOLS_PASS     => 'zmWWhBDcusTvtq4Bbx5tQW9GAUSMhR3RuyAnghgV',
+    TOOLS_DB_PORT_5432_TCP_ADDR    => 'leadable-tools.eastus2.cloudapp.azure.com',
+    TOOLS_DB_PORT_5432_TCP_PORT    => '32768',
+    TOOLS_DB_ENV_POSTGRES_USER     => 'tools-db-owner',
+    TOOLS_DB_ENV_POSTGRES_PASSWORD => 'zmWWhBDcusTvtq4Bbx5tQW9GAUSMhR3RuyAnghgV',
 };
 my @tools_env = map {"-e $_='$tools->{$_}'"} keys %$tools;
 
