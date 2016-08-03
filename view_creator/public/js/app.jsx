@@ -46,31 +46,11 @@ App.MLS_Picker = React.createClass({
 });
 
 App.Workspace = React.createClass({
-    getInitialState: function () {
-        return {filter: null};
-    },
-    handleSearchChange: function(val) {
-        this.setState({filter: val});
-    },
     render: function () {
         var data = this.props.data;
 
-        // apply filter
-        if (this.state.filter) {
-            var re = new RegExp(this.state.filter, 'i');
-            data = _.filter(data, function (col) {
-                return col.name.match(re);
-            }.bind(this));
-        }
-
-        // always filter system columns
-        data = _.filter(data, function (col) {
-            return col.name.match(/^__/) === null;
-        }.bind(this));
-
         return (
             <div style={{width: '800px', width: '800px', left: '25% '}}>
-                <App.Workspace.SearchBar handleSearchChange={this.handleSearchChange}/>
                 <App.Workspace.Columns data={data} mls={this.props.mls}/>
             </div>
         );
@@ -105,84 +85,33 @@ App.Workspace.SearchBar = React.createClass({
 
 App.Workspace.Columns = React.createClass({
     getInitialState: function () {
-        return {col_data: {}};
+        return {filter: null};
     },
-    examineCol: function (name, event) {
-        event.preventDefault();
-
-        if (this.state.col_data[name]) {
-            var loaded = this.state.col_data[name].loaded;
-            var show   = this.state.col_data[name].show;
-
-            var col_data = _.clone(this.state.col_data);
-
-            if (!loaded) {
-                // ignore clicks until loaded
-                return;
-            }
-            else if (show) {
-                // hide the data
-                col_data[name].show = false;
-
-            }
-            else if (!show) {
-                // show the data
-                col_data[name].show = true;
-            }
-
-            this.setState({col_data: col_data});
-        }
-        else {
-            // set loaded = false, show = true on this item
-            var col_data = _.clone(this.state.col_data);
-            col_data[name] = {loaded: false, show: true};
-            this.setState({col_data: col_data});
-
-            // fetch the data
-            $.get('get_col_data', {mls: this.props.mls, col: name}, function (res) {
-                var col_data = _.clone(this.state.col_data);
-                col_data[name] = _.merge({loaded: true, show: true}, res);
-                this.setState({col_data: col_data});
-            }.bind(this));
-        }       
+    handleSearchChange: function(val) {
+        this.setState({filter: val});
     },
     render: function () {
         var data = this.props.data;
 
+        // apply filter
+        if (this.state.filter) {
+            var re = new RegExp(this.state.filter, 'i');
+            data = _.filter(data, function (col) {
+                return col.name.match(re);
+            }.bind(this));
+        }
+
+        // always filter system columns
+        data = _.filter(data, function (col) {
+            return col.name.match(/^__/) === null;
+        }.bind(this));
+
         return (
             <div style={{width: '450px'}}>
+                <App.Workspace.SearchBar handleSearchChange={this.handleSearchChange}/>
                 {
                     data.map(function (col) {
-                        var col_data = this.state.col_data[col.name];
-                        return (
-                            <div key={col.name} className="media" style={{borderBottom: '1px solid #e0e0e0', paddingBottom: '16px'}}>
-                                <div className="media-left">
-                                </div>
-                                <div className="media-body">
-                                    <div style={{fontSize: '18px', fontWeight: '500'}} className="media-heading">{col.name}</div>
-                                    <div style={{fontSize: '14px'}}>{col.comment}</div>
-
-                                    <a href="#" style={{fontSize: '14px'}} onClick={(event) => this.examineCol(col.name, event)}>
-                                        <i className="fa fa-table" aria-hidden="true" style={{paddingRight: '4px'}}></i>
-                                        Examine
-                                    </a>
-
-                                    <span style={{padding: '0px 8px'}}></span>
-
-                                    <a href="#" style={{fontSize: '14px'}}>
-                                        <i className="fa fa-arrow-right" aria-hidden="true" style={{paddingRight: '4px'}}></i>
-                                        Map
-                                    </a>
-
-                                    {
-                                        col_data && col_data.show ?
-                                        <App.Workspace.Columns.ColumnData data={this.state.col_data[col.name]} />
-                                        : false
-                                    }
-
-                                </div>
-                            </div>
-                        )
+                        return <App.Workspace.Columns.ColumnBox key={col.name} col_data={col} mls={this.props.mls}/>
                     }.bind(this))
                 }
             </div>
@@ -190,9 +119,71 @@ App.Workspace.Columns = React.createClass({
     }
 });
 
+App.Workspace.Columns.ColumnBox = React.createClass({
+    getInitialState: function () {
+        return {col_data: {}, loaded: false, show: false};
+    },
+    examineCol: function (name, event) {
+        event.preventDefault();
+
+        if (this.state.loaded) {
+            if (this.state.show) {
+                // hide the data
+                this.setState({show: false});
+            }
+            else if (!this.state.show) {
+                // show the data
+                this.setState({show: true});
+            }
+        }
+        else {
+            // set show = true
+            this.setState({show: true});
+
+            // fetch the data
+            $.get('get_col_data', {mls: this.props.mls, col: name}, function (res) {
+                this.setState({col_data: res, loaded: true});
+            }.bind(this));
+        }       
+    },
+    render: function () {
+        var col = this.props.col_data;
+
+        return (
+            <div className="media" style={{borderBottom: '1px solid #e0e0e0', paddingBottom: '16px'}}>
+                <div className="media-left">
+                </div>
+                <div className="media-body">
+                    <div style={{fontSize: '18px', fontWeight: '500'}} className="media-heading">{col.name}</div>
+                    <div style={{fontSize: '14px'}}>{col.comment}</div>
+
+                    <a href="#" style={{fontSize: '14px'}} onClick={(event) => this.examineCol(col.name, event)}>
+                        <i className="fa fa-table" aria-hidden="true" style={{paddingRight: '4px'}}></i>
+                        Examine
+                    </a>
+
+                    <span style={{padding: '0px 8px'}}></span>
+
+                    <a href="#" style={{fontSize: '14px'}}>
+                        <i className="fa fa-arrow-right" aria-hidden="true" style={{paddingRight: '4px'}}></i>
+                        Map
+                    </a>
+
+                    {
+                        this.state.show ?
+                        <App.Workspace.Columns.ColumnData data={this.state.col_data} loaded={this.state.loaded}/>
+                        : false
+                    }
+
+                </div>
+            </div>
+        );
+    }
+});
+
 App.Workspace.Columns.ColumnData = React.createClass({
     render: function () {
-        if (!this.props.data.loaded) {
+        if (!this.props.loaded) {
             return <div>Loading...</div>;
         }
 

@@ -67,7 +67,7 @@ get 'get_col_data' => sub {
     my $tools_dbh = get_tools_dbh();
     my $mls_dbh = get_mls_dbh('leadable-east.eastus2.cloudapp.azure.com');
 
-    my $count_sql = qq|SELECT __class_name as name, count("$col") FROM $mls."Property" WHERE "$col" IS NOT NULL GROUP BY "__class_name";|;
+    my $count_sql = qq|SELECT __class_name as name, count("$col") FROM $mls."Property" GROUP BY "__class_name";|;
     my $count_rs  = $mls_dbh->selectall_arrayref($count_sql, {Slice => {}});
 
     my $sample_sql = qq|select "$col" from $mls."Property"  WHERE "$col" IS NOT NULL LIMIT 100;|;
