@@ -9,15 +9,27 @@ use Mojolicious::Lite;
 use Mojo::JSON qw(j);
 use DBI;
 use Data::Dumper;
+use CHI;
+
+my $cache = CHI->new(
+    driver => 'Memory',
+    global => 0,
+    expires_in => 300,
+);
+
+my @SERVERS = qw(
+    leadable-east.eastus2.cloudapp.azure.com
+    leadable-west.westus.cloudapp.azure.com
+);
 
 get '/' => {template => 'index'};
 
 get 'get_mls_names' => sub {
     my $self = shift;
 
-    my $data = ['aarretsx'];
+    my $data = get_mls_info();
 
-    $self->render(json => $data);
+    $self->render(json => [sort keys %$data]);
 };
 
 get 'get_mls_data' => sub {
@@ -25,9 +37,8 @@ get 'get_mls_data' => sub {
 
     my $mls = $self->param('mls');
 
-    # connect to tools db and get mls info (cache this info - or get on startup?)
-    my $tools_dbh = get_tools_dbh();
-    my $mls_dbh = get_mls_dbh('leadable-east.eastus2.cloudapp.azure.com');
+    my $data    = get_mls_info();
+    my $mls_dbh = get_mls_dbh($data->{$mls});
 
     my $sql = qq|
         SELECT a.attname as name, b.comment from
@@ -54,16 +65,7 @@ get 'get_mls_data' => sub {
     my $rs = $mls_dbh->selectall_arrayref($sql, { Slice => {} });
     my @cols = sort {$a->{name} cmp $b->{name}} @$rs;
 
-    $self->render(json => \@cols);
-};
-
-get 'get_mls_pkey' => sub {
-    my $self = shift;
-
-    my $mls = $self->param('mls');
-    my $mls_dbh = get_mls_dbh('leadable-east.eastus2.cloudapp.azure.com');
-
-    my $sql = qq|
+    my $pkey_sql = qq|
         SELECT a.attname
         FROM   pg_index i
         JOIN   pg_attribute a ON a.attrelid = i.indrelid
@@ -72,8 +74,9 @@ get 'get_mls_pkey' => sub {
         AND    i.indisprimary
     ;|;
 
-    my $pkey = $mls_dbh->selectrow_arrayref($sql);
-    $self->render(json => {pkey => $pkey->[0]});
+    my $pkey = $mls_dbh->selectrow_arrayref($pkey_sql)->[0];
+
+    $self->render(json => {cols => \@cols, pkey => $pkey});
 };
 
 get 'get_col_data' => sub {
@@ -82,9 +85,8 @@ get 'get_col_data' => sub {
     my $mls = $self->param('mls');
     my $col = $self->param('col');
 
-    # connect to tools db and get mls info
-    my $tools_dbh = get_tools_dbh();
-    my $mls_dbh = get_mls_dbh('leadable-east.eastus2.cloudapp.azure.com');
+    my $data    = get_mls_info();
+    my $mls_dbh = get_mls_dbh($data->{$mls});
 
     my $count_sql = qq|SELECT __class_name as name, count("$col") FROM $mls."Property" GROUP BY "__class_name";|;
     my $count_rs  = $mls_dbh->selectall_arrayref($count_sql, {Slice => {}});
@@ -93,18 +95,6 @@ get 'get_col_data' => sub {
     my $sample_rs  = $mls_dbh->selectcol_arrayref($sample_sql);
 
     $self->render(json => {count_rs => $count_rs, sample_rs => $sample_rs});
-};
-
-sub get_tools_dbh {
-  my $dbname = 'tools-db-owner';
-  my $host = $ENV{TOOLS_DB_PORT_5432_TCP_ADDR};
-  my $port = $ENV{TOOLS_DB_PORT_5432_TCP_PORT};
-  my $user = $ENV{TOOLS_DB_ENV_POSTGRES_USER};
-  my $pass = $ENV{TOOLS_DB_ENV_POSTGRES_PASSWORD};
-
-  my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
-
-  return DBI->connect($connstr, $user, $pass, { AutoCommit => 1, RaiseError => 1, pg_server_prepare => 0 });
 };
 
 sub get_mls_dbh {
@@ -119,6 +109,35 @@ sub get_mls_dbh {
 
     return DBI->connect($connstr, $user, $pass, { AutoCommit => 1, RaiseError => 1, pg_server_prepare => 0 });
 };
+
+sub get_mls_info {
+    my $servers = $cache->get('servers');
+
+    if (!$servers) {
+        $servers = {};
+
+        my $schema_sql = qq|
+            SELECT schema_name
+            FROM information_schema.schemata
+            WHERE
+                schema_name NOT LIKE 'pg_%' AND
+                schema_name NOT IN ('information_schema', 'topology', 'tiger', 'tiger_data', 'public')
+        ;|;
+
+        foreach my $host (@SERVERS) {
+            my $mls_dbh = get_mls_dbh($host);
+            my $mls_list = $mls_dbh->selectcol_arrayref($schema_sql);
+
+            foreach my $mls_name (@$mls_list) {
+                $servers->{$mls_name} = $host;
+            }
+        }
+
+        $cache->set('servers', $servers);
+    }
+
+    return $servers;
+}
 
 app->start;
 

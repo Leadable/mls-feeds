@@ -5,33 +5,32 @@ App.Main = React.createClass({
     getInitialState: function () {
         return {
             mls_names: [],
-            active_mls: 'aarretsx',
+            active_mls: null,
             active_mls_data: [],
-            active_mls_pkey: ''
+            active_mls_pkey: null,
         };
     },
     componentDidMount: function () {
         $.get('get_mls_names', function (res) {
             this.setState({mls_names: res});
         }.bind(this));
-
-        // REMOVE ME!
-        this.load_mls_data();
     },
-    load_mls_data: function () {
-        $.get('get_mls_data', {mls: this.state.active_mls}, function (res) {
-            this.setState({active_mls_data: res});
-        }.bind(this));
+    setActiveMLS: function (event) {
+        var mls_name = event.target.value;
 
-        $.get('get_mls_pkey', {mls: this.state.active_mls}, function (res) {
-            this.setState({active_mls_pkey: res.pkey});
+        $.get('get_mls_data', {mls: mls_name}, function (res) {
+            this.setState({
+                active_mls: mls_name,
+                active_mls_data: res.cols,
+                active_mls_pkey: res.pkey,
+            });
         }.bind(this));
     },
     render: function () {
         return (
             <div style={{margin: '5px'}}>
                 <div>View Creator</div>
-                <App.MLS_Picker mls_names={this.state.mls_names}/>
+                <App.MLS_Picker mls_names={this.state.mls_names} setActiveMLS={this.setActiveMLS}/>
                 <App.Workspace
                     data={this.state.active_mls_data}
                     mls={this.state.active_mls}
@@ -48,7 +47,7 @@ App.MLS_Picker = React.createClass({
         return (
             <div>
                 <label htmlFor="mls_picker">MLS:</label>
-                <select id="mls_picker" defaultValue="default">
+                <select id="mls_picker" defaultValue="default" onChange={this.props.setActiveMLS}>
                     <option value="default" disabled>Select...</option>
                     {
                         mls_names.map(function (name) {
