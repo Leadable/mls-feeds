@@ -57,6 +57,25 @@ get 'get_mls_data' => sub {
     $self->render(json => \@cols);
 };
 
+get 'get_mls_pkey' => sub {
+    my $self = shift;
+
+    my $mls = $self->param('mls');
+    my $mls_dbh = get_mls_dbh('leadable-east.eastus2.cloudapp.azure.com');
+
+    my $sql = qq|
+        SELECT a.attname
+        FROM   pg_index i
+        JOIN   pg_attribute a ON a.attrelid = i.indrelid
+                             AND a.attnum = ANY(i.indkey)
+        WHERE  i.indrelid = '$mls."Property"'::regclass
+        AND    i.indisprimary
+    ;|;
+
+    my $pkey = $mls_dbh->selectrow_arrayref($sql);
+    $self->render(json => {pkey => $pkey->[0]});
+};
+
 get 'get_col_data' => sub {
     my $self = shift;
 
@@ -125,6 +144,7 @@ __DATA__
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js" integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.30.2/react-bootstrap.min.js"></script>
     <title>View Creator</title>
   </head>
   <body>
