@@ -76,7 +76,16 @@ get 'get_mls_data' => sub {
 
     my $pkey = $mls_dbh->selectrow_arrayref($pkey_sql)->[0];
 
-    $self->render(json => {cols => \@cols, pkey => $pkey});
+    my $tools_dbh = get_tools_dbh();
+
+    my $mapping_sql = qq|SELECT * FROM view_creator WHERE mls = '$mls';|;
+    my $mapping_rs = $tools_dbh->selectrow_hashref($mapping_sql);
+
+    $self->render(json => {
+        cols         => \@cols,
+        pkey         => $pkey,
+        mapping_data => j($mapping_rs->{data}),
+    });
 };
 
 get 'get_col_data' => sub {
@@ -88,13 +97,34 @@ get 'get_col_data' => sub {
     my $data    = get_mls_info();
     my $mls_dbh = get_mls_dbh($data->{$mls});
 
-    my $count_sql = qq|SELECT __class_name as name, count("$col") FROM $mls."Property" GROUP BY "__class_name";|;
+    my $count_sql = qq|SELECT __class_name as name, count("$col") FROM $mls."Property" GROUP BY "__class_name" ORDER BY "__class_name";|;
     my $count_rs  = $mls_dbh->selectall_arrayref($count_sql, {Slice => {}});
 
-    my $sample_sql = qq|select "$col" from $mls."Property"  WHERE "$col" IS NOT NULL LIMIT 100;|;
+    my $sample_sql = qq|select "$col" from $mls."Property" WHERE "$col" IS NOT NULL ORDER BY "$col" LIMIT 100;|;
     my $sample_rs  = $mls_dbh->selectcol_arrayref($sample_sql);
 
     $self->render(json => {count_rs => $count_rs, sample_rs => $sample_rs});
+};
+
+post 'persist_data' => sub {
+    my $self = shift;
+
+    my $mls  = $self->param('mls');
+    my $data = $self->param('data');
+
+    my $dbh = get_tools_dbh();
+    my $q_data = $dbh->quote($data);
+    my $q_mls  = $dbh->quote($mls);
+
+    my $sql = qq|UPDATE view_creator SET data = $q_data, updated_ts = NOW() WHERE mls = $q_mls RETURNING id;|;
+    my $updated = $dbh->selectrow_hashref($sql);
+
+    if (!$updated) {
+        $sql = qq|INSERT INTO view_creator (mls, data) VALUES ($q_mls, $q_data);|;
+        $dbh->do($sql);
+    }
+
+    $self->render(json => {});
 };
 
 sub get_mls_dbh {
@@ -138,6 +168,20 @@ sub get_mls_info {
 
     return $servers;
 }
+
+sub get_tools_dbh {
+  my $self = shift;
+
+  my $dbname = 'tools-db-owner';
+  my $host = $ENV{TOOLS_DB_PORT_5432_TCP_ADDR};
+  my $port = $ENV{TOOLS_DB_PORT_5432_TCP_PORT};
+  my $user = $ENV{TOOLS_DB_ENV_POSTGRES_USER};
+  my $pass = $ENV{TOOLS_DB_ENV_POSTGRES_PASSWORD};
+
+  my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
+
+  return DBI->connect($connstr, $user, $pass, { AutoCommit => 1, RaiseError => 1, pg_server_prepare => 0 }) or die $DBI::errstr;
+};
 
 app->start;
 

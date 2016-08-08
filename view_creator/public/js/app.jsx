@@ -8,6 +8,10 @@ App.Main = React.createClass({
             active_mls: null,
             active_mls_data: [],
             active_mls_pkey: null,
+            load_state: 'idle',
+
+            mapping_data: {},
+            save_box_text: '',
         };
     },
     componentDidMount: function () {
@@ -17,25 +21,83 @@ App.Main = React.createClass({
     },
     setActiveMLS: function (event) {
         var mls_name = event.target.value;
+        this.setState({load_state: 'loading'});
 
         $.get('get_mls_data', {mls: mls_name}, function (res) {
             this.setState({
                 active_mls: mls_name,
                 active_mls_data: res.cols,
                 active_mls_pkey: res.pkey,
+                mapping_data: res.mapping_data,
+                load_state: 'loaded',
             });
         }.bind(this));
     },
+    setMapping: function (col_name, val) {
+        var mapping_data = _.clone(this.state.mapping_data);
+        mapping_data[col_name] = {
+            col_name: col_name,
+            val: val,
+        };
+
+        this.setState({mapping_data: mapping_data});
+        this.saveData(mapping_data);
+    },
+    saveData: function (data) {
+        this.setState({save_box_text: 'Saving...'});
+
+        var params = {
+            data: JSON.stringify(data),
+            mls: this.state.active_mls
+        };
+
+        $.post('persist_data', params, function (res) {
+            this.setState({save_box_text: 'Saved'});
+            setTimeout(() => (this.setState({save_box_text: ''})), 5000);
+        }.bind(this));
+    },
     render: function () {
+        var save_box_style = {
+            display: 'block',
+            backgroundColor: 'yellow',
+            color: 'black',
+            position: 'absolute',
+            top: '0',
+            left: '50%'
+        };
+
         return (
             <div style={{margin: '5px'}}>
                 <div>View Creator</div>
                 <App.MLS_Picker mls_names={this.state.mls_names} setActiveMLS={this.setActiveMLS}/>
-                <App.Workspace
-                    data={this.state.active_mls_data}
-                    mls={this.state.active_mls}
-                    pkey={this.state.active_mls_pkey}
-                />
+
+                <div style={save_box_style}>{this.state.save_box_text}</div>
+
+                {
+                    this.state.load_state == 'loading' ?
+                    <div>Loading...</div>
+                    : false
+                }
+
+                {
+                    this.state.load_state == 'loaded' ? (
+                        <div>
+                            <App.Columns
+                                col_data={this.state.active_mls_data}
+                                mls={this.state.active_mls}
+                                setMapping={this.setMapping}
+                                mapping_data={this.state.mapping_data}
+                            />
+
+                            <App.Summary
+                                mapping_data={_.values(this.state.mapping_data)}
+                                mls={this.state.active_mls}
+                                pkey={this.state.active_mls_pkey}
+                            />
+                        </div>
+                    )
+                    : false
+                }
             </div>
         );
     }
@@ -60,39 +122,7 @@ App.MLS_Picker = React.createClass({
     }
 });
 
-App.Workspace = React.createClass({
-    getInitialState: function () {
-        return {mapping_data: {}};
-    },
-    setMapping: function (col_name, val) {
-        var mapping_data = _.clone(this.state.mapping_data);
-        mapping_data[col_name] = {
-            col_name: col_name,
-            val: val,
-        };
-
-        this.setState({mapping_data: mapping_data});
-    },
-    render: function () {
-        return (
-            <div>
-                <App.Workspace.Columns
-                    data={this.props.data}
-                    mls={this.props.mls}
-                    setMapping={this.setMapping}
-                />
-
-                <App.Workspace.Summary
-                    mapping_data={_.values(this.state.mapping_data)}
-                    mls={this.props.mls}
-                    pkey={this.props.pkey}
-                />
-            </div>
-        );
-    }
-});
-
-App.Workspace.SearchBar = React.createClass({
+App.SearchBar = React.createClass({
     getInitialState: function () {
         var func = _.debounce(() => {
             this.props.handleSearchChange(this.state.value);
@@ -118,7 +148,7 @@ App.Workspace.SearchBar = React.createClass({
     }
 })
 
-App.Workspace.Columns = React.createClass({
+App.Columns = React.createClass({
     getInitialState: function () {
         return {filter: null};
     },
@@ -130,31 +160,33 @@ App.Workspace.Columns = React.createClass({
         this.setState({filter: val});
     },
     render: function () {
-        var data = this.props.data;
+        var col_data     = this.props.col_data;
+        var mapping_data = this.props.mapping_data;
 
         // apply filter
         if (this.state.filter) {
             var re = new RegExp(this.state.filter, 'i');
-            data = _.filter(data, function (col) {
+            col_data = _.filter(col_data, function (col) {
                 return col.name.match(re);
             }.bind(this));
         }
 
         // always filter system columns
-        data = _.filter(data, function (col) {
+        col_data = _.filter(col_data, function (col) {
             return col.name.match(/^__/) === null;
         }.bind(this));
 
         return (
             <div style={{width: '450px', position: 'relative', float: 'left'}}>
-                <App.Workspace.SearchBar handleSearchChange={this.handleSearchChange}/>
+                <App.SearchBar handleSearchChange={this.handleSearchChange}/>
                 {
-                    data.map(function (col) {
-                        return <App.Workspace.Columns.ColumnBox 
+                    col_data.map(function (col) {
+                        return <App.Columns.ColumnBox 
                                     key={col.name} 
                                     col_data={col}
                                     mls={this.props.mls}
                                     setMapping={this.props.setMapping}
+                                    mapping_name={mapping_data[col.name] ? mapping_data[col.name].val : ''}
                                 />
                     }.bind(this))
                 }
@@ -163,14 +195,13 @@ App.Workspace.Columns = React.createClass({
     }
 });
 
-App.Workspace.Columns.ColumnBox = React.createClass({
+App.Columns.ColumnBox = React.createClass({
     getInitialState: function () {
         return {
             col_data: {},
             loaded_data: false,
             show_data: false,
             edit_mapping: false,
-            mapping_name: null,
         };
     },
     examineCol: function (name, event) {
@@ -200,12 +231,12 @@ App.Workspace.Columns.ColumnBox = React.createClass({
             }.bind(this));
         }       
     },
-    mapCol: function (name, event) {
+    showEdit: function (name, event) {
         event.preventDefault();
         this.setState({edit_mapping: true});
     },
     changeMapping: function (value) {
-        this.setState({mapping_name: value, edit_mapping: false});
+        this.setState({edit_mapping: false});
         this.props.setMapping(this.props.col_data.name, value);
     },
     render: function () {
@@ -215,8 +246,16 @@ App.Workspace.Columns.ColumnBox = React.createClass({
             fontSize: '16px',
             height: '0',
             position: 'relative',
-            bottom: '78px',
-            left: '200px',
+            bottom: '31px',
+            left: '140px',
+        };
+
+        var check_style = {
+            color: 'green',
+            fontSize: '30px',
+            position: 'relative',
+            bottom: '64px',
+            left: '400px',
         };
 
         return (
@@ -234,7 +273,7 @@ App.Workspace.Columns.ColumnBox = React.createClass({
 
                     <span style={{padding: '0px 8px'}}></span>
 
-                    <a href="#" style={{fontSize: '14px'}} onClick={(event) => this.mapCol(col.name, event)}>
+                    <a href="#" style={{fontSize: '14px'}} onClick={(event) => this.showEdit(col.name, event)}>
                         <i className="fa fa-arrow-right" aria-hidden="true" style={{paddingRight: '4px'}}></i>
                         Map
                     </a>
@@ -243,7 +282,7 @@ App.Workspace.Columns.ColumnBox = React.createClass({
 
                     {
                         this.state.edit_mapping ?
-                        <App.Workspace.Columns.ColumnBox.EditMapping
+                        <App.Columns.ColumnBox.EditMapping
                             name={col.name}
                             changeMapping={this.changeMapping}
                             mapping_name={this.state.mapping_name}
@@ -252,14 +291,17 @@ App.Workspace.Columns.ColumnBox = React.createClass({
                     }
 
                     {
-                        this.state.mapping_name && !this.state.edit_mapping ?
-                        <div style={mapping_style}>Mapping: {this.state.mapping_name}</div>
+                        this.props.mapping_name && !this.state.edit_mapping ?
+                        <div style={{height: 0}}>
+                            <div style={mapping_style}>Mapping: {this.props.mapping_name}</div>
+                            <i style={check_style} className="fa fa-check" aria-hidden="true"></i>
+                        </div>
                         : false
                     }
 
                     {
                         this.state.show_data ?
-                        <App.Workspace.Columns.ColumnBox.ColumnData data={this.state.col_data} loaded={this.state.loaded_data}/>
+                        <App.Columns.ColumnBox.ColumnData data={this.state.col_data} loaded={this.state.loaded_data}/>
                         : false
                     }
 
@@ -269,7 +311,7 @@ App.Workspace.Columns.ColumnBox = React.createClass({
     }
 });
 
-App.Workspace.Columns.ColumnBox.ColumnData = React.createClass({
+App.Columns.ColumnBox.ColumnData = React.createClass({
     render: function () {
         if (!this.props.loaded) {
             return <div>Loading...</div>;
@@ -340,7 +382,7 @@ App.Workspace.Columns.ColumnBox.ColumnData = React.createClass({
     }
 });
 
-App.Workspace.Columns.ColumnBox.EditMapping = React.createClass({
+App.Columns.ColumnBox.EditMapping = React.createClass({
     getInitialState: function () {
         return {value: this.props.mapping_name || ''};
     },
@@ -375,7 +417,7 @@ App.Workspace.Columns.ColumnBox.EditMapping = React.createClass({
     }
 });
 
-App.Workspace.Summary = React.createClass({
+App.Summary = React.createClass({
     getInitialState: function () {
         return {show_modal: false, modal_text: null};
     },
@@ -403,7 +445,7 @@ App.Workspace.Summary = React.createClass({
                 <div style={{fontSize: '24px', fontWeight: 'bold'}}>Summary</div>
                 <a style={{height: 0, position: 'relative', left: '136px', bottom: '28px'}} href="#" onClick={this.generateView}>Generate View</a>
 
-                <App.Workspace.Summary.Table mapping_data={this.props.mapping_data}/>
+                <App.Summary.Table mapping_data={this.props.mapping_data}/>
 
                 <Modal show={this.state.show_modal} onHide={this.closeModal}>
                     <Modal.Header closeButton>
@@ -421,7 +463,7 @@ App.Workspace.Summary = React.createClass({
     }
 });
 
-App.Workspace.Summary.Table = React.createClass({
+App.Summary.Table = React.createClass({
     render: function () {
         var mapping_data = _.sortBy(this.props.mapping_data, o => o.col_name);
 
