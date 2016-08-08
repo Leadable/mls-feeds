@@ -12,6 +12,7 @@ App.Main = React.createClass({
 
             mapping_data: {},
             save_box_text: '',
+            show_clear_prompt: false,
         };
     },
     componentDidMount: function () {
@@ -56,6 +57,10 @@ App.Main = React.createClass({
             setTimeout(() => (this.setState({save_box_text: ''})), 5000);
         }.bind(this));
     },
+    clearData: function () {
+        this.setState({mapping_data: {}});
+        this.saveData({});
+    },
     render: function () {
         var save_box_style = {
             display: 'block',
@@ -70,6 +75,7 @@ App.Main = React.createClass({
             <div style={{margin: '5px'}}>
                 <div>View Creator</div>
                 <App.MLS_Picker mls_names={this.state.mls_names} setActiveMLS={this.setActiveMLS}/>
+                <App.ClearData mls={this.state.active_mls} clearData={this.clearData}/>
 
                 <div style={save_box_style}>{this.state.save_box_text}</div>
 
@@ -99,6 +105,48 @@ App.Main = React.createClass({
                     : false
                 }
             </div>
+        );
+    }
+});
+
+App.ClearData = React.createClass({
+    getInitialState: function () {
+        return {show: false};
+    },
+    showPrompt: function () {
+        this.setState({show: true});
+    },
+    hidePrompt: function () {
+        this.setState({show: false});
+    },
+    clearData: function () {
+        this.hidePrompt();
+        this.props.clearData();
+    },
+    render: function () {
+        if (!this.state.show && this.props.mls) {
+            var link_style = {
+                position: 'relative',
+                top: '32px',
+                left: '170px',
+                zIndex: '2',
+            };
+            return <a href="#" onClick={this.showPrompt} style={link_style}>Clear Data</a>
+        }
+
+        return (
+            <Modal show={this.state.show} onHide={this.hidePrompt}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Clear data for {this.props.mls}?</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Do you really want to clear all saved data for {this.props.mls}?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={this.clearData}>Yes</Button>
+                    <Button onClick={this.hidePrompt}>No</Button>
+                </Modal.Footer>
+            </Modal>
         );
     }
 });
@@ -152,10 +200,6 @@ App.Columns = React.createClass({
     getInitialState: function () {
         return {filter: null};
     },
-    shouldComponentUpdate: function (next_props) {
-        // todo: prevent updates when mapping_data changes
-        return true;
-    },
     handleSearchChange: function(val) {
         this.setState({filter: val});
     },
@@ -178,6 +222,7 @@ App.Columns = React.createClass({
 
         return (
             <div style={{width: '450px', position: 'relative', float: 'left'}}>
+                <div style={{fontSize: '24px', fontWeight: 'bold'}}>Map Columns</div>
                 <App.SearchBar handleSearchChange={this.handleSearchChange}/>
                 {
                     col_data.map(function (col) {
@@ -441,7 +486,7 @@ App.Summary = React.createClass({
         };
 
         return (
-            <div style={{position: 'relative', float: 'left', left: '128px', top: '32px'}}>
+            <div style={{position: 'relative', float: 'left', left: '128px'}}>
                 <div style={{fontSize: '24px', fontWeight: 'bold'}}>Summary</div>
                 <a style={{height: 0, position: 'relative', left: '136px', bottom: '28px'}} href="#" onClick={this.generateView}>Generate View</a>
 
