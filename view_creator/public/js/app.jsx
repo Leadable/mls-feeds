@@ -11,7 +11,6 @@ App.Main = React.createClass({
             load_state: 'idle',
 
             mapping_data: {},
-            save_box_text: '',
             show_clear_prompt: false,
         };
     },
@@ -37,52 +36,43 @@ App.Main = React.createClass({
     setMapping: function (col_name, val) {
         var mapping_data = _.clone(this.state.mapping_data);
 
-        if (val) {
-            mapping_data[col_name] = {
-                col_name: col_name,
-                val: val,
-            };
-        }
-        else {
-            delete mapping_data[col_name];
-        }
+        mapping_data[col_name] = _.merge(mapping_data[col_name] || {}, {
+            col_name: col_name,
+            val: val,
+        });
+
+        this.setState({mapping_data: mapping_data});
+        this.saveData(mapping_data);
+    },
+    setNote: function (col_name, val) {
+        var mapping_data = _.clone(this.state.mapping_data);
+
+        mapping_data[col_name] = _.merge(mapping_data[col_name] || {}, {
+            col_name: col_name,
+            note_text: val
+        });
 
         this.setState({mapping_data: mapping_data});
         this.saveData(mapping_data);
     },
     saveData: function (data) {
-        this.setState({save_box_text: 'Saving...'});
-
         var params = {
             data: JSON.stringify(data),
             mls: this.state.active_mls
         };
 
-        $.post('persist_data', params, function (res) {
-            this.setState({save_box_text: ''});
-        }.bind(this));
+        $.post('persist_data', params);
     },
     clearData: function () {
         this.setState({mapping_data: {}});
         this.saveData({});
     },
     render: function () {
-        var save_box_style = {
-            display: 'block',
-            backgroundColor: 'yellow',
-            color: 'black',
-            position: 'absolute',
-            top: '0',
-            left: '50%'
-        };
-
         return (
             <div style={{margin: '5px'}}>
-                <div>View Property Creator</div>
+                <div style={{fontSize: '24px', fontWeight: 'bold'}}>View Property Creator</div>
                 <App.MLS_Picker mls_names={this.state.mls_names} setActiveMLS={this.setActiveMLS}/>
                 <App.ClearData mls={this.state.active_mls} clearData={this.clearData}/>
-
-                <div style={save_box_style}>{this.state.save_box_text}</div>
 
                 {
                     this.state.load_state == 'loading' ?
@@ -96,12 +86,17 @@ App.Main = React.createClass({
                             <App.Columns
                                 col_data={this.state.active_mls_data}
                                 mls={this.state.active_mls}
-                                setMapping={this.setMapping}
                                 mapping_data={this.state.mapping_data}
+                                setMapping={this.setMapping}
+                                setNote={this.setNote}
                             />
 
                             <App.Summary
-                                mapping_data={_.values(this.state.mapping_data)}
+                                mapping_data={
+                                    _.filter(_.values(this.state.mapping_data),
+                                        (col) => (col.val)
+                                    )
+                                }
                                 mls={this.state.active_mls}
                                 pkey={this.state.active_mls_pkey}
                             />
@@ -132,8 +127,8 @@ App.ClearData = React.createClass({
         if (!this.state.show && this.props.mls) {
             var link_style = {
                 position: 'relative',
-                top: '32px',
-                left: '170px',
+                top: '29px',
+                left: '160px',
                 zIndex: '2',
             };
             return <a href="#" onClick={this.showPrompt} style={link_style}>Clear Data</a>
@@ -161,7 +156,7 @@ App.MLS_Picker = React.createClass({
         var mls_names = this.props.mls_names;
         return (
             <div>
-                <label htmlFor="mls_picker">MLS:</label>
+                <label htmlFor="mls_picker" style={{paddingRight: '8px'}}>MLS:</label>
                 <select id="mls_picker" defaultValue="default" onChange={this.props.setActiveMLS}>
                     <option value="default" disabled>Select...</option>
                     {
@@ -198,7 +193,7 @@ App.SearchBar = React.createClass({
                 <input 
                     type="text" className="form-control" id="search-input" 
                     onChange={this.handleChange} style={{paddingLeft: '40px'}}
-                    placeholder="Search column names and comments"
+                    placeholder="Search columns"
                 />
             </div>
         );
@@ -211,14 +206,6 @@ App.Columns = React.createClass({
     },
     handleSearchChange: function(val) {
         this.setState({filter: val});
-    },
-    shouldComponentUpdate: function (next_props, next_state) {
-        // prevent redrawing the entire column list unless props or state changes
-        if (_.isEqual(next_props, this.props) && _.isEqual(this.state, next_state)) {
-            return false;
-        }
-
-        return true;
     },
     render: function () {
         var col_data     = this.props.col_data;
@@ -246,7 +233,7 @@ App.Columns = React.createClass({
 
         return (
             <div style={{width: '450px', position: 'relative', float: 'left'}}>
-                <div style={{fontSize: '24px', fontWeight: 'bold'}}>Map Columns</div>
+                <div style={{fontSize: '20px', fontWeight: 'bold'}}>Map Columns</div>
                 <App.SearchBar handleSearchChange={this.handleSearchChange}/>
                 {
                     col_data.map(function (col) {
@@ -254,8 +241,12 @@ App.Columns = React.createClass({
                                     key={col.name} 
                                     col_data={col}
                                     mls={this.props.mls}
-                                    setMapping={this.props.setMapping}
+
                                     mapping_name={mapping_data[col.name] ? mapping_data[col.name].val : ''}
+                                    note_text={mapping_data[col.name] ? mapping_data[col.name].note_text : ''}
+
+                                    setMapping={this.props.setMapping}
+                                    setNote={this.props.setNote}
                                 />
                     }.bind(this))
                 }
@@ -271,6 +262,7 @@ App.Columns.ColumnBox = React.createClass({
             loaded_data: false,
             show_data: false,
             edit_mapping: false,
+            edit_note: false,
         };
     },
     examineCol: function (name, event) {
@@ -300,13 +292,21 @@ App.Columns.ColumnBox = React.createClass({
             }.bind(this));
         }       
     },
-    toggleEdit: function (name, event) {
+    toggleEditMapping: function () {
         event.preventDefault();
         this.setState({edit_mapping: !this.state.edit_mapping});
+    },
+    toggleEditNote: function () {
+        event.preventDefault();
+        this.setState({edit_note: !this.state.edit_note});
     },
     changeMapping: function (value) {
         this.setState({edit_mapping: false});
         this.props.setMapping(this.props.col_data.name, value);
+    },
+    changeNote: function (value) {
+        this.setState({edit_note: false});
+        this.props.setNote(this.props.col_data.name, value);
     },
     render: function () {
         var col = this.props.col_data;
@@ -316,7 +316,7 @@ App.Columns.ColumnBox = React.createClass({
             height: '0',
             position: 'relative',
             bottom: '31px',
-            left: '140px',
+            left: '204px',
         };
 
         var check_style = {
@@ -334,6 +334,7 @@ App.Columns.ColumnBox = React.createClass({
                 <div className="media-body">
                     <div style={{fontSize: '18px', fontWeight: '500'}} className="media-heading">{col.name}</div>
                     <div style={{fontSize: '14px'}}>{col.comment}</div>
+                    <div style={{fontSize: '14px', padding: '4px 0', opacity: 0.54}}>{col.type}</div>
 
                     <a href="#" style={{fontSize: '14px'}} onClick={(event) => this.examineCol(col.name, event)}>
                         <i className="fa fa-table" aria-hidden="true" style={{paddingRight: '4px'}}></i>
@@ -342,9 +343,16 @@ App.Columns.ColumnBox = React.createClass({
 
                     <span style={{padding: '0px 8px'}}></span>
 
-                    <a href="#" style={{fontSize: '14px'}} onClick={(event) => this.toggleEdit(col.name, event)}>
+                    <a href="#" style={{fontSize: '14px'}} onClick={this.toggleEditMapping}>
                         <i className="fa fa-arrow-right" aria-hidden="true" style={{paddingRight: '4px'}}></i>
                         Map
+                    </a>
+
+                    <span style={{padding: '0px 8px'}}></span>
+
+                    <a href="#" style={{fontSize: '14px'}} onClick={this.toggleEditNote}>
+                        <i className="fa fa-pencil" aria-hidden="true" style={{paddingRight: '4px'}}></i>
+                        Note
                     </a>
 
                     <div style={{padding: '4px 0'}}></div>
@@ -352,7 +360,6 @@ App.Columns.ColumnBox = React.createClass({
                     {
                         this.state.edit_mapping ?
                         <App.Columns.ColumnBox.EditMapping
-                            name={col.name}
                             changeMapping={this.changeMapping}
                             mapping_name={this.props.mapping_name}
                         />
@@ -365,6 +372,21 @@ App.Columns.ColumnBox = React.createClass({
                             <div style={mapping_style}>Mapping: {this.props.mapping_name}</div>
                             <i style={check_style} className="fa fa-check" aria-hidden="true"></i>
                         </div>
+                        : false
+                    }
+
+                    {
+                        this.state.edit_note ?
+                        <App.Columns.ColumnBox.EditNote
+                            changeNote={this.changeNote}
+                            note_text={this.props.note_text}
+                        />
+                        : false
+                    }
+
+                    {
+                        this.props.note_text && !this.state.edit_note ?
+                        <div>Note: {this.props.note_text}</div>
                         : false
                     }
 
@@ -451,6 +473,38 @@ App.Columns.ColumnBox.ColumnData = React.createClass({
     }
 });
 
+App.Columns.ColumnBox.EditNote = React.createClass({
+    getInitialState: function () {
+        return {value: this.props.note_text || ''};
+    },
+    handleChange: function (event) {
+        this.setState({value: event.target.value});
+    },
+    submit: function () {
+        this.props.changeNote(this.state.value);
+    },
+    render: function () {
+        var input_style = {
+        };
+
+        var button_style = {
+            marginTop: '8px',
+        };
+
+        return (
+            <div>
+                <textarea
+                    style={input_style} type="text"
+                    className="form-control"
+                    onChange={this.handleChange}
+                    value={this.state.value}
+                />
+                <button style={button_style} type="button" className="btn btn-primary" onClick={this.submit}>Done</button>
+            </div>
+        )
+    }
+});
+
 App.Columns.ColumnBox.EditMapping = React.createClass({
     getInitialState: function () {
         return {value: this.props.mapping_name || ''};
@@ -511,8 +565,8 @@ App.Summary = React.createClass({
 
         return (
             <div style={{position: 'relative', float: 'left', left: '128px'}}>
-                <div style={{fontSize: '24px', fontWeight: 'bold'}}>Summary</div>
-                <a style={{height: 0, position: 'relative', left: '136px', bottom: '28px'}} href="#" onClick={this.generateView}>Generate View</a>
+                <div style={{fontSize: '20px', fontWeight: 'bold'}}>Summary</div>
+                <a style={{height: 0, position: 'relative', left: '120px', bottom: '25px'}} href="#" onClick={this.generateView}>Generate SQL</a>
 
                 <App.Summary.Table mapping_data={this.props.mapping_data}/>
 
@@ -541,7 +595,7 @@ App.Summary.Table = React.createClass({
                 <thead>
                     <tr>
                         <th>Column Name</th>
-                        <th>View Name</th>
+                        <th>Mapping</th>
                     </tr>
                 </thead>
                 <tbody>
