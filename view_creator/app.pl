@@ -11,10 +11,12 @@ use DBI;
 use Data::Dumper;
 use CHI;
 
+$| = 1;
+
 my $cache = CHI->new(
     driver => 'Memory',
     global => 0,
-    expires_in => 300,
+    expires_in => 1800,
 );
 
 my @SERVERS = qw(
@@ -40,30 +42,36 @@ get 'get_mls_data' => sub {
     my $data    = get_mls_info();
     my $mls_dbh = get_mls_dbh($data->{$mls});
 
-    my $sql = qq|
-        SELECT a.attname as name, b.comment from
-        (
-          SELECT attname
-          FROM   pg_attribute
-          WHERE  attrelid = '$mls."Property"'::regclass
-          AND    attnum > 0
-          AND    NOT attisdropped
-        ) a
-        left join
-        (
-            SELECT c.column_name as name,pgd.description as comment
-            FROM pg_catalog.pg_statio_all_tables as st
-            inner join pg_catalog.pg_description pgd on (pgd.objoid=st.relid)
-            inner join information_schema.columns c on (pgd.objsubid=c.ordinal_position
-            and  c.table_schema=st.schemaname and c.table_name=st.relname)
-            WHERE table_schema = '$mls' and table_name = 'Property'
-        ) b
-        on a.attname = b.name
-        ORDER BY name asc;
-    |;
+    my $cols = $cache->get("cols_$mls");
 
-    my $rs = $mls_dbh->selectall_arrayref($sql, { Slice => {} });
-    my @cols = sort {$a->{name} cmp $b->{name}} @$rs;
+    if (!$cols) {
+        my $sql = qq|
+            SELECT a.attname as name, b.comment, format_type(a.atttypid, a.atttypmod) as type from
+            (
+              SELECT *
+              FROM   pg_attribute
+              WHERE  attrelid = '$mls."Property"'::regclass
+              AND    attnum > 0
+              AND    NOT attisdropped
+            ) a
+            left join
+            (
+                SELECT c.column_name as name,pgd.description as comment
+                FROM pg_catalog.pg_statio_all_tables as st
+                inner join pg_catalog.pg_description pgd on (pgd.objoid=st.relid)
+                inner join information_schema.columns c on (pgd.objsubid=c.ordinal_position
+                and  c.table_schema=st.schemaname and c.table_name=st.relname)
+                WHERE table_schema = '$mls' and table_name = 'Property'
+            ) b
+            on a.attname = b.name
+            ORDER BY name asc;
+        |;
+
+        my $rs = $mls_dbh->selectall_arrayref($sql, { Slice => {} });
+        $cols = [sort {$a->{name} cmp $b->{name}} @$rs];
+
+        $cache->set("cols_$mls", $cols);
+    }
 
     my $pkey_sql = qq|
         SELECT a.attname
@@ -82,7 +90,7 @@ get 'get_mls_data' => sub {
     my $mapping_rs = $tools_dbh->selectrow_hashref($mapping_sql);
 
     $self->render(json => {
-        cols         => \@cols,
+        cols         => $cols,
         pkey         => $pkey,
         mapping_data => j($mapping_rs->{data}),
     });
@@ -137,7 +145,7 @@ sub get_mls_dbh {
 
     my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
 
-    return DBI->connect($connstr, $user, $pass, { AutoCommit => 1, RaiseError => 1, pg_server_prepare => 0 });
+    return DBI->connect_cached($connstr, $user, $pass, { AutoCommit => 1, RaiseError => 1, pg_server_prepare => 0 });
 };
 
 sub get_mls_info {
@@ -180,7 +188,7 @@ sub get_tools_dbh {
 
   my $connstr = "dbi:Pg:dbname=$dbname;host=$host;port=$port";
 
-  return DBI->connect($connstr, $user, $pass, { AutoCommit => 1, RaiseError => 1, pg_server_prepare => 0 }) or die $DBI::errstr;
+  return DBI->connect_cached($connstr, $user, $pass, { AutoCommit => 1, RaiseError => 1, pg_server_prepare => 0 }) or die $DBI::errstr;
 };
 
 app->start;
