@@ -13,7 +13,7 @@ RUN apt-get update \
   && aptitude safe-upgrade -y \
   && apt-get install -y --no-install-recommends postgresql-client-9.4 build-essential libboost-all-dev libcurl4-openssl-dev autoconf antlr swig libmojolicious-perl libpq-dev libclass-dbi-pg-perl libnet-amazon-s3-perl cpanminus screen strace \
   && rm -rf /var/lib/apt/lists/*
-RUN cpanm Geo::StreetAddress::US Text::LevenshteinXS Net::Azure::StorageClient DBI DBD::Pg
+RUN cpanm Geo::StreetAddress::US Text::LevenshteinXS Net::Azure::StorageClient DBI DBD::Pg CHI
 
 RUN wget https://github.com/NationalAssociationOfRealtors/libRETS/archive/1.6.1.tar.gz
 RUN tar xzf 1.6.1.tar.gz

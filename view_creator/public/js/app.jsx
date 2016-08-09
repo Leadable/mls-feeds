@@ -29,17 +29,23 @@ App.Main = React.createClass({
                 active_mls: mls_name,
                 active_mls_data: res.cols,
                 active_mls_pkey: res.pkey,
-                mapping_data: res.mapping_data,
+                mapping_data: res.mapping_data || {},
                 load_state: 'loaded',
             });
         }.bind(this));
     },
     setMapping: function (col_name, val) {
         var mapping_data = _.clone(this.state.mapping_data);
-        mapping_data[col_name] = {
-            col_name: col_name,
-            val: val,
-        };
+
+        if (val) {
+            mapping_data[col_name] = {
+                col_name: col_name,
+                val: val,
+            };
+        }
+        else {
+            delete mapping_data[col_name];
+        }
 
         this.setState({mapping_data: mapping_data});
         this.saveData(mapping_data);
@@ -53,8 +59,7 @@ App.Main = React.createClass({
         };
 
         $.post('persist_data', params, function (res) {
-            this.setState({save_box_text: 'Saved'});
-            setTimeout(() => (this.setState({save_box_text: ''})), 5000);
+            this.setState({save_box_text: ''});
         }.bind(this));
     },
     clearData: function () {
@@ -73,7 +78,7 @@ App.Main = React.createClass({
 
         return (
             <div style={{margin: '5px'}}>
-                <div>View Creator</div>
+                <div>View Property Creator</div>
                 <App.MLS_Picker mls_names={this.state.mls_names} setActiveMLS={this.setActiveMLS}/>
                 <App.ClearData mls={this.state.active_mls} clearData={this.clearData}/>
 
@@ -190,7 +195,11 @@ App.SearchBar = React.createClass({
                     <i className="fa fa-search" aria-hidden="true"></i>
                 </label>
 
-                <input type="text" className="form-control" id="search-input" onChange={this.handleChange} style={{paddingLeft: '40px'}}/>
+                <input 
+                    type="text" className="form-control" id="search-input" 
+                    onChange={this.handleChange} style={{paddingLeft: '40px'}}
+                    placeholder="Search column names and comments"
+                />
             </div>
         );
     }
@@ -203,6 +212,14 @@ App.Columns = React.createClass({
     handleSearchChange: function(val) {
         this.setState({filter: val});
     },
+    shouldComponentUpdate: function (next_props, next_state) {
+        // prevent redrawing the entire column list unless props or state changes
+        if (_.isEqual(next_props, this.props) && _.isEqual(this.state, next_state)) {
+            return false;
+        }
+
+        return true;
+    },
     render: function () {
         var col_data     = this.props.col_data;
         var mapping_data = this.props.mapping_data;
@@ -211,7 +228,14 @@ App.Columns = React.createClass({
         if (this.state.filter) {
             var re = new RegExp(this.state.filter, 'i');
             col_data = _.filter(col_data, function (col) {
-                return col.name.match(re);
+                if (col.name.match(re)) {
+                    return true;
+                }
+                else if (col.comment && col.comment.match(re)) {
+                    return true;
+                }
+
+                return false;
             }.bind(this));
         }
 
@@ -276,9 +300,9 @@ App.Columns.ColumnBox = React.createClass({
             }.bind(this));
         }       
     },
-    showEdit: function (name, event) {
+    toggleEdit: function (name, event) {
         event.preventDefault();
-        this.setState({edit_mapping: true});
+        this.setState({edit_mapping: !this.state.edit_mapping});
     },
     changeMapping: function (value) {
         this.setState({edit_mapping: false});
@@ -318,7 +342,7 @@ App.Columns.ColumnBox = React.createClass({
 
                     <span style={{padding: '0px 8px'}}></span>
 
-                    <a href="#" style={{fontSize: '14px'}} onClick={(event) => this.showEdit(col.name, event)}>
+                    <a href="#" style={{fontSize: '14px'}} onClick={(event) => this.toggleEdit(col.name, event)}>
                         <i className="fa fa-arrow-right" aria-hidden="true" style={{paddingRight: '4px'}}></i>
                         Map
                     </a>
@@ -330,7 +354,7 @@ App.Columns.ColumnBox = React.createClass({
                         <App.Columns.ColumnBox.EditMapping
                             name={col.name}
                             changeMapping={this.changeMapping}
-                            mapping_name={this.state.mapping_name}
+                            mapping_name={this.props.mapping_name}
                         />
                         : false
                     }
@@ -393,7 +417,7 @@ App.Columns.ColumnBox.ColumnData = React.createClass({
                             sample_data.map(function (data) {
                                 return (
                                     <tr key={i++}>
-                                        <td>{data}</td>
+                                        <td>{_.isArray(data) ? data.join(', ') : data}</td>
                                     </tr>
                                 );
                             }.bind(this))

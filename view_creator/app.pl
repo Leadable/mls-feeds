@@ -100,7 +100,7 @@ get 'get_col_data' => sub {
     my $count_sql = qq|SELECT __class_name as name, count("$col") FROM $mls."Property" GROUP BY "__class_name" ORDER BY "__class_name";|;
     my $count_rs  = $mls_dbh->selectall_arrayref($count_sql, {Slice => {}});
 
-    my $sample_sql = qq|select "$col" from $mls."Property" WHERE "$col" IS NOT NULL ORDER BY "$col" LIMIT 100;|;
+    my $sample_sql = qq|select "$col" from $mls."Property" WHERE "$col" IS NOT NULL LIMIT 100;|;
     my $sample_rs  = $mls_dbh->selectcol_arrayref($sample_sql);
 
     $self->render(json => {count_rs => $count_rs, sample_rs => $sample_rs});
@@ -208,7 +208,7 @@ __DATA__
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js" integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.30.2/react-bootstrap.min.js"></script>
-    <title>View Creator</title>
+    <title>View Property Creator</title>
   </head>
   <body>
     <div id="content"></div>
