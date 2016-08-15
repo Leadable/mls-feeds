@@ -198,7 +198,7 @@ App.SearchBar = React.createClass({
             </div>
         );
     }
-})
+});
 
 App.Columns = React.createClass({
     getInitialState: function () {
