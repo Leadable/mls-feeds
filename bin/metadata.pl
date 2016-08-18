@@ -160,6 +160,8 @@ sub get_rets_obj {
       rets_version => $RETS_CREDS->{$mls}{rets_version},
     });
 
+    $rets->login;
+
     $rets->SetHttpLogName("/tmp/metadata_$mls.log");
 
     return $rets;

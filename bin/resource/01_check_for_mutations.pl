@@ -36,6 +36,7 @@ my $rets = $MLS::Config::RETS;
 my $log_dir = MLS::Resource::Utils::get_log_dir();
 
 if ($rets) {
+    $rets->login;
     $rets->SetHttpLogName("$log_dir/check_for_mutations.log");
 }
 

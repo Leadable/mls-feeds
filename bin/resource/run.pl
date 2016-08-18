@@ -53,10 +53,6 @@ my $tools_dbh = MLS::Database->new({db => 'tools'});
 
 my $rets = $MLS::Config::RETS;
 
-if ($rets) {
-    $rets->SetHttpLogName("$log_dir/rets.log");
-}
-
 my $photo_storage   = MLS::Storage->new({ use_s3 => 0, bucket => 'dfo-photos' });
 my $log_storage     = MLS::Storage->new({ use_s3 => 0, bucket => 'dfo-log' });
 
@@ -81,6 +77,11 @@ eval {
     $| = 1;
 
     $monitor->start();
+
+    if ($rets) {
+        $rets->login;
+        $rets->SetHttpLogName("$log_dir/rets.log");
+    }
 
     $mutation_module->new({
         dbh => $dbh,

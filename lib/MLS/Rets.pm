@@ -15,10 +15,6 @@ sub new {
     $opts->{NumRetry} ||= 3;
 
     bless $opts, $class;
-
-    $opts->login;
-
-    return $opts;
 }
 
 sub login {
