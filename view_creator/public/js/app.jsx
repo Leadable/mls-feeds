@@ -1,6 +1,48 @@
 var Modal  = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 
+App.mandatory_cols = [
+    'age',
+    'id',
+    'listing_id',
+    'mlsnum',
+    'status',
+    '__list_date',
+    'sold_date',
+    'sold_price',
+    'under_contract',
+    'price',
+    'price_per_sqft',
+    'beds',
+    'type',
+    'baths_total',
+    'address_line1',
+    'city',
+    'city_st',
+    'zip',
+    'square_feet',
+    'year_built',
+    'acres',
+    'garage',
+    'basement',
+    'fireplace',
+    'fenced_yard',
+    'waterfront',
+    'one_story',
+    'pool',
+    'patio_deck_porch',
+    'walk_in_closets',
+    'double_vanity',
+    '__minor_area',
+    '__major_area',
+    'subdivision',
+    'elementary_school',
+    'middle_school',
+    'high_school',
+    'office_name',
+    'listing_type',
+];
+
 App.Main = React.createClass({
     getInitialState: function () {
         return {
@@ -35,6 +77,10 @@ App.Main = React.createClass({
     },
     setMapping: function (col_name, val) {
         var mapping_data = _.clone(this.state.mapping_data);
+
+        if (val == 'Generic Feature') {
+            val = 'feature_' + col_name;
+        }
 
         mapping_data[col_name] = _.merge(mapping_data[col_name] || {}, {
             col_name: col_name,
@@ -242,6 +288,7 @@ App.Columns = React.createClass({
                                     col_data={col}
                                     mls={this.props.mls}
 
+                                    mapping_data={mapping_data}
                                     mapping_name={mapping_data[col.name] ? mapping_data[col.name].val : ''}
                                     note_text={mapping_data[col.name] ? mapping_data[col.name].note_text : ''}
 
@@ -292,16 +339,16 @@ App.Columns.ColumnBox = React.createClass({
             }.bind(this));
         }       
     },
-    toggleEditMapping: function () {
+    toggleEditMapping: function (event) {
         event.preventDefault();
         this.setState({edit_mapping: !this.state.edit_mapping});
     },
-    toggleEditNote: function () {
+    toggleEditNote: function (event) {
         event.preventDefault();
         this.setState({edit_note: !this.state.edit_note});
     },
     changeMapping: function (value) {
-        this.setState({edit_mapping: false});
+        //this.setState({edit_mapping: false});
         this.props.setMapping(this.props.col_data.name, value);
     },
     changeNote: function (value) {
@@ -324,7 +371,7 @@ App.Columns.ColumnBox = React.createClass({
             fontSize: '30px',
             position: 'relative',
             bottom: '64px',
-            left: '400px',
+            left: '392px',
         };
 
         return (
@@ -343,33 +390,31 @@ App.Columns.ColumnBox = React.createClass({
 
                     <span style={{padding: '0px 8px'}}></span>
 
-                    <a href="#" style={{fontSize: '14px'}} onClick={this.toggleEditMapping}>
+                    <a href="#" style={{fontSize: '14px'}} onClick={(event) => this.toggleEditMapping(event)}>
                         <i className="fa fa-arrow-right" aria-hidden="true" style={{paddingRight: '4px'}}></i>
                         Map
                     </a>
 
                     <span style={{padding: '0px 8px'}}></span>
 
-                    <a href="#" style={{fontSize: '14px'}} onClick={this.toggleEditNote}>
+                    <a href="#" style={{fontSize: '14px'}} onClick={(event) => this.toggleEditNote(event)}>
                         <i className="fa fa-pencil" aria-hidden="true" style={{paddingRight: '4px'}}></i>
                         Note
+                    </a>
+
+                    <span style={{padding: '0px 8px'}}></span>
+
+                    <a href="#" style={{fontSize: '14px'}} onClick={(event) => this.changeMapping('')}>
+                        <i className="fa fa-times" aria-hidden="true" style={{paddingRight: '4px'}}></i>
+                        Clear Mapping
                     </a>
 
                     <div style={{padding: '4px 0'}}></div>
 
                     {
-                        this.state.edit_mapping ?
-                        <App.Columns.ColumnBox.EditMapping
-                            changeMapping={this.changeMapping}
-                            mapping_name={this.props.mapping_name}
-                        />
-                        : false
-                    }
-
-                    {
-                        this.props.mapping_name && !this.state.edit_mapping ?
-                        <div style={{height: 0}}>
-                            <div style={mapping_style}>Mapping: {this.props.mapping_name}</div>
+                        this.props.mapping_name ?
+                        <div>
+                            <div>Mapping: {this.props.mapping_name}</div>
                             <i style={check_style} className="fa fa-check" aria-hidden="true"></i>
                         </div>
                         : false
@@ -393,6 +438,16 @@ App.Columns.ColumnBox = React.createClass({
                     {
                         this.state.show_data ?
                         <App.Columns.ColumnBox.ColumnData data={this.state.col_data} loaded={this.state.loaded_data}/>
+                        : false
+                    }
+
+                    {
+                        this.state.edit_mapping ?
+                        <App.Columns.ColumnBox.EditMapping
+                            changeMapping={this.changeMapping}
+                            mapping_name={this.props.mapping_name}
+                            mapping_data={this.props.mapping_data}
+                        />
                         : false
                     }
 
@@ -506,35 +561,49 @@ App.Columns.ColumnBox.EditNote = React.createClass({
 });
 
 App.Columns.ColumnBox.EditMapping = React.createClass({
-    getInitialState: function () {
-        return {value: this.props.mapping_name || ''};
-    },
-    handleChange: function (event) {
-        this.setState({value: event.target.value});
-    },
-    submit: function () {
-        this.props.changeMapping(this.state.value);
-    },
     render: function () {
-        var input_style = {
-            display: 'inline',
-            width: '300px',
-            marginRight: '8px',
-        };
+        var cols = App.mandatory_cols.concat('Generic Feature');
+        var mapping_data = this.props.mapping_data;
 
-        var button_style = {
+        // find all the mappings that have been used
+        var selected = {};
+        _.each(_.values(mapping_data), (o) => selected[o.val] = 1);
+
+        var check_style = {
+            color: 'green',
+            fontSize: '28px',
             position: 'relative',
-            bottom: '2px',
+            float: 'right',
         };
 
         return (
-            <div>
-                <input style={input_style} type="text" 
-                       className="form-control"
-                       onChange={this.handleChange} placeholder="Mapping"
-                       value={this.state.value}
-                />
-                <button style={button_style} type="button" className="btn btn-primary" onClick={this.submit}>Done</button>
+            <div className="list-group">
+                {
+                    cols.map(function (col_name) {
+                        var active = false;
+
+                        if (this.props.mapping_name == col_name ||
+                           (col_name == 'Generic Feature' && _.startsWith(this.props.mapping_name, 'feature_'))
+                        ) {
+                            active = true;
+                        }
+
+                        return (
+                            <button
+                                key={col_name}
+                                type="button" className={"list-group-item" + (active ? ' active' : '')}
+                                onClick={this.props.changeMapping.bind(null, col_name)}
+                            >
+                                {col_name}
+                                {
+                                    selected[col_name] ?
+                                    <i style={check_style} className="fa fa-check" aria-hidden="true"></i>
+                                    : false
+                                }
+                            </button>
+                        )
+                    }.bind(this))
+                }
             </div>
         )
     }
