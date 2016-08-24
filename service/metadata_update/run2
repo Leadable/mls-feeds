@@ -1,0 +1,19 @@
+#!/bin/bash
+for mls in $( ls /etc/service ); do
+    if [ $mls = 'db-east' ] || [ $mls = 'db-west' ] || [ $mls = 'open' ] || [ $mls = 'sql_backup' ]
+    then
+        continue
+    fi
+
+    echo mls: $mls
+
+    docker run \
+    --link mls-db-${MLS_DB_HOST}:postgres \
+    -e POSTGRES_FEEDS_USER='mls-db-owner' \
+    -e POSTGRES_FEEDS_PASS='zmWWhBDcusTvtq4Bbx5tQW9GAUSMhR3RuyAnghgV' \
+    -e MLS_NAME=$mls \
+    -v /home/joe/mls-feeds/:/opt/mls-feeds \
+    leadable/mls-feeds perl /opt/mls-feeds/bin/metadata_update.pl
+done
+
+sleep 43200
