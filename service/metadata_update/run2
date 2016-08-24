@@ -1,6 +1,6 @@
 #!/bin/bash
 for mls in $( ls /etc/service ); do
-    if [ $mls = 'db-east' ] || [ $mls = 'db-west' ] || [ $mls = 'open' ] || [ $mls = 'sql_backup' ]
+    if [ $mls = 'db-east' ] || [ $mls = 'db-west' ] || [ $mls = 'open' ] || [ $mls = 'sql_backup' ] || [ $mls = 'metadata_update' ]
     then
         continue
     fi
