@@ -115,9 +115,9 @@ sub get_rets_obj {
   my $board_path = "MLS::Resource::${vendor}::${mls}::Config";
   eval "require $board_path" or die "Could not find [$board_path]: $@\n";
 
-  $MLS::Config::RETS->SetHttpLogName("/tmp/metadata_$mls.log");
+  $MLS::Config::RETS->login;
 
-  # $MLS::Config::RETS->login;
+  $MLS::Config::RETS->SetHttpLogName("/tmp/metadata_$mls.log");
 
   return $MLS::Config::RETS;
 }
