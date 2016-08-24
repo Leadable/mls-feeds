@@ -1,1 +1,2 @@
-../run
+#!/bin/sh
+exec envdir ../env ./run2
