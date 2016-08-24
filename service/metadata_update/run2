@@ -9,7 +9,7 @@ for mls in $( ls /etc/service ); do
 
     docker run \
     --link mls-db-${MLS_DB_HOST}:postgres \
-    --name metadata-update-$mls
+    --name metadata-update-$mls \
     -e POSTGRES_FEEDS_USER='mls-db-owner' \
     -e POSTGRES_FEEDS_PASS='zmWWhBDcusTvtq4Bbx5tQW9GAUSMhR3RuyAnghgV' \
     -e MLS_NAME=$mls \
