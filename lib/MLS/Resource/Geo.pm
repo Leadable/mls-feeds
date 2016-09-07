@@ -92,15 +92,6 @@ sub go {
     my $error = 0;
 
     eval {
-      next if $self->geocode_mapbox($remote_row);
-    };
-
-    if ($@) {
-      print $@;
-      $error = 1;
-    }
-
-    eval {
       next if $self->geocode_bing($remote_row);
     };
 
