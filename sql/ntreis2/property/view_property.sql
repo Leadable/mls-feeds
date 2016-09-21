@@ -272,5 +272,5 @@ FROM
 WHERE
   p."Matrix_Unique_ID"::text = m.remote_id AND
   m.last_transaction_completed_at is not null AND
-  p."PermitInternetYN" and p."StateOrProvince" = 'TX'
+  p."PermitInternetYN" and (p."StateOrProvince" = 'TX' OR p."StateOrProvince" = 'Texas')
 ;
