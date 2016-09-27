@@ -44,7 +44,7 @@ SELECT
     ELSE
       CASE "L_Type_"
         WHEN 'Condo' THEN 'Condo'
-        WHEN 'Boat Facility' THEN 'Boat Facility'
+        WHEN 'Multi-Family' THEN 'Multi-Family'
         WHEN 'Mobile Home' THEN 'Mfg/Mobile'
         ELSE 'Residential'
       END
