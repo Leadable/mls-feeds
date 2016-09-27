@@ -1,7 +1,7 @@
-package MLS::Resource::Innovia::nneren::Config::Property;
+package MLS::Resource::Innovia::nnerenOLD::Config::Property;
 use strict;
 
-use MLS::Resource::Innovia::nneren::Config;
+use MLS::Resource::Innovia::nnerenOLD::Config;
 use MLS::Resource::Utils;
 
 # ID of the Rets Property Resource

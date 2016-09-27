@@ -1,7 +1,7 @@
-package MLS::Resource::Paragon::nneren2::Config::Property;
+package MLS::Resource::Paragon::nneren::Config::Property;
 use strict;
 
-use MLS::Resource::Paragon::nneren2::Config;
+use MLS::Resource::Paragon::nneren::Config;
 
 # ID of the Rets Property Resource
 $MLS::Config::RESOURCE = 'Property';

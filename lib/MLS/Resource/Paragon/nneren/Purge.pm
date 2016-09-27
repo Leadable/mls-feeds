@@ -1,4 +1,4 @@
-package MLS::Resource::Paragon::nneren2::Purge;
+package MLS::Resource::Paragon::nneren::Purge;
 
 use strict;
 use base 'MLS::Resource::Paragon::Purge';

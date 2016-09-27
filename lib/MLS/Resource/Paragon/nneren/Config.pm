@@ -1,4 +1,4 @@
-package MLS::Resource::Innovia::nneren::Config;
+package MLS::Resource::Paragon::nneren::Config;
 
 use strict;
 
@@ -9,9 +9,10 @@ $MLS::Config::MLS = 'nneren';
 
 # RETS session object
 $MLS::Config::RETS = MLS::Rets->new({
-  login_url  => 'http://nne.rets.mlxinnovia.com/nne/login',
+  login_url  => 'http://neren.rets.paragonrels.com/rets/fnisrets.aspx/NEREN/login',
   username   => '0711mon',
   password   => 'rVLE1KfQmDUl4WmlOYs1',
+  rets_version => '1.7.2',
 });
 
 $MLS::Config::Mutation::OFFSET_SIZE = 2500;
