@@ -53,6 +53,10 @@ sub go {
         die $@;
     }
 
+    print "Vacuum analyze [$mv]...\n";
+    $dbh_feeds->set_autocommit(1);
+    $dbh_feeds->do(qq|VACUUM ANALYZE $mv;|);
+
     $self->finish();
 }
 
