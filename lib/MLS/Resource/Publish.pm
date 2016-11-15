@@ -57,6 +57,8 @@ sub go {
     $dbh_feeds->set_autocommit(1);
     $dbh_feeds->do(qq|VACUUM ANALYZE $mv;|);
 
+    $dbh_feeds->set_autocommit(0);
+
     $self->finish();
 }
 
